@@ -22,3 +22,9 @@ Route::get('forgot-password', [PasswordResetController::class, 'showLinkRequestF
 Route::post('forgot-password', [PasswordResetController::class, 'sendResetLinkEmail'])->name('password.email');
 Route::get('reset-password/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
 Route::post('reset-password', [PasswordResetController::class, 'reset'])->name('password.update');
+
+// Ruta para mostrar el formulario de registro
+Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
+
+// Ruta para procesar la solicitud de registro
+Route::post('/register', [AuthController::class, 'register']);

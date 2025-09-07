@@ -15,8 +15,8 @@
                         @csrf
                         <input type="hidden" name="token" value="{{ $token }}">
                         <div class="mb-3">
-                            <input type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ $correo ?? old('email') }}" required placeholder="Correo electrónico">
-                            @error('email')
+                            <input type="email" class="form-control @error('correo') is-invalid @enderror" name="correo" value="{{ $correo ?? old('correo') }}" required placeholder="Correo electrónico">
+                            @error('correo')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
                                 </span>

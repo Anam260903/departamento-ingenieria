@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Usuario;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
@@ -42,5 +44,36 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect('/login');
+    }
+
+    // Muestra el formulario de registro
+    public function showRegisterForm()
+    {
+        return view('auth.register');
+    }
+
+    // Procesa el registro de un nuevo usuario
+    public function register(Request $request)
+    {
+        // 1. Validar los datos del formulario
+        $request->validate([
+            'nombre' => 'required|string|max:15',
+            'apellido' => 'required|string|max:15',
+            'cedula_user' => 'required|string|max:8|unique:usuarios',
+            'correo' => 'required|string|email|max:40|unique:usuarios',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        // 2. Crear el nuevo usuario
+        Usuario::create([
+            'nombre' => $request->nombre,
+            'apellido' => $request->apellido,
+            'cedula_user' => $request->cedula_user,
+            'correo' => $request->correo,
+            'password' => Hash::make($request->password), // Hashear la contraseña
+        ]);
+
+        // 3. Redirigir al usuario
+        return redirect()->route('login')->with('success', 'Registro exitoso. ¡Ahora puedes iniciar sesión!');
     }
 }

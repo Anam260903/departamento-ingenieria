@@ -19,8 +19,8 @@
                     <form method="POST" action="{{ route('password.email') }}">
                         @csrf
                         <div class="mb-3">
-                            <input type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required placeholder="Correo electrónico">
-                            @error('email')
+                            <input type="email" class="form-control @error('correo') is-invalid @enderror" name="correo" value="{{ old('correo') }}" required placeholder="Correo electrónico">
+                            @error('correo')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
                                 </span>

@@ -28,14 +28,4 @@ class Usuario extends Authenticatable
     {
         return 'correo';
     }
-    
-    public function getEmailAttribute()
-{
-    return $this->attributes['correo'];
-}
-
-public function setEmailAttribute($value)
-{
-    $this->attributes['correo'] = $value;
-}
 }

@@ -3,31 +3,31 @@ html, body {
     margin: 0;
     font-family: Arial, sans-serif;
 }
-.container-fluid {
+.register-container {
     height: 100%;
 }
-.login-row {
+.register-row {
     height: 100vh;
 }
-.left-panel {
-    background-color: #035aa6; /* Color azul para el fondo */
+.left-panel-register {
+    background-color: white; /* Panel blanco para el logo */
     display: flex;
     justify-content: center;
     align-items: center;
 }
-.login-card {
+.right-panel-register {
+    background-color: #035aa6; /* Panel azul para el formulario */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.register-card {
     background: white;
     padding: 3rem;
     border-radius: 1rem;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     width: 100%;
-    max-width: 450px;
-}
-.right-panel {
-    background-color: white; /* Color blanco para el fondo */
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    max-width: 500px; /* Un poco más ancho para los campos */
 }
 .logo-container {
     text-align: center;
