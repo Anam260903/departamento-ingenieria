@@ -1,0 +1,27 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    font-family: 'Open Sans', sans-serif; /* Aplica Open Sans a todo el texto */
+}
+
+/* También puedes aplicarlo a los formularios */
+.form-control {
+    font-family: 'Open Sans', sans-serif;
+}
+
+h2 {
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 700; /* Open Sans Bold */
+}
+
+h5 {
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 700; /* Open Sans Bold */
+}
+
+/* Opcional: También en el botón */
+.btn-primary {
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 700;
+}
+

@@ -74,6 +74,6 @@ class AuthController extends Controller
         ]);
 
         // 3. Redirigir al usuario
-        return redirect()->route('login')->with('success', 'Registro exitoso. ¡Ahora puedes iniciar sesión!');
+        return redirect()->route('login')->with('success', '¡Registro exitoso! Ahora puedes iniciar sesión.');
     }
 }
