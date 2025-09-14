@@ -18,23 +18,23 @@ class AuthController extends Controller
     // Procesa el inicio de sesión
     public function login(Request $request)
     {
-        $credentials = $request->validate([
-            'correo' => 'required|email',
-            'password' => 'required',
-        ]);
+    $credentials = $request->validate([
+        'correo' => 'required|email',
+        'password' => 'required',
+    ]);
 
-        if (Auth::attempt(['correo' => $credentials['correo'], 'password' => $credentials['password']])) {
-            $request->session()->regenerate();
+    
+    
+    if (Auth::attempt(['correo' => $credentials['correo'], 'password' => $credentials['password']])) {
+        $request->session()->regenerate();
 
-            // Redirige al dashboard o a la página principal después de un inicio de sesión exitoso
-            return redirect()->intended('/dashboard');
-        }
-
-        // Si las credenciales son incorrectas, redirige de nuevo con un mensaje de error
-        return back()->withErrors([
-            'correo' => 'Las credenciales proporcionadas no coinciden con nuestros registros.',
-        ])->onlyInput('correo');
+        return redirect()->route('dashboard');
     }
+     // Si las credenciales son incorrectas, redirige de nuevo con un mensaje de error
+    return back()->withErrors([
+        'correo' => 'Las credenciales proporcionadas no coinciden con nuestros registros.',
+    ])->onlyInput('correo');
+}
 
     // Cierra la sesión del usuario
     public function logout(Request $request)

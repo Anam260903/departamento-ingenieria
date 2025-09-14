@@ -28,3 +28,8 @@ Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('regi
 
 // Ruta para procesar la solicitud de registro
 Route::post('/register', [AuthController::class, 'register']);
+
+// Ruta del dashboard (protegida por middleware)
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->name('dashboard')->middleware('auth');

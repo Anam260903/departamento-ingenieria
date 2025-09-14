@@ -1,0 +1,69 @@
+body {
+    background-color: #f0f2f5;
+    overflow-x: hidden;
+}
+
+#wrapper {
+    display: flex;
+    padding-top: 56px; /* Para que el contenido no quede debajo del navbar fijo */
+    width: 100%;
+    min-height: 100vh;
+}
+
+/* Estilos para el sidebar en pantallas de escritorio (lg) */
+@media (min-width: 992px) {
+    #sidebar-wrapper {
+        margin-left: 0 !important;
+    }
+    #page-content-wrapper {
+        width: calc(100% - 15rem);
+    }
+}
+
+/* Estilos base del sidebar para todas las pantallas */
+#sidebar-wrapper {
+    min-height: 100vh;
+    width: 15rem;
+    background-color: #ffffff;
+    border-right: 1px solid #e9ecef;
+    transition: margin .25s ease-out;
+    margin-left: -15rem; /* Oculto por defecto en móviles */
+}
+
+/* Estilos base del contenido principal */
+#page-content-wrapper {
+    min-width: 100vw;
+    padding: 20px;
+    transition: margin .25s ease-out;
+}
+
+/* Estado de 'toggled' para mostrar el menú en móviles */
+#wrapper.toggled #sidebar-wrapper {
+    margin-left: 0 !important;
+}
+
+/* Estilos para los cards y el gráfico */
+.card {
+    border: none;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.bg-primary {
+    background-color: #035aa6 !important;
+}
+
+.list-group-item {
+    border: none;
+    border-left: 5px solid transparent;
+}
+
+.list-group-item.active {
+    background-color: #d6e0f0 !important;
+    border-left-color: #035aa6 !important;
+    color: #035aa6 !important;
+    font-weight: bold;
+}
+.list-group-item:hover {
+    background-color: #f8f9fa !important;
+}
