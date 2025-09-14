@@ -16,11 +16,49 @@
     <div class="d-flex" id="wrapper">
         @include('components._sidebar')
 
-        <div id="page-content-wrapper" class="w-100 p-4">
-            <h1 class="mb-4">Bienvenido al Dashboard</h1>
-            <p>Este es el contenido principal del dashboard.</p>
-            
-        <!-- Aquí puedes agregar más contenido dinámico -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+                <h1 class="mt-4">INICIO</h1>
+
+                <div class="row mt-4 gy-4 gx-md-4 align-items-stretch">
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <div class="card text-center shadow-sm h-100">
+                            <div class="card-body d-flex flex-column justify-content-center">
+                                <i class="bi bi-exclamation-circle-fill display-4 text-warning"></i>
+                                <h5 class="card-title mt-3">INSPECCIONES PENDIENTES</h5>
+                                <p class="display-4 fw-bold">{{ $inspeccionesPendientes }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <div class="card text-center shadow-sm h-100">
+                            <div class="card-body d-flex flex-column justify-content-center">
+                                <i class="bi bi-check-circle-fill display-4 text-success"></i>
+                                <h5 class="card-title mt-3">INSPECCIONES COMPLETADAS</h5>
+                                <p class="display-4 fw-bold">{{ $inspeccionesCompletadas }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <div class="card text-center shadow-sm h-100">
+                            <div class="card-body d-flex flex-column justify-content-center">
+                                <i class="bi bi-journal-text display-4 text-primary"></i>
+                                <h5 class="card-title mt-3">TOTAL DE INFORMES</h5>
+                                <p class="display-4 fw-bold">{{ $totalInformes }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card shadow-sm p-4">
+                            <h5 class="text-center mb-4">Informes realizados por mes</h5>
+                            <canvas id="informesChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     

@@ -1,6 +1,5 @@
 body {
     background-color: #f0f2f5;
-    overflow-x: hidden;
 }
 
 #wrapper {
@@ -8,6 +7,7 @@ body {
     padding-top: 56px; /* Para que el contenido no quede debajo del navbar fijo */
     width: 100%;
     min-height: 100vh;
+    overflow-x: hidden; /* EVITA el scroll horizontal */
 }
 
 /* Estilos para el sidebar en pantallas de escritorio (lg) */
@@ -32,8 +32,7 @@ body {
 
 /* Estilos base del contenido principal */
 #page-content-wrapper {
-    min-width: 100vw;
-    padding: 20px;
+    padding: 1.5rem;
     transition: margin .25s ease-out;
 }
 
