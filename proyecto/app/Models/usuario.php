@@ -24,6 +24,16 @@ class Usuario extends Authenticatable
         'password',
     ];
 
+    /**
+     * Get the e-mail address that should be used for password reset.
+     *
+     * @return string
+     */
+    public function getEmailForPasswordReset()
+    {
+        return $this->correo;
+    }
+
     public function getAuthIdentifierName()
     {
         return 'correo';

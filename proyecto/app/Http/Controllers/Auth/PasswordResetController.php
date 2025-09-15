@@ -21,7 +21,7 @@ class PasswordResetController extends Controller
         $request->validate(['correo' => 'required|email']);
 
         $response = Password::broker()->sendResetLink(
-            $request->only('correo')
+        ['correo' => $request->correo]
         );
 
         if ($response == Password::RESET_LINK_SENT) {

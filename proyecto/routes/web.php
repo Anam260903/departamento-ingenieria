@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PerfilController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -30,7 +31,15 @@ Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('regi
 // Ruta para procesar la solicitud de registro
 Route::post('/register', [AuthController::class, 'register']);
 
+//Ruta para cerrar sesión
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
 // Ruta del dashboard (protegida por middleware)
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->name('dashboard')
+    ->middleware('auth');
+
+// Ruta del perfil de usuario (protegida por middleware)
+Route::get('/perfil', [PerfilController::class, 'index'])
+    ->name('perfil')
     ->middleware('auth');
