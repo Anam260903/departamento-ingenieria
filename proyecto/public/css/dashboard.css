@@ -7,7 +7,7 @@ body {
     padding-top: 56px; /* Para que el contenido no quede debajo del navbar fijo */
     width: 100%;
     min-height: 100vh;
-    overflow-x: hidden; /* EVITA el scroll horizontal */
+    overflow-x: hidden;
 }
 
 /* Estilos para el sidebar en pantallas de escritorio (lg) */
@@ -30,10 +30,19 @@ body {
     margin-left: -15rem; /* Oculto por defecto en móviles */
 }
 
+body.sb-sidenav-toggled #wrapper #page-content-wrapper {
+    min-width: 0;
+}
+
+body.sb-sidenav-toggled #sidebar-wrapper {
+    margin-left: 0;
+}
+
 /* Estilos base del contenido principal */
 #page-content-wrapper {
     padding: 1.5rem;
     transition: margin .25s ease-out;
+    width: 90%;
 }
 
 /* Estado de 'toggled' para mostrar el menú en móviles */

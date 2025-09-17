@@ -20,7 +20,7 @@
             <div class="container-fluid">
                 <h1 class="mt-4">INICIO</h1>
 
-                <div class="row mt-4 gy-4 gx-md-4 align-items-stretch">
+                <div class="row mt-4 gy-4 gx-md-4">
                     <div class="col-12 col-md-6 col-lg-4">
                         <div class="card text-center shadow-sm h-100">
                             <div class="card-body d-flex flex-column justify-content-center">
