@@ -45,10 +45,10 @@
 
                         <div class="row mb-3">
                             <div class="col-6">
-                                <input type="text" class="form-control" name="nombre" maxlength="30" placeholder="Nombre" value="{{ old('nombre') }}" required>
+                                <input type="text" class="form-control" name="nombre" maxlength="30" placeholder="Nombre" value="{{ old('nombre') }}" required pattern="[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+" title="Solo se permiten letras y espacios">
                             </div>
                             <div class="col-6">
-                                <input type="text" class="form-control" name="apellido" maxlength="30" placeholder="Apellido" value="{{ old('apellido') }}" required>
+                                <input type="text" class="form-control" name="apellido" maxlength="30" placeholder="Apellido" value="{{ old('apellido') }}" required pattern="[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+" title="Solo se permiten letras y espacios">
                             </div>
                         </div>
 

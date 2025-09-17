@@ -57,8 +57,8 @@ class AuthController extends Controller
     {
         // 1. Validar los datos del formulario
         $request->validate([
-            'nombre' => 'required|string|max:15',
-            'apellido' => 'required|string|max:15',
+            'nombre' =>['required', 'string', 'max:255', 'regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/'],
+            'apellido' =>['required', 'string', 'max:255', 'regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/'],
             'cedula_user' => 'required|string|max:8|unique:usuarios',
             'correo' => 'required|string|email|max:40|unique:usuarios',
             'password' => 'required|string|min:8|confirmed',

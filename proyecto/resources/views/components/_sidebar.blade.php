@@ -36,7 +36,7 @@
             <i class="bi bi-calculator me-2"></i> Estimación de materiales
         </a>
         
-        <form action="{{ route('login') }}" method="POST">
+        <form action="{{ route('logout') }}" method="POST">
             @csrf
             <button type="submit" class="list-group-item list-group-item-action bg-white d-flex align-items-center w-100 border-0">
                 <i class="bi bi-box-arrow-right me-2"></i> Cerrar sesión

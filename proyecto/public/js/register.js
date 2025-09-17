@@ -28,4 +28,12 @@ document.addEventListener('DOMContentLoaded', function () {
             this.querySelector('i').classList.toggle('bi-eye-slash-fill');
         });
     }
+
+    // --- Script para permitir solo letras en campos de texto ---
+    document.querySelectorAll('[name="nombre"], [name="apellido"]').forEach(input => {
+        input.addEventListener('input', function() {
+            // Reemplaza cualquier carácter que no sea una letra (incluyendo ñ, tildes) o un espacio.
+            this.value = this.value.replace(/[^A-Za-zñÑáéíóúÁÉÍÓÚ\s]/g, '');
+        });
+    });
 });

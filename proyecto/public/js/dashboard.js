@@ -1,18 +1,19 @@
-document.addEventListener('DOMContentLoaded', function () {
+// public/js/dashboard.js
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Lógica para mostrar/ocultar el sidebar (si la tienes)
     const sidebarToggle = document.getElementById('sidebarToggle');
-    const wrapper = document.getElementById('wrapper');
-    
-    if (sidebarToggle && wrapper) {
-        sidebarToggle.addEventListener('click', function (e) {
-            e.preventDefault();
-            wrapper.classList.toggle('toggled');
+    if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', function(event) {
+            event.preventDefault();
+            document.body.classList.toggle('sb-sidenav-toggled');
+            localStorage.setItem('sb-sidenav-toggle', document.body.classList.contains('sb-sidenav-toggled'));
         });
     }
 
-    // Script para el gráfico de Chart.js
+    // Lógica para el gráfico de Chart.js (si la tienes)
     const ctx = document.getElementById('informesChart');
     if (ctx) {
-        // Obtenemos los datos del DOM (desde la vista Blade)
         const datos = JSON.parse(ctx.getAttribute('data-chart-data'));
         const labels = JSON.parse(ctx.getAttribute('data-chart-labels'));
 
@@ -23,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 datasets: [{
                     label: 'Número de informes',
                     data: datos,
-                    backgroundColor: '#035aa6', // Color único para las barras
+                    backgroundColor: '#035aa6',
                     borderColor: '#035aa6',
                     borderWidth: 1
                 }]
@@ -38,4 +39,27 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
+
+    // --- Lógica para mostrar/ocultar contraseñas ---
+    document.querySelectorAll('.toggle-password').forEach(button => {
+        button.addEventListener('click', function() {
+            const passwordInput = this.previousElementSibling;
+            const icon = this.querySelector('i');
+
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+
+            icon.classList.toggle('bi-eye');
+            icon.classList.toggle('bi-eye-slash');
+        });
+    });
+
+    // --- Script para permitir solo letras en campos de texto ---
+    document.querySelectorAll('[name="nombre"], [name="apellido"]').forEach(input => {
+        input.addEventListener('input', function() {
+            // Reemplaza cualquier carácter que no sea una letra (incluyendo ñ, tildes) o un espacio.
+            this.value = this.value.replace(/[^A-Za-zñÑáéíóúÁÉÍÓÚ\s]/g, '');
+        });
+    });
+
 });

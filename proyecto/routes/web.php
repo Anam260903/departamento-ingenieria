@@ -39,7 +39,11 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
     ->name('dashboard')
     ->middleware('auth');
 
-// Ruta del perfil de usuario (protegida por middleware)
-Route::get('/perfil', [PerfilController::class, 'index'])
-    ->name('perfil')
-    ->middleware('auth');
+// Ruta para mostrar el perfil (GET, protegida por middleware)
+Route::get('/perfil', [PerfilController::class, 'index'])->name('perfil')->middleware('auth');
+
+// Ruta para actualizar los datos del perfil (POST, protegida por middleware)
+Route::post('/perfil/actualizar', [PerfilController::class, 'update'])->name('perfil.update')->middleware('auth');
+
+// Ruta para actualizar la contraseña del perfil (POST, protegida por middleware)
+Route::post('/perfil/cambiar-contrasena', [PerfilController::class, 'changePassword'])->name('perfil.change-password')->middleware('auth');
