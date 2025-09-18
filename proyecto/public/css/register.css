@@ -11,7 +11,7 @@
     align-items: center;
 }
 .right-panel-register {
-    background-color: #035aa6; /* Panel azul para el formulario */
+    background-color: #1E56A0; /* Panel azul para el formulario */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -37,18 +37,6 @@
 .form-control {
     border-radius: 0.5rem;
     padding: 0.75rem;
-}
-.btn-primary {
-    background-color: #0466c8;
-    border-color: #0466c8;
-    width: 100%;
-    font-weight: bold;
-    padding: 0.75rem;
-    border-radius: 0.5rem;
-}
-.btn-primary:hover {
-    background-color: #035aa6;
-    border-color: #035aa6;
 }
 a {
     color: #0466c8;

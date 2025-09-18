@@ -5,7 +5,7 @@
     height: 100vh;
 }
 .left-panel {
-    background-color: #035aa6; /* Color azul para el fondo */
+    background-color: #1E56A0; /* Color azul para el fondo */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -40,16 +40,16 @@
     padding: 0.75rem;
 }
 .btn-primary {
-    background-color: #0466c8;
-    border-color: #0466c8;
+    background-color: #271EA0;
+    border-color: #271EA0;
     width: 100%;
     font-weight: bold;
     padding: 0.75rem;
     border-radius: 0.5rem;
 }
 .btn-primary:hover {
-    background-color: #035aa6;
-    border-color: #035aa6;
+    background-color: #1E97A0;
+    border-color: #1E97A0;
 }
 a {
     color: #0466c8;

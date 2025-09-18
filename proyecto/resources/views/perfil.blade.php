@@ -11,13 +11,12 @@
 </head>
 <body>
 
-    <div class="d-flex" id="wrapper">
+    @include('components._navbar')
 
+    <div class="d-flex" id="wrapper">
         @include('components._sidebar')
 
         <div id="page-content-wrapper">
-
-            @include('components._navbar')
 
             <div class="container-fluid py-4">
                 <h1 class="mb-4">MI PERFIL</h1>
