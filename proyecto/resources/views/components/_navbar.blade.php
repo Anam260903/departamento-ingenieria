@@ -13,7 +13,7 @@
     <link href="{{ asset('css/dasboard.css') }}" rel="stylesheet">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top navegacion">
     <div class="container-fluid">
         <a class="navbar-brand d-flex align-items-center" href="{{ route('dashboard') }}">
             <img src="{{ asset('images/logo_icon.png') }}" alt="Logo" width="40" height="40" class="me-2">

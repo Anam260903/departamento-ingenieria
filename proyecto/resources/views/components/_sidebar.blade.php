@@ -16,15 +16,15 @@
     <div class="bg-white" id="sidebar-wrapper">
     <div class="list-group list-group-flush pt-4">
 
-        <a href="{{ route('dashboard') }}" class="list-group-item list-group-item-action bg-white d-flex align-items-center {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+        <a href="{{ route('dashboard') }}" class="list-group-item list-group-item-action bg-white d-flex align-items-center @if(request()->routeIs('dashboard')) active @endif">
             <i class="bi bi-house me-2"></i> Inicio
         </a>
 
-        <a href="{{ route('perfil') }}" class="list-group-item list-group-item-action bg-white d-flex align-items-center {{ request()->routeIs('perfil') ? 'active' : '' }}">
+        <a href="{{ route('perfil') }}" class="list-group-item list-group-item-action bg-white d-flex align-items-center @if(request()->routeIs('perfil')) active @endif">
             <i class="bi bi-person me-2"></i> Perfil
         </a>
 
-        <a href="#" class="list-group-item list-group-item-action bg-white d-flex align-items-center">
+        <a href="{{ route('inspecciones.index') }}" class="list-group-item list-group-item-action bg-white d-flex align-items-center @if(request()->routeIs('inspecciones.index')) active @endif">
             <i class="bi bi-card-checklist me-2"></i> Gestión de inspecciones
         </a>
         

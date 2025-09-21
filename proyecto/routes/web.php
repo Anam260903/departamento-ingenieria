@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PerfilController;
+use App\Http\Controllers\InspeccionesController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -47,3 +48,6 @@ Route::post('/perfil/actualizar', [PerfilController::class, 'update'])->name('pe
 
 // Ruta para actualizar la contraseña del perfil (POST, protegida por middleware)
 Route::post('/perfil/cambiar-contrasena', [PerfilController::class, 'changePassword'])->name('perfil.change-password')->middleware('auth');
+
+//Ruta para la gestión de inspecciones (GET, protegida por middleware)
+Route::get('/gestion-inspecciones', [InspeccionesController::class, 'index'])->name('inspecciones.index')->middleware('auth');
