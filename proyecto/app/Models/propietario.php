@@ -3,8 +3,25 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class propietario extends Model
 {
-    //
+    use HasFactory;
+
+    protected $table = 'propietario';
+    protected $primaryKey = 'id_propie';
+    public $timestamps = false; // No usamos created_at y updated_at en esta tabla
+
+    protected $fillable = [
+        'nombre_propie',
+        'apellido_propie',
+        'cedula_propie',
+        'telefono',
+    ];
+
+    public function viviendas()
+    {
+        return $this->hasMany(Vivienda::class, 'id_propie');
+    }
 }

@@ -21,14 +21,20 @@
 
             <div class="container-fluid py-4">
                 <h1 class="mb-4">GESTIÓN DE INSPECCIONES</h1>
+                @if(session('success'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            @endif
 
                 <div class="row justify-content-end mb-3">
-        <div class="col-auto">
-            <a href="#" class="btn btn-primary text-nowrap">
-                <i class="bi bi-plus-circle me-2"></i>Nueva inspección
-            </a>
-        </div>
-    </div>
+                    <div class="col-auto">
+                        <a href="{{ route('inspecciones.create') }}" class="btn btn-primary text-nowrap">
+                            <i class="bi bi-plus-circle me-2"></i>Nueva inspección
+                        </a>
+                    </div>
+                </div>
 
                 <div class="table-responsive">
                     <table class="table table-hover shadow-sm">
@@ -43,12 +49,20 @@
                             </tr>
                         </thead>
                         <tbody>
+                            @forelse ($inspecciones as $inspeccion)
                             <tr>
-                                <td>1</td>
-                                <td>24-08-2025</td>
-                                <td>Ana Marcano</td>
-                                <td>Valle nuevo, san martín, municipio bermúdez</td>
+                                <th scope="row">{{ $inspeccion->id_inspeccion }}</th>
+                                <td>{{ $inspeccion->fecha }}</td>
+                                <td>{{ $inspeccion->propietario_vivienda }}</td>
+                                <td>{{ $inspeccion->direccion }}</td>
                                 <td><span class="badge bg-warning text-dark">Pendiente</span></td>
+                                <td>
+                                    @if ($inspeccion->estado == 0)
+                                        <span class="badge bg-warning text-dark">Pendiente</span>
+                                    @else
+                                        <span class="badge bg-success">Completada</span>
+                                    @endif
+                                </td>
                                 <td>
                                     <div class="d-flex gap-2">
                                         <button class="btn btn-sm btn-info text-white" title="Ver detalles"><i class="bi bi-eye"></i></button>
@@ -57,6 +71,11 @@
                                     </div>
                                 </td>
                             </tr>
+                             @empty
+                                <tr>
+                                    <td colspan="7" class="text-center">No hay inspecciones registradas.</td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>

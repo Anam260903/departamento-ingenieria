@@ -24,7 +24,7 @@
             <i class="bi bi-person me-2"></i> Perfil
         </a>
 
-        <a href="{{ route('inspecciones.index') }}" class="list-group-item list-group-item-action bg-white d-flex align-items-center @if(request()->routeIs('inspecciones.index')) active @endif">
+        <a href="{{ route('inspecciones.index') }}" class="list-group-item list-group-item-action bg-white d-flex align-items-center @if(request()->routeIs('inspecciones.index') || request()->routeIs('inspecciones.create')) active @endif">
             <i class="bi bi-card-checklist me-2"></i> Gestión de inspecciones
         </a>
         

@@ -9,6 +9,30 @@ class Inspeccion extends Model
 {
     use HasFactory;
 
-    protected $table = 'inspecciones';
+    protected $table = 'inspeccion';
     protected $primaryKey = 'id_insp';
+    public $timestamps = false; // No usamos created_at y updated_at en esta tabla
+
+    protected $fillable = [
+        'fecha_insp',
+        'estado_insp',
+        'observacion',
+        'id_user', // FK de usuario (quién registra la inspección)
+        'id_viv',  // FK de vivienda
+    ];
+
+    public function usuario()
+    {
+        return $this->belongsTo(Usuario::class, 'id_user');
+    }
+
+    public function vivienda()
+    {
+        return $this->belongsTo(Vivienda::class, 'id_viv');
+    }
+
+    public function informe()
+    {
+        return $this->hasOne(Informe::class, 'id_insp');
+    }
 }

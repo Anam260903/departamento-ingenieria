@@ -51,3 +51,9 @@ Route::post('/perfil/cambiar-contrasena', [PerfilController::class, 'changePassw
 
 //Ruta para la gestión de inspecciones (GET, protegida por middleware)
 Route::get('/gestion-inspecciones', [InspeccionesController::class, 'index'])->name('inspecciones.index')->middleware('auth');
+
+//Ruta para mostrar el formulario de creación de inspección (GET, protegida por middleware)
+Route::get('/inspecciones/crear', [InspeccionesController::class, 'create'])->name('inspecciones.create')->middleware('auth');
+
+//Ruta para almacenar una nueva inspección (POST, protegida por middleware)
+Route::post('/inspecciones', [InspeccionesController::class, 'store'])->name('inspecciones.store')->middleware('auth');

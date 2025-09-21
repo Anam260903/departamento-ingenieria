@@ -61,6 +61,15 @@ body.sb-sidenav-toggled #sidebar-wrapper {
     background-color: #1E56A0 !important;
 }
 
+.btn-primary {
+    background-color: #271EA0;
+    border-color: #271EA0;
+    width: 100%;
+    font-weight: bold;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+}
+
 .list-group-item {
     border: none;
     border-left: 5px solid transparent;

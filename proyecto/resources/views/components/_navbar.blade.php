@@ -15,6 +15,7 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top navegacion">
     <div class="container-fluid">
+        
         <a class="navbar-brand d-flex align-items-center" href="{{ route('dashboard') }}">
             <img src="{{ asset('images/logo_icon.png') }}" alt="Logo" width="40" height="40" class="me-2">
         </a>
@@ -30,10 +31,13 @@
             <span class="text-white d-inline-block">{{ Auth::user()->nombre }} {{ Auth::user()->apellido }}</span> <br>
             <small class="text-white d-inline-block">{{ Auth::user()->correo }}</small>
         </div>
+
+        <div class="col-auto d-md-none">
+            <button class="btn btn-primary" id="sidebarToggle">
+                <i class="bi bi-list"></i>
+            </button>
+        </div>
         
-        <button class="btn btn-primary d-md-none" id="sidebarToggle">
-            <i class="bi bi-list"></i>
-        </button>
     </div>
 </nav>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
