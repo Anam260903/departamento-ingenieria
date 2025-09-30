@@ -29,9 +29,4 @@ class Usuario extends Authenticatable
     {
         return $this->correo;
     }
-
-    public function getAuthIdentifierName()
-    {
-        return 'correo';
-    }
 }

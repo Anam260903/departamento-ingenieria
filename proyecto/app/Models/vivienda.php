@@ -9,7 +9,7 @@ class vivienda extends Model
 {
     use HasFactory;
 
-    protected $table = 'vivienda';
+    protected $table = 'viviendas';
     protected $primaryKey = 'id_viv';
     public $timestamps = false; // No usamos created_at y updated_at en esta tabla
 

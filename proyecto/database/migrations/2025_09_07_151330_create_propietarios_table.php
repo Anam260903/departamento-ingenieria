@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('nombre_propie', 15);
             $table->string('apellido_propie', 15);
             $table->string('cedula_propie', 8)->unique();
-            $table->string('telefono', 8)->nullable();
+            $table->string('telefono', 11)->nullable();
             $table->timestamps();
         });
     }

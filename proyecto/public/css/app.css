@@ -9,6 +9,10 @@ html, body {
     font-family: 'Open Sans', sans-serif;
 }
 
+h1 {
+    font-size: 2.5em; /* Un tamaño relativo al fuente base */
+  }
+
 h2 {
     font-family: 'Open Sans', sans-serif;
     font-weight: 700; /* Open Sans Bold */

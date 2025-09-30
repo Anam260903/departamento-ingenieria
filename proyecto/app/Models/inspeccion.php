@@ -9,9 +9,9 @@ class Inspeccion extends Model
 {
     use HasFactory;
 
-    protected $table = 'inspeccion';
+    protected $table = 'inspecciones';
     protected $primaryKey = 'id_insp';
-    public $timestamps = false; // No usamos created_at y updated_at en esta tabla
+    public $timestamps = false; // No se usa created_at y updated_at en esta tabla
 
     protected $fillable = [
         'fecha_insp',

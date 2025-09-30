@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id('id_insp');
             $table->date('fecha_insp');
             $table->string('estado_insp', 1);
-            $table->string('observacion', 50)->nullable();
+            $table->string('observacion', 250)->nullable();
             $table->unsignedBigInteger('id_user');
             $table->unsignedBigInteger('id_viv');
             $table->foreign('id_user')->references('id_user')->on('usuarios');

@@ -8,6 +8,15 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
+    <style>
+        /* Estilos específicos para los badges de estado */
+        .badge-pendiente {
+            background-color: #ffc107;
+        }
+        .badge-completada {
+            background-color: #28a745;
+        }
+    </style>
 </head>
 <body>
 
@@ -21,63 +30,148 @@
 
             <div class="container-fluid py-4">
                 <h1 class="mb-4">GESTIÓN DE INSPECCIONES</h1>
-                @if(session('success'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-            @endif
+
+                {{-- Mensajes de éxito o error --}}
+                @if (session('success'))
+                    <div class="alert alert-success">{{ session('success') }}</div>
+                @endif
+                @if (session('error'))
+                    <div class="alert alert-danger">{{ session('error') }}</div>
+                @endif
 
                 <div class="row justify-content-end mb-3">
-                    <div class="col-auto">
+                    <div class="col-auto" >
                         <a href="{{ route('inspecciones.create') }}" class="btn btn-primary text-nowrap">
                             <i class="bi bi-plus-circle me-2"></i>Nueva inspección
                         </a>
                     </div>
                 </div>
 
-                <div class="table-responsive">
-                    <table class="table table-hover shadow-sm">
-                        <thead class="table-primary">
-                            <tr>
-                                <th scope="col">N°</th>
-                                <th scope="col">Fecha</th>
-                                <th scope="col">Propietario de la vivienda</th>
-                                <th scope="col">Dirección</th>
-                                <th scope="col">Estado</th>
-                                <th scope="col">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse ($inspecciones as $inspeccion)
-                            <tr>
-                                <th scope="row">{{ $inspeccion->id_inspeccion }}</th>
-                                <td>{{ $inspeccion->fecha }}</td>
-                                <td>{{ $inspeccion->propietario_vivienda }}</td>
-                                <td>{{ $inspeccion->direccion }}</td>
-                                <td><span class="badge bg-warning text-dark">Pendiente</span></td>
-                                <td>
-                                    @if ($inspeccion->estado == 0)
-                                        <span class="badge bg-warning text-dark">Pendiente</span>
-                                    @else
-                                        <span class="badge bg-success">Completada</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <div class="d-flex gap-2">
-                                        <button class="btn btn-sm btn-info text-white" title="Ver detalles"><i class="bi bi-eye"></i></button>
-                                        <button class="btn btn-sm btn-warning text-white" title="Editar"><i class="bi bi-pencil-square"></i></button>
-                                        <button class="btn btn-sm btn-success" title="Crear informe"><i class="bi bi-plus-circle"></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                             @empty
+                <div class="card shadow-sm p-4 mb-4">
+                    {{-- La acción apunta al método index del recurso 'inspecciones' --}}
+                        <form action="{{ route('inspecciones.index') }}" method="GET"> 
+                        <div class="row g-3">
+                    {{-- Filtro por Palabra Clave (Nombre, Dirección, Observación) --}}
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" name="keyword" placeholder="Buscar por Nombre, Dirección o Palabras Clave" value="{{ request('keyword') }}">
+                        </div>
+            
+                    {{-- Filtro por Estado --}}
+                        <div class="col-md-3">
+                            <select class="form-select" name="estado">
+                                <option value="">Filtrar por Estado</option>
+                                <option value="0" {{ request('estado') === '0' ? 'selected' : '' }}>Pendiente</option>
+                                <option value="1" {{ request('estado') === '1' ? 'selected' : '' }}>Completada</option>
+                            </select>
+                        </div>
+
+                    {{-- Filtro por Fecha (Rango de Inicio) --}}
+                        <div class="col-md-3">
+                            <label for="fecha_inicio" class="form-label visually-hidden">Fecha Desde</label>
+                            <input type="date" class="form-control" id="fecha_inicio" name="fecha_inicio" title="Fecha Desde" value="{{ request('fecha_inicio') }}">
+                        </div>
+
+                    {{-- Botones de Acción --}}
+                        <div class="col-md-2 d-flex">
+                                <button type="submit" class="btn btn-secondary w-100 me-2">
+                                    <i class="bi bi-funnel"></i> Filtrar
+                                </button>
+                            {{-- Botón para limpiar filtros --}}
+                                <a href="{{ route('inspecciones.index') }}" class="btn btn-outline-secondary">
+                                    <i class="bi bi-x-circle"></i>
+                                </a>
+                        </div>
+                    </div>
+                    </form>
+                </div>
+
+                <div class="card shadow-sm p-4">
+                    
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-header-custom"> {{-- Clase personalizada para el color azul --}}
                                 <tr>
-                                    <td colspan="7" class="text-center">No hay inspecciones registradas.</td>
+                                    <th scope="col">Nº</th>
+                                    <th scope="col">Fecha</th>
+                                    <th scope="col">Propietario de la vivienda</th>
+                                    <th scope="col">Dirección</th>
+                                    <th scope="col">Estado</th>
+                                    <th scope="col">Acciones</th>
                                 </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @forelse ($inspecciones as $inspeccion)
+                                    <tr>
+                                        <td>{{ $loop->iteration }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($inspeccion->fecha_insp)->format('d-m-Y') }}</td>
+                                        <td>
+                                            @if($inspeccion->vivienda && $inspeccion->vivienda->propietario)
+                                                {{ $inspeccion->vivienda->propietario->nombre_propie }} {{ $inspeccion->vivienda->propietario->apellido_propie }}
+                                            @else
+                                                N/A
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if($inspeccion->vivienda)
+                                                {{ $inspeccion->vivienda->direccion }}
+                                            @else
+                                                N/A
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if($inspeccion->estado_insp == 0)
+                                                <span class="badge badge-pendiente">Pendiente</span>
+                                            @else
+                                                <span class="badge badge-completada">Completada</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            <div class="d-flex gap-2">
+                                                {{-- 1. Botón de Ver Detalles (SIEMPRE VISIBLE) --}}
+                                                <a href="" class="btn btn-info btn-sm" title="Ver detalles">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+
+                                                {{-- 2. Botón de Editar (SIEMPRE VISIBLE) --}}
+                                                    <a href="{{ route('inspecciones.edit', $inspeccion->id_insp) }}" class="btn btn-warning btn-sm" title="Editar inspección">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </a>
+                                                
+                                                @if($inspeccion->estado_insp == 0)
+                                                    {{-- 3. Botón de Completar (PENDIENTE) --}}
+                                                    <form action="#" method="POST" class="d-inline">
+                                                        @csrf
+                                                        @method('PUT')
+                                                        <button type="submit" class="btn btn-success btn-sm" title="Marcar como completada">
+                                                            <i class="bi bi-check-circle"></i>
+                                                        </button>
+                                                    </form>
+                                                @else
+                                                    {{-- 4. Botón de Generar Informe (COMPLETADA) --}}
+                                                    <a href="#" class="btn btn-success btn-sm" title="Generar Informe Técnico">
+                                                        <i class="bi bi-file-earmark-plus-fill"></i> 
+                                                    </a>
+                                                @endif
+
+                                                {{-- 5. Botón de Eliminar (SIEMPRE VISIBLE) --}}
+                                                <form action="{{ route('inspecciones.destroy', $inspeccion->id_insp) }}" method="POST" class="d-inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-danger btn-sm" title="Eliminar inspección" onclick="return confirm('¿Estás seguro de que quieres eliminar esta inspección?')">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="6" class="text-center py-4">No hay inspecciones registradas.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -86,4 +180,5 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ asset('js/dashboard.js') }}"></script>
 </body>
+</html>
 </html>

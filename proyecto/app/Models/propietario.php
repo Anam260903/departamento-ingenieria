@@ -9,7 +9,7 @@ class propietario extends Model
 {
     use HasFactory;
 
-    protected $table = 'propietario';
+    protected $table = 'propietarios';
     protected $primaryKey = 'id_propie';
     public $timestamps = false; // No usamos created_at y updated_at en esta tabla
 
