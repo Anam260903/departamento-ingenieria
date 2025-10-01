@@ -62,7 +62,7 @@ class InspeccionesController extends Controller
         return view('formulario-inspeccion');
     }
 
-     public function store(Request $request)
+    public function store(Request $request)
     {
         // 1. Validar los datos del formulario
         $request->validate([
@@ -82,7 +82,7 @@ class InspeccionesController extends Controller
         }
 
         try {
-            // 2. Buscar o crear el Propietario (usará la tabla 'propietarios')
+            // 2. Buscar o crear el Propietario
             $propietario = Propietario::firstOrCreate(
                 ['cedula_propie' => $request->propietario_cedula],
                 [
@@ -92,7 +92,7 @@ class InspeccionesController extends Controller
                 ]
             );
 
-            // 3. Crear la Vivienda (usa la columna 'direccion' de la tabla 'vivienda')
+            // 3. Crear la Vivienda
             $vivienda = Vivienda::create([
                 'direccion' => $request->direccion,
                 'id_propie' => $propietario->id_propie, // FK a Propietario
@@ -100,12 +100,12 @@ class InspeccionesController extends Controller
 
              $userId = Auth::check() ? Auth::user()->getAuthIdentifier() : null;
 
-            // 4. Crear la Inspección (usa el ID de usuario autenticado)
+            // 4. Crear la Inspección
             Inspeccion::create([
                 'fecha_insp' => $request->fecha,
                 'estado_insp' => $request->estado,
                 'observacion' => $request->observacion,
-                'id_user' => $userId, // ¡CORREGIDO: usa el ID entero del usuario!
+                'id_user' => $userId,
                 'id_viv' => $vivienda->id_viv, // FK a Vivienda
             ]);
 
@@ -116,4 +116,86 @@ class InspeccionesController extends Controller
             return back()->withInput()->with('error', 'Ocurrió un error al guardar la inspección. Intente nuevamente.');
         }
     }
+
+    public function edit($id_insp)
+    {
+        // Cargar la inspección con sus relaciones anidadas (vivienda y propietario)
+        $inspeccion = Inspeccion::with('vivienda.propietario')->findOrFail($id_insp);
+        return view('editar-inspeccion', compact('inspeccion'));
+    }
+
+    public function update(Request $request, $id_insp)
+    {
+        // 1. Validar los datos del formulario
+        $inspeccion = Inspeccion::with('vivienda.propietario')->findOrFail($id_insp);
+        $vivienda = $inspeccion->vivienda;
+        $propietario = $vivienda->propietario;
+
+        $request->validate([
+            'fecha' => 'required|date',
+            'propietario_nombre' => 'required|string|max:30', 
+            'propietario_apellido' => 'required|string|max:30',
+            'propietario_cedula' => 'required|string|max:8|unique:propietarios,cedula_propie,' . $propietario->id_propie . ',id_propie',
+            'propietario_telefono' => 'required|string|max:11', 
+            'direccion' => 'required|string|max:100', 
+            'estado' => 'required|numeric|in:0,1',
+            'observacion' => 'nullable|string|max:250', 
+        ]);
+
+        try {
+            // 2. Actualizar el Propietario
+            $propietario->update([
+                'nombre_propie' => $request->propietario_nombre,
+                'apellido_propie' => $request->propietario_apellido,
+                'cedula_propie' => $request->propietario_cedula,
+                'telefono' => $request->propietario_telefono,
+            ]);
+
+            // 3. Actualizar la Vivienda
+            $vivienda->update([
+                'direccion' => $request->direccion,
+                // id_propie no cambia, ya que solo estamos modificando los datos del propietario
+            ]);
+
+            // 4. Actualizar la Inspección
+            $inspeccion->update([
+                'fecha_insp' => $request->fecha,
+                'estado_insp' => $request->estado,
+                'observacion' => $request->observacion,
+                // id_user y id_viv no cambian
+            ]);
+
+            // 5. Redirigir al usuario
+            return redirect()->route('inspecciones.index')->with('success', '¡Inspección #' . $id_insp . ' actualizada con éxito!');
+        }
+        catch (\Exception $e) {
+            \Log::error("Error al actualizar inspección: " . $e->getMessage());
+            return back()->withInput()->with('error', 'Ocurrió un error al guardar los cambios. Intente nuevamente.');
+        }
+    }
+
+    /**
+    * Marca una inspección como completada (estado_insp = 1).
+    * @param int $id_insp
+    * @return \Illuminate\Http\RedirectResponse
+    */
+    public function completeInspection($id_insp)
+    {
+        $inspeccion = Inspeccion::findOrFail($id_insp);
+
+        try {
+            // Actualiza solo el campo de estado
+            $inspeccion->update([
+                'estado_insp' => 1, // Asumiendo que 1 = Completada
+            ]);
+
+            return redirect()->route('inspecciones.index')->with('success', '¡Inspección #' . $id_insp . ' marcada como COMPLETADA con éxito! ✅');
+        }
+        catch (\Exception $e) {
+            // En caso de error en la base de datos
+            \Log::error("Error al completar inspección: " . $e->getMessage());
+            return back()->with('error', 'Ocurrió un error al marcar la inspección como completada. Intente nuevamente.');
+        }
+    }
+    
 }

@@ -18,7 +18,7 @@
 
         <div id="page-content-wrapper">
             <div class="container-fluid">
-                <h1 class="mt-4">INICIO</h1>
+                <h1 class="mt-4 h3">INICIO</h1>
 
                 <div class="row mt-4 gy-4 gx-md-4">
                     <div class="col-12 col-md-6 col-lg-4">

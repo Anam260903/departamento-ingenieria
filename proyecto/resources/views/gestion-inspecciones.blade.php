@@ -29,7 +29,7 @@
             @include('components._navbar')
 
             <div class="container-fluid py-4">
-                <h1 class="mb-4">GESTIÓN DE INSPECCIONES</h1>
+                <h1 class="mb-4 h3">GESTIÓN DE INSPECCIONES</h1>
 
                 {{-- Mensajes de éxito o error --}}
                 @if (session('success'))
@@ -91,7 +91,6 @@
                         <table class="table table-striped table-hover">
                             <thead class="table-header-custom"> {{-- Clase personalizada para el color azul --}}
                                 <tr>
-                                    <th scope="col">Nº</th>
                                     <th scope="col">Fecha</th>
                                     <th scope="col">Propietario de la vivienda</th>
                                     <th scope="col">Dirección</th>
@@ -102,7 +101,6 @@
                             <tbody>
                                 @forelse ($inspecciones as $inspeccion)
                                     <tr>
-                                        <td>{{ $loop->iteration }}</td>
                                         <td>{{ \Carbon\Carbon::parse($inspeccion->fecha_insp)->format('d-m-Y') }}</td>
                                         <td>
                                             @if($inspeccion->vivienda && $inspeccion->vivienda->propietario)
@@ -128,7 +126,12 @@
                                         <td>
                                             <div class="d-flex gap-2">
                                                 {{-- 1. Botón de Ver Detalles (SIEMPRE VISIBLE) --}}
-                                                <a href="" class="btn btn-info btn-sm" title="Ver detalles">
+                                                <a href="#"
+                                                    class="btn btn-info btn-sm btn-ver-observacion"
+                                                    title="Ver detalles"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#observacionModal"
+                                                    data-observacion="{{ json_encode($inspeccion->observacion) }}">
                                                     <i class="bi bi-eye"></i>
                                                 </a>
 
@@ -138,12 +141,22 @@
                                                     </a>
                                                 
                                                 @if($inspeccion->estado_insp == 0)
-                                                    {{-- 3. Botón de Completar (PENDIENTE) --}}
-                                                    <form action="#" method="POST" class="d-inline">
+                                                    {{-- En la columna 'Acciones' de la tabla, dentro del bucle que recorre $inspecciones --}}
+
+                                                    {{-- Formulario para Marcar como Completada (Botón Verde) --}}
+                                                    {{-- El d-inline es crucial para que el formulario no rompa la disposición horizontal de los botones --}}
+                                                    <form action="{{ route('inspecciones.complete', $inspeccion->id_insp) }}" method="POST" class="d-inline">
                                                         @csrf
-                                                        @method('PUT')
-                                                        <button type="submit" class="btn btn-success btn-sm" title="Marcar como completada">
-                                                            <i class="bi bi-check-circle"></i>
+                                                        @method('PATCH')
+    
+                                                            <button type="submit" 
+                                                            class="btn btn-success btn-sm" 
+                                                            title="Marcar como Completada"
+                                                            {{-- Añade una confirmación simple con JavaScript antes de enviar --}}
+                                                            onclick="return confirm('¿Está seguro de que desea marcar esta inspección como COMPLETADA?')"
+                                                            {{-- Deshabilita el botón si ya está completada (estado 1) para evitar clics innecesarios --}}
+                                                            @if ($inspeccion->estado_insp == 1) disabled @endif> 
+                                                        <i class="bi bi-check-circle"></i>
                                                         </button>
                                                     </form>
                                                 @else
@@ -166,7 +179,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="6" class="text-center py-4">No hay inspecciones registradas.</td>
+                                        <td colspan="5" class="text-center py-4">No hay inspecciones registradas.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -177,8 +190,26 @@
         </div>
     </div>
 
+    {{-- Modal de Observación --}}
+    <div class="modal fade" id="observacionModal" tabindex="-1" aria-labelledby="observacionModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="observacionModalLabel">Observaciones de la Inspección</h5>
+                </div>
+                <div class="modal-body">
+                    <p id="modalObservacionContent"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ asset('js/dashboard.js') }}"></script>
+    <script src="{{ asset('js/inspecciones.js') }}"></script>
 </body>
 </html>
 </html>

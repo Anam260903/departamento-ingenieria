@@ -53,3 +53,6 @@ Route::post('/perfil/cambiar-contrasena', [PerfilController::class, 'changePassw
 Route::middleware('auth')->group(function () {
     Route::resource('inspecciones', InspeccionesController::class);
 });
+
+// Ruta para marcar una inspección como completada
+Route::patch('inspecciones/{id_insp}/complete', [InspeccionesController::class, 'completeInspection'])->name('inspecciones.complete');
