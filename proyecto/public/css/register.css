@@ -5,13 +5,13 @@
     height: 100vh;
 }
 .left-panel-register {
-    background-color: white; /* Panel blanco para el logo */
+    background-color: white;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 .right-panel-register {
-    background-color: #1E56A0; /* Panel azul para el formulario */
+    background-color: #1e56a0;
     display: flex;
     justify-content: center;
     align-items: center;

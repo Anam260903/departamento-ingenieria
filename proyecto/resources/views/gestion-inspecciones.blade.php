@@ -89,10 +89,10 @@
                     
                     <div class="table-responsive">
                         <table class="table table-striped table-hover">
-                            <thead class="table-header-custom"> {{-- Clase personalizada para el color azul --}}
+                            <thead class="table-header-custom">
                                 <tr>
                                     <th scope="col">Fecha</th>
-                                    <th scope="col">Propietario de la vivienda</th>
+                                    <th scope="col">Propietario</th>
                                     <th scope="col">Dirección</th>
                                     <th scope="col">Estado</th>
                                     <th scope="col">Acciones</th>

@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('propietarios', function (Blueprint $table) {
             $table->id('id_propie');
-            $table->string('nombre_propie', 15);
-            $table->string('apellido_propie', 15);
+            $table->string('nombre_propie', 30);
+            $table->string('apellido_propie', 30);
             $table->string('cedula_propie', 8)->unique();
             $table->string('telefono', 11)->nullable();
             $table->timestamps();

@@ -43,7 +43,7 @@ class InspeccionesController extends Controller
             $query->where('estado_insp', (int)$request->estado); 
         }
 
-        // 4. Filtrar por Fecha de Inicio (Fecha de Inspección)
+        // 4. Filtrar por Fecha de Inspección
         if ($request->filled('fecha_inicio')) {
             // Busca inspecciones cuya fecha_insp sea MAYOR O IGUAL a la fecha_inicio proporcionada
             $query->whereDate('fecha_insp', '>=', $request->fecha_inicio);
@@ -67,8 +67,8 @@ class InspeccionesController extends Controller
         // 1. Validar los datos del formulario
         $request->validate([
             'fecha' => 'required|date',
-            'propietario_nombre' => 'required|string|max:30',
-            'propietario_apellido' => 'required|string|max:30',
+            'propietario_nombre' => ['required', 'string', 'max:30', 'regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/'],
+            'propietario_apellido' => ['required', 'string', 'max:30', 'regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/'],
             'propietario_cedula' => 'required|string|max:8|unique:propietarios,cedula_propie',
             'propietario_telefono' => 'required|string|max:11',
             'direccion' => 'required|string|max:100',
@@ -133,8 +133,8 @@ class InspeccionesController extends Controller
 
         $request->validate([
             'fecha' => 'required|date',
-            'propietario_nombre' => 'required|string|max:30', 
-            'propietario_apellido' => 'required|string|max:30',
+            'propietario_nombre' => ['required', 'string', 'max:30', 'regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/'], 
+            'propietario_apellido' => ['required', 'string', 'max:30', 'regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/'],
             'propietario_cedula' => 'required|string|max:8|unique:propietarios,cedula_propie,' . $propietario->id_propie . ',id_propie',
             'propietario_telefono' => 'required|string|max:11', 
             'direccion' => 'required|string|max:100', 
@@ -174,11 +174,6 @@ class InspeccionesController extends Controller
         }
     }
 
-    /**
-    * Marca una inspección como completada (estado_insp = 1).
-    * @param int $id_insp
-    * @return \Illuminate\Http\RedirectResponse
-    */
     public function completeInspection($id_insp)
     {
         $inspeccion = Inspeccion::findOrFail($id_insp);
@@ -186,7 +181,7 @@ class InspeccionesController extends Controller
         try {
             // Actualiza solo el campo de estado
             $inspeccion->update([
-                'estado_insp' => 1, // Asumiendo que 1 = Completada
+                'estado_insp' => 1,
             ]);
 
             return redirect()->route('inspecciones.index')->with('success', '¡Inspección #' . $id_insp . ' marcada como COMPLETADA con éxito! ✅');
@@ -195,6 +190,22 @@ class InspeccionesController extends Controller
             // En caso de error en la base de datos
             \Log::error("Error al completar inspección: " . $e->getMessage());
             return back()->with('error', 'Ocurrió un error al marcar la inspección como completada. Intente nuevamente.');
+        }
+    }
+
+    public function destroy($id_insp)
+    {
+        try {
+            $inspeccion = Inspeccion::findOrFail($id_insp);
+
+            // Al usar el Trait SoftDeletes, el método delete() establece deleted_at.
+            $inspeccion->delete(); 
+
+            return redirect()->route('inspecciones.index')->with('success', '¡Inspección #' . $id_insp . ' eliminada correctamente!');
+        }
+        catch (\Exception $e) {
+            \Log::error("Error al eliminar inspección: " . $e->getMessage());
+            return back()->with('error', 'Ocurrió un error al eliminar la inspección. Intente nuevamente.');
         }
     }
     

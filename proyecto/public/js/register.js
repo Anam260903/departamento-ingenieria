@@ -1,39 +1,51 @@
-document.addEventListener('DOMContentLoaded', function () {
-    const togglePassword = document.getElementById('toggle-password');
-    const passwordField = document.getElementById('password-field');
+document.addEventListener("DOMContentLoaded", function () {
+    const togglePassword = document.getElementById("toggle-password");
+    const passwordField = document.getElementById("password-field");
 
     if (togglePassword) {
-        togglePassword.addEventListener('click', function () {
+        togglePassword.addEventListener("click", function () {
             // Alternar el tipo de input entre 'password' y 'text'
-            const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
-            passwordField.setAttribute('type', type);
+            const type =
+                passwordField.getAttribute("type") === "password"
+                    ? "text"
+                    : "password";
+            passwordField.setAttribute("type", type);
 
             // Alternar el ícono del ojo
-            this.querySelector('i').classList.toggle('bi-eye-fill');
-            this.querySelector('i').classList.toggle('bi-eye-slash-fill');
+            this.querySelector("i").classList.toggle("bi-eye-fill");
+            this.querySelector("i").classList.toggle("bi-eye-slash-fill");
         });
     }
 
-    const togglePasswordConfirm = document.getElementById('toggle-password-confirm');
-    const passwordConfirmField = document.getElementById('password-confirm-field');
+    const togglePasswordConfirm = document.getElementById(
+        "toggle-password-confirm"
+    );
+    const passwordConfirmField = document.getElementById(
+        "password-confirm-field"
+    );
 
     if (togglePasswordConfirm) {
-        togglePasswordConfirm.addEventListener('click', function () {
+        togglePasswordConfirm.addEventListener("click", function () {
             // Alternar el tipo de input entre 'password' y 'text'
-            const type = passwordConfirmField.getAttribute('type') === 'password' ? 'text' : 'password';
-            passwordConfirmField.setAttribute('type', type);
+            const type =
+                passwordConfirmField.getAttribute("type") === "password"
+                    ? "text"
+                    : "password";
+            passwordConfirmField.setAttribute("type", type);
 
             // Alternar el ícono del ojo
-            this.querySelector('i').classList.toggle('bi-eye-fill');
-            this.querySelector('i').classList.toggle('bi-eye-slash-fill');
+            this.querySelector("i").classList.toggle("bi-eye-fill");
+            this.querySelector("i").classList.toggle("bi-eye-slash-fill");
         });
     }
 
-    // --- Script para permitir solo letras en campos de texto ---
-    document.querySelectorAll('[name="nombre"], [name="apellido"]').forEach(input => {
-        input.addEventListener('input', function() {
-            // Reemplaza cualquier carácter que no sea una letra (incluyendo ñ, tildes) o un espacio.
-            this.value = this.value.replace(/[^A-Za-zñÑáéíóúÁÉÍÓÚ\s]/g, '');
+    // Script para permitir solo letras en campos de texto ---
+    document
+        .querySelectorAll('[name="nombre"], [name="apellido"]')
+        .forEach((input) => {
+            input.addEventListener("input", function () {
+                // Reemplaza cualquier carácter que no sea una letra (incluyendo ñ, tildes) o un espacio.
+                this.value = this.value.replace(/[^A-Za-zñÑáéíóúÁÉÍÓÚ\s]/g, "");
+            });
         });
-    });
 });

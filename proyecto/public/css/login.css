@@ -5,7 +5,7 @@
     height: 100vh;
 }
 .left-panel {
-    background-color: #1E56A0; /* Color azul para el fondo */
+    background-color: #1e56a0;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -22,7 +22,7 @@
     max-width: 450px;
 }
 .right-panel {
-    background-color: white; /* Color blanco para el fondo */
+    background-color: white;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -40,16 +40,16 @@
     padding: 0.75rem;
 }
 .btn-primary {
-    background-color: #271EA0;
-    border-color: #271EA0;
+    background-color: #271ea0;
+    border-color: #271ea0;
     width: 100%;
     font-weight: bold;
     padding: 0.75rem;
     border-radius: 0.5rem;
 }
 .btn-primary:hover {
-    background-color: #1E97A0;
-    border-color: #1E97A0;
+    background-color: #1e97a0;
+    border-color: #1e97a0;
 }
 a {
     color: #0466c8;

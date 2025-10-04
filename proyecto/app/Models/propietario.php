@@ -11,7 +11,7 @@ class propietario extends Model
 
     protected $table = 'propietarios';
     protected $primaryKey = 'id_propie';
-    public $timestamps = false; // No usamos created_at y updated_at en esta tabla
+    public $timestamps = false;
 
     protected $fillable = [
         'nombre_propie',

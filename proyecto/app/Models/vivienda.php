@@ -11,7 +11,7 @@ class vivienda extends Model
 
     protected $table = 'viviendas';
     protected $primaryKey = 'id_viv';
-    public $timestamps = false; // No usamos created_at y updated_at en esta tabla
+    public $timestamps = false;
 
     protected $fillable = [
         'direccion',

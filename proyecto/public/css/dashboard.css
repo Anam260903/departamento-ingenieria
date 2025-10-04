@@ -4,7 +4,7 @@ body {
 
 #wrapper {
     display: flex;
-    padding-top: 56px; /* Para que el contenido no quede debajo del navbar fijo */
+    padding-top: 56px;
     width: 100%;
     min-height: 100vh;
     overflow-x: hidden;
@@ -26,7 +26,7 @@ body {
     width: 15rem;
     background-color: #ffffff;
     border-right: 1px solid #e9ecef;
-    transition: margin .25s ease-out;
+    transition: margin 0.25s ease-out;
     margin-left: -15rem; /* Oculto por defecto en móviles */
 }
 
@@ -41,7 +41,7 @@ body.sb-sidenav-toggled #sidebar-wrapper {
 /* Estilos base del contenido principal */
 #page-content-wrapper {
     padding: 1.5rem;
-    transition: margin .25s ease-out;
+    transition: margin 0.25s ease-out;
     width: 90%;
 }
 
@@ -58,12 +58,12 @@ body.sb-sidenav-toggled #sidebar-wrapper {
 }
 
 .navegacion {
-    background-color: #1E56A0 !important;
+    background-color: #1e56a0 !important;
 }
 
 .btn-primary {
-    background-color: #271EA0;
-    border-color: #271EA0;
+    background-color: #271ea0;
+    border-color: #271ea0;
     width: 100%;
     font-weight: bold;
     padding: 0.75rem;

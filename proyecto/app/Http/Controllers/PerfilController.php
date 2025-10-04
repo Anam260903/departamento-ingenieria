@@ -25,14 +25,13 @@ class PerfilController extends Controller
 
         // Validar los datos del formulario, excluyendo al usuario actual
         $request->validate([
-        'nombre' => ['required', 'string', 'max:255', 'regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/'],
-        'apellido' => ['required', 'string', 'max:255', 'regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/'],
+        'nombre' => ['required', 'string', 'max:30', 'regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/'],
+        'apellido' => ['required', 'string', 'max:30', 'regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/'],
         'correo' => [
             'required',
             'string',
             'email',
             'max:255',
-            // Usamos 'ignore' con el objeto de usuario para una validación robusta
             Rule::unique('usuarios', 'correo')->ignore($usuario),
         ],
     ]);
@@ -52,7 +51,7 @@ class PerfilController extends Controller
         // Validar las contraseñas
         $request->validate([
             'password_actual' => 'required',
-            'password_nueva' => 'required|min:8|confirmed', // 'confirmed' valida que 'password_nueva' y 'password_confirmacion' coincidan
+            'password_nueva' => 'required|min:8|confirmed',
         ]);
 
         $usuario = Auth::user();

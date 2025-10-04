@@ -4,14 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Inspeccion extends Model
 {
-    use HasFactory;
+    use SoftDeletes; 
 
     protected $table = 'inspecciones';
     protected $primaryKey = 'id_insp';
-    public $timestamps = false; // No se usa created_at y updated_at en esta tabla
+    public $timestamps = false;
 
     protected $fillable = [
         'fecha_insp',

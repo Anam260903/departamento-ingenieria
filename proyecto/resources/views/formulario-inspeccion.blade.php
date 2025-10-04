@@ -64,7 +64,7 @@
                             {{-- Nombre --}}
                             <div class="col-lg-3 col-md-6 mb-3">
                                 <label for="propietario_nombre" class="form-label">Nombre</label>
-                                <input type="text" class="form-control @error('propietario_nombre') is-invalid @enderror" id="propietario_nombre" name="propietario_nombre" placeholder="Nombre del propietario" maxlength="30" value="{{ old('propietario_nombre') }}" required>
+                                <input type="text" class="form-control @error('propietario_nombre') is-invalid @enderror" id="propietario_nombre" name="propietario_nombre" placeholder="Nombre del propietario" maxlength="30" value="{{ old('propietario_nombre') }}" required pattern="[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+" title="Solo se permiten letras y espacios">
                                 @error('propietario_nombre')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -72,7 +72,7 @@
                             {{-- Apellido --}}
                             <div class="col-lg-3 col-md-6 mb-3">
                                 <label for="propietario_apellido" class="form-label">Apellido</label>
-                                <input type="text" class="form-control @error('propietario_apellido') is-invalid @enderror" id="propietario_apellido" name="propietario_apellido" placeholder="Apellido del propietario" maxlength="30" value="{{ old('propietario_apellido') }}" required>
+                                <input type="text" class="form-control @error('propietario_apellido') is-invalid @enderror" id="propietario_apellido" name="propietario_apellido" placeholder="Apellido del propietario" maxlength="30" value="{{ old('propietario_apellido') }}" required pattern="[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+" title="Solo se permiten letras y espacios">
                                 @error('propietario_apellido')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -123,6 +123,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ asset('js/inspecciones.js') }}"></script>
     <script src="{{ asset('js/dashboard.js') }}"></script> 
 </body>
 </html>
