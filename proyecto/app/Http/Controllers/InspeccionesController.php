@@ -19,7 +19,7 @@ class InspeccionesController extends Controller
         // 2. Filtrar por Palabra Clave (Keyword)
         if ($request->filled('keyword')) {
             $keyword = $request->keyword;
-        
+
             $query->where(function ($q) use ($keyword) {
                 // Buscar en la tabla principal (observacion)
                 $q->where('observacion', 'like', '%' . $keyword . '%');
@@ -40,7 +40,7 @@ class InspeccionesController extends Controller
         // 3. Filtrar por Estado
         if ($request->filled('estado')) {
             // Aseguramos que el valor sea un entero para la columna INT
-            $query->where('estado_insp', (int)$request->estado); 
+            $query->where('estado_insp', (int) $request->estado);
         }
 
         // 4. Filtrar por Fecha de Inspección
@@ -48,7 +48,7 @@ class InspeccionesController extends Controller
             // Busca inspecciones cuya fecha_insp sea MAYOR O IGUAL a la fecha_inicio proporcionada
             $query->whereDate('fecha_insp', '>=', $request->fecha_inicio);
         }
-    
+
         // 5. Ejecutar la consulta y ordenar (las más recientes primero)
         $inspecciones = $query->orderBy('fecha_insp', 'desc')->get();
 
@@ -75,7 +75,7 @@ class InspeccionesController extends Controller
             'estado' => 'required|numeric|in:0,1',
             'observacion' => 'nullable|string|max:250',
         ]);
-        
+
 
         if (!Auth::check()) {
             return redirect()->route('login')->with('error', 'Su sesión ha caducado. Por favor, inicie sesión de nuevo.');
@@ -98,7 +98,7 @@ class InspeccionesController extends Controller
                 'id_propie' => $propietario->id_propie, // FK a Propietario
             ]);
 
-             $userId = Auth::check() ? Auth::user()->getAuthIdentifier() : null;
+            $userId = Auth::check() ? Auth::user()->getAuthIdentifier() : null;
 
             // 4. Crear la Inspección
             Inspeccion::create([
@@ -133,13 +133,13 @@ class InspeccionesController extends Controller
 
         $request->validate([
             'fecha' => 'required|date',
-            'propietario_nombre' => ['required', 'string', 'max:30', 'regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/'], 
+            'propietario_nombre' => ['required', 'string', 'max:30', 'regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/'],
             'propietario_apellido' => ['required', 'string', 'max:30', 'regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/'],
             'propietario_cedula' => 'required|string|max:8|unique:propietarios,cedula_propie,' . $propietario->id_propie . ',id_propie',
-            'propietario_telefono' => 'required|string|max:11', 
-            'direccion' => 'required|string|max:100', 
+            'propietario_telefono' => 'required|string|max:11',
+            'direccion' => 'required|string|max:100',
             'estado' => 'required|numeric|in:0,1',
-            'observacion' => 'nullable|string|max:250', 
+            'observacion' => 'nullable|string|max:250',
         ]);
 
         try {
@@ -167,8 +167,7 @@ class InspeccionesController extends Controller
 
             // 5. Redirigir al usuario
             return redirect()->route('inspecciones.index')->with('success', '¡Inspección #' . $id_insp . ' actualizada con éxito!');
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             \Log::error("Error al actualizar inspección: " . $e->getMessage());
             return back()->withInput()->with('error', 'Ocurrió un error al guardar los cambios. Intente nuevamente.');
         }
@@ -185,8 +184,7 @@ class InspeccionesController extends Controller
             ]);
 
             return redirect()->route('inspecciones.index')->with('success', '¡Inspección #' . $id_insp . ' marcada como COMPLETADA con éxito! ✅');
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             // En caso de error en la base de datos
             \Log::error("Error al completar inspección: " . $e->getMessage());
             return back()->with('error', 'Ocurrió un error al marcar la inspección como completada. Intente nuevamente.');
@@ -199,14 +197,13 @@ class InspeccionesController extends Controller
             $inspeccion = Inspeccion::findOrFail($id_insp);
 
             // Al usar el Trait SoftDeletes, el método delete() establece deleted_at.
-            $inspeccion->delete(); 
+            $inspeccion->delete();
 
             return redirect()->route('inspecciones.index')->with('success', '¡Inspección #' . $id_insp . ' eliminada correctamente!');
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             \Log::error("Error al eliminar inspección: " . $e->getMessage());
             return back()->with('error', 'Ocurrió un error al eliminar la inspección. Intente nuevamente.');
         }
     }
-    
+
 }

@@ -18,23 +18,23 @@ class AuthController extends Controller
     // Procesa el inicio de sesión
     public function login(Request $request)
     {
-    $credentials = $request->validate([
-        'correo' => 'required|email',
-        'password' => 'required',
-    ]);
+        $credentials = $request->validate([
+            'correo' => 'required|email',
+            'password' => 'required',
+        ]);
 
-    
-    
-    if (Auth::attempt(['correo' => $credentials['correo'], 'password' => $credentials['password']])) {
-        $request->session()->regenerate();
 
-        return redirect()->route('dashboard');
+
+        if (Auth::attempt(['correo' => $credentials['correo'], 'password' => $credentials['password']])) {
+            $request->session()->regenerate();
+
+            return redirect()->route('dashboard');
+        }
+        // Si las credenciales son incorrectas, redirige de nuevo con un mensaje de error
+        return back()->withErrors([
+            'correo' => 'Las credenciales proporcionadas no coinciden con nuestros registros.',
+        ])->onlyInput('correo');
     }
-     // Si las credenciales son incorrectas, redirige de nuevo con un mensaje de error
-    return back()->withErrors([
-        'correo' => 'Las credenciales proporcionadas no coinciden con nuestros registros.',
-    ])->onlyInput('correo');
-}
 
     // Cierra la sesión del usuario
     public function logout(Request $request)
@@ -57,8 +57,8 @@ class AuthController extends Controller
     {
         // 1. Validar los datos del formulario
         $request->validate([
-            'nombre' =>['required', 'string', 'max:30', 'regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/'],
-            'apellido' =>['required', 'string', 'max:30', 'regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/'],
+            'nombre' => ['required', 'string', 'max:30', 'regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/'],
+            'apellido' => ['required', 'string', 'max:30', 'regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/'],
             'cedula_user' => 'required|string|max:8|unique:usuarios',
             'correo' => 'required|string|email|max:40|unique:usuarios',
             'password' => 'required|string|min:8|confirmed',

@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <title>Recuperar Contraseña</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="{{ asset('css/login.css') }}" rel="stylesheet">
 </head>
+
 <body>
     <div class="container-fluid">
         <div class="row login-row">
@@ -19,7 +21,8 @@
                     <form method="POST" action="{{ route('password.email') }}">
                         @csrf
                         <div class="mb-3">
-                            <input type="email" class="form-control @error('correo') is-invalid @enderror" name="correo" value="{{ old('correo') }}" required placeholder="Correo electrónico">
+                            <input type="email" class="form-control @error('correo') is-invalid @enderror" name="correo"
+                                value="{{ old('correo') }}" required placeholder="Correo electrónico">
                             @error('correo')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
@@ -32,10 +35,12 @@
             </div>
             <div class="col-md-6 right-panel d-none d-md-flex">
                 <div class="logo-container">
-                    <img src="{{ asset('images/logo-corvisucre.png') }}" alt="Logo Departamento de Ingeniería CORVISUCRE">
+                    <img src="{{ asset('images/logo-corvisucre.png') }}"
+                        alt="Logo Departamento de Ingeniería CORVISUCRE">
                 </div>
             </div>
         </div>
     </div>
 </body>
+
 </html>

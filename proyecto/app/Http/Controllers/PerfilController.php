@@ -14,7 +14,7 @@ class PerfilController extends Controller
     {
         // Obtener la información del usuario autenticado
         $usuario = Auth::user();
-        
+
         // Pasar el objeto de usuario a la vista
         return view('perfil', compact('usuario'));
     }
@@ -25,23 +25,23 @@ class PerfilController extends Controller
 
         // Validar los datos del formulario, excluyendo al usuario actual
         $request->validate([
-        'nombre' => ['required', 'string', 'max:30', 'regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/'],
-        'apellido' => ['required', 'string', 'max:30', 'regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/'],
-        'correo' => [
-            'required',
-            'string',
-            'email',
-            'max:255',
-            Rule::unique('usuarios', 'correo')->ignore($usuario),
-        ],
-    ]);
+            'nombre' => ['required', 'string', 'max:30', 'regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/'],
+            'apellido' => ['required', 'string', 'max:30', 'regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/'],
+            'correo' => [
+                'required',
+                'string',
+                'email',
+                'max:255',
+                Rule::unique('usuarios', 'correo')->ignore($usuario),
+            ],
+        ]);
 
         // Actualizar los datos del usuario
         $usuario->update([
-        'nombre' => $request->nombre,
-        'apellido' => $request->apellido,
-        'correo' => $request->correo,
-    ]);
+            'nombre' => $request->nombre,
+            'apellido' => $request->apellido,
+            'correo' => $request->correo,
+        ]);
 
         // Redirigir al usuario de vuelta a la página de perfil con un mensaje de éxito
         return redirect()->route('perfil')->with('success', '¡Tu perfil ha sido actualizado con éxito!');
