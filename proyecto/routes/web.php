@@ -56,3 +56,6 @@ Route::middleware('auth')->group(function () {
 
 // Ruta para marcar una inspección como completada
 Route::patch('inspecciones/{id_insp}/complete', [InspeccionesController::class, 'completeInspection'])->name('inspecciones.complete');
+
+// Ruta para exportar listado de inspecciones a PDF
+Route::get('inspecciones/exportar/pdf', [InspeccionesController::class, 'exportarPDF'])->name('inspecciones.exportar.pdf');

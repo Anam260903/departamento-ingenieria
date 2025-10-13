@@ -43,6 +43,14 @@
                 @endif
 
                 <div class="row justify-content-end mb-3">
+                    {{-- Botón de DESCARGA PDF--}}
+                    <div class="col-auto">
+                        <a href="{{ route('inspecciones.exportar.pdf') }}" class="btn btn-secondary text-nowrap"
+                            title="Descargar PDF">
+                            <i class="bi bi-file-earmark-pdf me-2"></i>Descargar listado
+                        </a>
+                    </div>
+                    {{-- Botón "Nueva Inspección"--}}
                     <div class="col-auto">
                         <a href="{{ route('inspecciones.create') }}" class="btn btn-primary text-nowrap">
                             <i class="bi bi-plus-circle me-2"></i>Nueva inspección

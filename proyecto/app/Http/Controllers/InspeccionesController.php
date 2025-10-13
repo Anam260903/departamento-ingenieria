@@ -8,6 +8,7 @@ use App\Models\Propietario;
 use App\Models\Vivienda;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\QueryException;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class InspeccionesController extends Controller
 {
@@ -204,6 +205,26 @@ class InspeccionesController extends Controller
             \Log::error("Error al eliminar inspección: " . $e->getMessage());
             return back()->with('error', 'Ocurrió un error al eliminar la inspección. Intente nuevamente.');
         }
+    }
+
+    public function exportarPDF()
+    {
+        // 1. Cargar las inspecciones con las relaciones necesarias: vivienda, propietario y usuario
+        $inspecciones = Inspeccion::with(['vivienda.propietario', 'usuario'])
+
+            ->get();
+
+        // 2. Cargar la vista Blade en la librería PDF
+        $pdf = PDF::loadView('reporte-inspecciones-pdf', compact('inspecciones'));
+
+        // Ajuste para mejorar la paginación en tablas grandes (Dompdf)
+        $pdf->setOptions(['isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true]);
+
+        // 3. Devolver el archivo PDF para descarga
+        $fecha = \Carbon\Carbon::now()->format('Ymd');
+        $nombreArchivo = "Reporte_Inspecciones_{$fecha}.pdf";
+
+        return $pdf->download($nombreArchivo);
     }
 
 }
