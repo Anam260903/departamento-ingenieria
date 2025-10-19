@@ -25,6 +25,7 @@ class Usuario extends Authenticatable
         'password',
     ];
 
+    //Funcion para enviar el correo de restablecimiento de contraseña
     public function getEmailForPasswordReset()
     {
         return $this->correo;

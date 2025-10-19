@@ -227,4 +227,45 @@ class InspeccionesController extends Controller
         return $pdf->download($nombreArchivo);
     }
 
+    public function exportarPDFMes(Request $request)
+    {
+        // 1. Obtener el mes y el año del formulario
+        $mes = $request->input('mes');
+        $ano = $request->input('ano');
+
+        // Validación básica
+        if (empty($mes) || empty($ano)) {
+            return redirect()->back()->with('error', 'Debe seleccionar un Mes y un Año para exportar.');
+        }
+
+        // 2. Filtrar las inspecciones por Mes y Año
+        $inspecciones = Inspeccion::with(['vivienda.propietario', 'usuario'])
+            // Filtrar por el año de la fecha_insp
+            ->whereYear('fecha_insp', $ano)
+            // Filtrar por el mes de la fecha_insp
+            ->whereMonth('fecha_insp', $mes)
+            ->orderBy('fecha_insp', 'asc')
+            ->get();
+
+        // 3. Preparar datos para el PDF
+        \Carbon\Carbon::setLocale('es');
+        $nombreMes = \Carbon\Carbon::createFromDate($ano, $mes)->monthName;
+        $fechaReporte = "{$nombreMes} de {$ano}";
+
+        // Si no hay inspecciones se envia un mensaje
+        if ($inspecciones->isEmpty()) {
+            return redirect()->back()->with('warning', "No se encontraron inspecciones para {$fechaReporte}.");
+        }
+
+        // 4. Cargar la vista Blade y generar el PDF
+        // Pasamos la fecha de reporte para actualizar el título del PDF
+        $pdf = PDF::loadView('reporte-inspecciones-pdf', compact('inspecciones', 'fechaReporte'));
+        $pdf->setOptions(['isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true]);
+
+        // 5. Devolver el archivo PDF para descarga
+        $nombreArchivo = "Reporte_Inspecciones_{$ano}_{$mes}.pdf";
+
+        return $pdf->download($nombreArchivo);
+    }
+
 }

@@ -59,3 +59,6 @@ Route::patch('inspecciones/{id_insp}/complete', [InspeccionesController::class, 
 
 // Ruta para exportar listado de inspecciones a PDF
 Route::get('inspecciones/exportar/pdf', [InspeccionesController::class, 'exportarPDF'])->name('inspecciones.exportar.pdf');
+
+// Ruta para exportar listado de inspecciones a PDF filtrado por mes
+Route::get('inspecciones/exportar/mes', [InspeccionesController::class, 'exportarPDFMes'])->name('inspecciones.exportar.mes');

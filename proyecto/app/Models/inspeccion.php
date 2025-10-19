@@ -22,6 +22,7 @@ class Inspeccion extends Model
         'id_viv',  // FK de vivienda
     ];
 
+    //Funciones para relaciones
     public function usuario()
     {
         return $this->belongsTo(Usuario::class, 'id_user');

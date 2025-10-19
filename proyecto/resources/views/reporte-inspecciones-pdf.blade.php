@@ -36,8 +36,14 @@
 
     {{-- TÍTULOS DEL REPORTE --}}
     <div class="report-title">REPORTE DE INSPECCIONES</div>
-    <div class="report-subtitle">Departamento de Ingeniería - {{ \Carbon\Carbon::now()->format('d/m/Y') }}</div>
-
+    <div class="report-subtitle">Departamento de Ingeniería -
+        @isset($fechaReporte)
+            {{ $fechaReporte }}
+        @else
+            {{ \Carbon\Carbon::now()->format('d/m/Y') }}
+        @endisset
+    </div>
+    
     {{-- TABLA DE DATOS --}}
     <table class="table">
         <thead>

@@ -59,7 +59,7 @@
                     </form>
 
                     <div class="d-flex justify-content-between mt-3">
-                        <a href="#" class="text-decoration-none">¿Has olvidado tu
+                        <a href="{{ route('password.request') }}" class="text-decoration-none">¿Has olvidado tu
                             contraseña?</a>
                         <p class="mb-0">¿No tienes cuenta? <a href="{{ route('register') }}">Regístrate</a></p>
                     </div>

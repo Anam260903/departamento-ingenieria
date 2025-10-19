@@ -34,6 +34,12 @@
             <div class="container-fluid py-4">
                 <h1 class="mb-4 h3">GESTIÓN DE INSPECCIONES</h1>
 
+                @if (session('warning'))<div class="alert alert-warning alert-dismissible fade show mt-3" role="alert">
+                        <strong>Advertencia:</strong> {{ session('warning') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
+
                 {{-- Mensajes de éxito o error --}}
                 @if (session('success'))
                     <div class="alert alert-success">{{ session('success') }}</div>
@@ -43,13 +49,23 @@
                 @endif
 
                 <div class="row justify-content-end mb-3">
-                    {{-- Botón de DESCARGA PDF--}}
+                    {{-- Botón de descarga PDF general--}}
                     <div class="col-auto">
                         <a href="{{ route('inspecciones.exportar.pdf') }}" class="btn btn-secondary text-nowrap"
                             title="Descargar PDF">
                             <i class="bi bi-file-earmark-pdf me-2"></i>Descargar listado
                         </a>
                     </div>
+
+                    {{--Botón de descarga PDF por mes--}}
+                    <div class="col-auto">
+                        <button type="button" class="btn btn-danger me-2" data-bs-toggle="modal"
+                            data-bs-target="#modalDescargaMensual" title="Descargar PDF por mes">
+                            <i class="bi bi-calendar-check"></i> Descargar PDF Mensual
+                        </button>
+                    </div>
+
+
                     {{-- Botón "Nueva Inspección"--}}
                     <div class="col-auto">
                         <a href="{{ route('inspecciones.create') }}" class="btn btn-primary text-nowrap">
@@ -219,6 +235,61 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Modal de Decargar PDF Mensual --}}
+    <div class="modal fade" id="modalDescargaMensual" tabindex="-1" aria-labelledby="modalDescargaMensualLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalDescargaMensualLabel">Descargar Reporte
+                        Mensual</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ route('inspecciones.exportar.mes') }}" method="GET">
+                    <div class="modal-body">
+                        <p>Seleccione el mes y año para filtrar el listado de inspecciones a descargar.</p>
+
+                        <div class="row g-3">
+                            {{-- Selector de Mes --}}
+                            <div class="col-md-6">
+                                <label for="mes_modal" class="form-label">Mes</label>
+                                <select id="mes_modal" name="mes" class="form-select" required>
+                                    <option value="">Seleccione Mes</option>
+                                    @php
+                                        \Carbon\Carbon::setLocale('es');
+                                    @endphp
+                                    {{-- Listar los 12 meses --}}
+                                    @for ($m = 1; $m <= 12; $m++)
+                                        <option value="{{ $m }}">
+                                            {{ ucfirst(\Carbon\Carbon::create()->month($m)->monthName) }}</option>
+                                    @endfor
+                                </select>
+                            </div>
+
+                            {{-- Selector de Año --}}
+                            <div class="col-md-6">
+                                <label for="ano_modal" class="form-label">Año</label>
+                                <select id="ano_modal" name="ano" class="form-select" required>
+                                    <option value="">Seleccione Año</option>
+                                    {{-- Listar 5 años hacia atrás --}}
+                                    @for ($y = date('Y'); $y >= date('Y') - 5; $y--)
+                                        <option value="{{ $y }}">{{ $y }}</option>
+                                    @endfor
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-download"></i> Descargar PDF
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
