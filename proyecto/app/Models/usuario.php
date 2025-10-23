@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Auth\Passwords\CanResetPassword;
 
 class Usuario extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, CanResetPassword;
 
     protected $table = 'usuarios';
     protected $primaryKey = 'id_user';
@@ -26,8 +27,9 @@ class Usuario extends Authenticatable
     ];
 
     //Funcion para enviar el correo de restablecimiento de contraseña
-    public function getEmailForPasswordReset()
+    public function sendPasswordResetNotification($token)
     {
-        return $this->correo;
+        $this->notify(new ResetPassword($token));
     }
+
 }

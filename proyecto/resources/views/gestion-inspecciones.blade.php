@@ -59,9 +59,9 @@
 
                     {{--Botón de descarga PDF por mes--}}
                     <div class="col-auto">
-                        <button type="button" class="btn btn-danger me-2" data-bs-toggle="modal"
+                        <button type="button" class="btn btn-danger text-nowrap" data-bs-toggle="modal"
                             data-bs-target="#modalDescargaMensual" title="Descargar PDF por mes">
-                            <i class="bi bi-calendar-check"></i> Descargar PDF Mensual
+                            <i class="bi bi-calendar-check me-2"></i> Descargar PDF Mensual
                         </button>
                     </div>
 
@@ -260,7 +260,7 @@
                                 <select id="mes_modal" name="mes" class="form-select" required>
                                     <option value="">Seleccione Mes</option>
                                     @php
-                                        \Carbon\Carbon::setLocale('es');
+\Carbon\Carbon::setLocale('es');
                                     @endphp
                                     {{-- Listar los 12 meses --}}
                                     @for ($m = 1; $m <= 12; $m++)
