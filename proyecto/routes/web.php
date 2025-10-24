@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\InspeccionesController;
+use App\Http\Controllers\InformesController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -49,7 +50,7 @@ Route::post('/perfil/actualizar', [PerfilController::class, 'update'])->name('pe
 // Ruta para actualizar la contraseña del perfil (POST, protegida por middleware)
 Route::post('/perfil/cambiar-contrasena', [PerfilController::class, 'changePassword'])->name('perfil.change-password')->middleware('auth');
 
-// Rutas de Inspecciones (protegidas por middleware)
+// Ruta para el módulo de inspecciones (protegidas por middleware)
 Route::middleware('auth')->group(function () {
     Route::resource('inspecciones', InspeccionesController::class);
 });
@@ -62,3 +63,13 @@ Route::get('inspecciones/exportar/pdf', [InspeccionesController::class, 'exporta
 
 // Ruta para exportar listado de inspecciones a PDF filtrado por mes
 Route::get('inspecciones/exportar/mes', [InspeccionesController::class, 'exportarPDFMes'])->name('inspecciones.exportar.mes');
+
+// Ruta para el módulo de informes técnicos
+Route::get('informes', [InformesController::class, 'index'])->name('informes.index');
+
+//Ruta para crear un informe técnico
+Route::get('informes/crear', [InformesController::class, 'create'])->name('informes.create');
+
+// Rutas TO DO: Edit, Update, Descarga PDF
+// Route::get('informes/{informe}/editar', [InformesController::class, 'edit'])->name('informes.edit');
+// Route::get('informes/{informe}/pdf', [InformesController::class, 'descargarPDF'])->name('informes.pdf');
