@@ -67,9 +67,8 @@ Route::get('inspecciones/exportar/mes', [InspeccionesController::class, 'exporta
 // Ruta para el módulo de informes técnicos
 Route::get('informes', [InformesController::class, 'index'])->name('informes.index');
 
-//Ruta para crear un informe técnico
-Route::get('informes/crear', [InformesController::class, 'create'])->name('informes.create');
+// Ruta para mostrar el formulario de creación (recibirá el id de inspección)
+Route::get('informes/crear/{id_insp}', [InformesController::class, 'create'])->name('informes.create');
 
-// Rutas TO DO: Edit, Update, Descarga PDF
-// Route::get('informes/{informe}/editar', [InformesController::class, 'edit'])->name('informes.edit');
-// Route::get('informes/{informe}/pdf', [InformesController::class, 'descargarPDF'])->name('informes.pdf');
+// Ruta para manejar la selección de la inspección
+Route::get('informes/seleccionar', [InformesController::class, 'seleccionarInspeccion'])->name('informes.seleccionar');

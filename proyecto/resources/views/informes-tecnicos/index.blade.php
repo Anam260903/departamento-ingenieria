@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,25 +10,26 @@
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
 </head>
+
 <body>
     <div class="d-flex" id="wrapper">
 
-        @include('components._sidebar') 
-        
+        @include('components._sidebar')
+
         <div id="page-content-wrapper">
-       
-            @include('components._navbar') 
-            
+
+            @include('components._navbar')
+
             <div class="container-fluid py-4">
-            
+
                 <h1 class="mb-4 h3">INFORMES TÉCNICOS</h1>
-                
+
                 {{-- Bloque de Alertas --}}
                 @if (session('warning'))
-                <div class="alert alert-warning alert-dismissible fade show mt-3" role="alert">
-                    <strong>Advertencia:</strong> {{ session('warning') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
+                    <div class="alert alert-warning alert-dismissible fade show mt-3" role="alert">
+                        <strong>Advertencia:</strong> {{ session('warning') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
                 @endif
                 @if (session('success'))
                     <div class="alert alert-success">{{ session('success') }}</div>
@@ -35,17 +37,18 @@
                 @if (session('error'))
                     <div class="alert alert-danger">{{ session('error') }}</div>
                 @endif
-                
+
                 <div class="row justify-content-end mb-3">
 
                     {{-- Botón "Nuevo informe" --}}
                     <div class="col-auto">
-                        <a href="{{ route('informes.create') }}" class="btn btn-primary text-nowrap">
+                        <a href="#" class="btn btn-primary text-nowrap" data-bs-toggle="modal"
+                            data-bs-target="#modalSeleccionarInspeccion">
                             <i class="bi bi-plus-circle me-2"></i>Nuevo informe
                         </a>
                     </div>
                 </div>
-                
+
                 {{-- Filtros --}}
                 <div class="card shadow-sm p-4 mb-4">
                     <form action="{{ route('informes.index') }}" method="GET">
@@ -56,7 +59,7 @@
                                     placeholder="Buscar por Propietario, Dirección o Ingeniero"
                                     value="{{ request('keyword') }}">
                             </div>
-                            {{-- Filtro por Ingeniero 
+                            {{-- Filtro por Ingeniero
                             <div class="col-md-3">
                                 <select class="form-select" name="ingeniero">
                                     <option value="">Filtrar por Ingeniero</option>
@@ -100,24 +103,24 @@
                                     <tr>
                                         {{-- Fecha --}}
                                         <td>{{ \Carbon\Carbon::parse($informe->fecha_inf)->format('d-m-Y') }}</td>
-                                        
+
                                         {{-- Ingeniero asignado --}}
                                         <td>
                                             @php $usuario = $informe->inspeccion->usuario ?? null; @endphp
                                             {{ $usuario ? ($usuario->nombre . ' ' . $usuario->apellido) : 'N/A' }}
                                         </td>
-                                        
+
                                         {{-- Propietario --}}
                                         <td>
                                             @php $propietario = $informe->inspeccion->vivienda->propietario ?? null; @endphp
                                             {{ $propietario ? ($propietario->nombre_propie . ' ' . $propietario->apellido_propie) : 'N/A' }}
                                         </td>
-                                        
+
                                         {{-- Dirección --}}
                                         <td>
                                             {{ $informe->inspeccion->vivienda->direccion ?? 'N/A' }}
                                         </td>
-                                        
+
                                         {{-- Acciones --}}
                                         <td>
                                             <div class="d-flex gap-2">
@@ -125,7 +128,7 @@
                                                 <a href="#" class="btn btn-warning btn-sm" title="Editar informe">
                                                     <i class="bi bi-pencil"></i>
                                                 </a>
-                                                
+
                                                 {{-- 2. Botón de Descargar PDF --}}
                                                 <a href="#" class="btn btn-danger btn-sm" title="Descargar PDF">
                                                     <i class="bi bi-file-pdf-fill"></i>
@@ -141,7 +144,7 @@
                             </tbody>
                         </table>
                     </div>
-                    
+
                     {{-- Enlaces de Paginación --}}
                     <div class="d-flex justify-content-center mt-3">
                         {{ $informes->links('pagination::bootstrap-5') }}
@@ -152,8 +155,96 @@
         </div>
     </div>
 
+    {{-- Modal para seleccionar inspección al crear nuevo informe --}}
+
+    <div class="modal fade" id="modalSeleccionarInspeccion" tabindex="-1"
+        aria-labelledby="modalSeleccionarInspeccionLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalSeleccionarInspeccionLabel">Seleccionar Inspección</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="#" id="formSeleccionarInspeccion">
+                    <div class="modal-body">
+                        <p>Seleccione la vivienda del propietario cuya inspección requiere un informe
+                            técnico.</p>
+
+                        <div class="mb-3">
+                            <label for="id_insp_select" class="form-label">Propietario / Vivienda</label>
+                            <select id="id_insp_select" name="id_insp" class="form-select" required>
+                                <option value="">Seleccione una inspección...</option>
+
+                                {{-- Llenar el Dropdown con inspecciones disponibles --}}
+                                @php
+
+                                    $informesController = new App\Http\Controllers\InformesController();
+                                    $inspeccionesDisponibles = $informesController->obtenerInspeccionesDisponibles();
+                                    $limiteTexto = 55;
+                                @endphp
+
+                                @forelse ($inspeccionesDisponibles as $insp)
+                                    @php
+                                        $propietario = $insp->vivienda->propietario;
+                                        $texto = ($propietario ? $propietario->nombre_propie . ' ' . $propietario->apellido_propie : 'N/A')
+                                            . ' - ' . ($insp->vivienda->direccion ?? 'N/A');
+                                        if (strlen($texto) > $limiteTexto) {
+                                            $textoMostrar = substr($texto, 0, $limiteTexto) . '...';
+                                        } else {
+                                            $textoMostrar = $texto;
+                                        }
+                                    @endphp
+                                    <option value="{{ $insp->id_insp }}">{{ $textoMostrar }}</option>
+                                @empty
+                                    <option value="" disabled>No hay inspecciones pendientes de informe.
+                                    </option>
+                                @endforelse
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" id="btnContinuarInforme"
+                            data-base-url="{{ url('informes/crear') }}/">
+                            Iniciar informe</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ asset('js/dashboard.js') }}"></script>
-    <script src="{{ asset('js/informes.js') }}"></script>
+    
+    <script>
+    // Este código está justo al final del body, asegurando que el botón ya exista.
+    document.addEventListener('DOMContentLoaded', function() {
+        const btnContinuar = document.getElementById('btnContinuarInforme');
+
+        if (btnContinuar) {
+            btnContinuar.addEventListener('click', function() {
+                
+                const selectElement = document.getElementById('id_insp_select');
+                const id_insp = selectElement.value;
+                const baseUrl = btnContinuar.getAttribute('data-base-url');
+
+                // Validamos que el ID exista y no sea la cadena vacía del placeholder
+                if (id_insp && id_insp !== "") { 
+                    
+                    // Redirección GARANTIZADA
+                    window.location.href = baseUrl + id_insp;
+                    
+                } else {
+                    alert('Por favor, seleccione una inspección válida para continuar.');
+                    selectElement.focus();
+                }
+            });
+        }
+    });
+
+    // Advertencia ARIA: Es seguro ignorarla. Es una advertencia de accesibilidad de Bootstrap/Chrome.
+</script>
+
 </body>
+
 </html>

@@ -34,7 +34,7 @@
                 <i class="bi bi-card-checklist me-2"></i> Gestión de inspecciones
             </a>
 
-            <a href="{{ route('informes.index') }}" class="list-group-item list-group-item-action bg-white d-flex align-items-center @if(request()->routeIs('informes.index') || request()->routeIs('informes.create')) active @endif">
+            <a href="{{ route('informes.index') }}" class="list-group-item list-group-item-action bg-white d-flex align-items-center @if(request()->routeIs('informes.index') || request()->routeIs('informes.seleccionar')) active @endif">
                 <i class="bi bi-file-earmark-text me-2"></i> Informes técnicos
             </a>
 
