@@ -1,0 +1,28 @@
+/* Estilo para la barra de progreso */
+        .step-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .step {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            font-weight: bold;
+            color: #6c757d;
+            /* Gris para pasos pendientes */
+        }
+
+        .step.active {
+            color: #007bff;
+            /* Azul para el paso actual */
+            border-bottom: 3px solid #007bff;
+        }
+
+        .step.completed {
+            color: #28a745;
+            /* Verde para pasos completados (TO DO) */
+        }

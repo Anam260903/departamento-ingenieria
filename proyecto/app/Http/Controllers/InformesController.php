@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 use App\Models\Informe;
 use App\Models\Inspeccion;
+use App\Models\Propietario;
+use App\Models\Vivienda;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class InformesController extends Controller
 {
@@ -63,6 +66,81 @@ class InformesController extends Controller
 
         // 3. Pasar los datos a la vista
         return view('informes-tecnicos.create', compact('inspeccion', 'fecha_inf', 'pasoActual'));
+    }
+
+    public function storeStep1(Request $request)
+    {
+        // 1. Validación de los datos del Paso 1
+        $validatedData = $request->validate([
+            'id_insp' => [
+                'required',
+                'integer',
+                // Asegurar que la inspección exista
+                Rule::exists('inspecciones', 'id_insp'),
+                // Asegurar que NO haya ya un informe asociado (Creación inicial)
+                Rule::unique('informes', 'id_insp')
+            ],
+            // Datos del Informe (fecha_inf y comunidad)
+            'fecha_inf' => 'required|date',
+            'comunidad' => 'required|string|max:50',
+
+            // Datos del Propietario (Responsable) - Se actualizarán si cambian
+            'propietario_cedula' => 'required|string|max:8|regex:/^[0-9]+$/',
+            'propietario_nombre' => 'required|string|max:30|regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/',
+            'propietario_apellido' => 'required|string|max:30|regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/',
+            'propietario_telefono' => 'required|string|max:11|regex:/^[0-9]+$/',
+
+            // Datos de la Vivienda (Dirección) - Se actualizarán si cambian
+            'direccion' => 'required|string|max:100',
+        ]);
+
+        try {
+            // Usamos una transacción para asegurar que todas las operaciones se completen
+            $informe = DB::transaction(function () use ($validatedData) {
+
+                // 2. Obtener la Inspección y sus relaciones para obtener IDs
+                $inspeccion = Inspeccion::with('vivienda.propietario')->findOrFail($validatedData['id_insp']);
+                $vivienda = $inspeccion->vivienda;
+                $propietario = $vivienda->propietario;
+
+                // 3. Actualizar datos del Propietario (Responsable)
+                $propietario->update([
+                    'cedula_propie' => $validatedData['propietario_cedula'],
+                    'nombre_propie' => $validatedData['propietario_nombre'],
+                    'apellido_propie' => $validatedData['propietario_apellido'],
+                    'telefono' => $validatedData['propietario_telefono'],
+                ]);
+
+                // 4. Actualizar datos de la Vivienda (Dirección)
+                $vivienda->update([
+                    'direccion' => $validatedData['direccion'],
+                ]);
+
+                // 5. Crear el registro inicial del informe
+                return Informe::create([
+                    'id_insp' => $validatedData['id_insp'],
+                    'fecha_inf' => $validatedData['fecha_inf'],
+                    'comunidad' => $validatedData['comunidad'],
+                    // Los demás campos (antecedentes, planteamiento, etc.) se quedan en NULL
+                ]);
+            });
+
+            // 6. Redirigir al siguiente paso
+            return redirect()->route('informes.edit.step2', ['id_inf' => $informe->id_inf])
+                ->with('success', 'Paso 1: Datos generales guardados actualizados. Continúe con el paso 2.');
+
+        } catch (\Exception $e) {
+            return back()->withInput()->with('error', 'Error al guardar los datos generales: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Placeholder para el siguiente paso (necesario para que la redirección funcione)
+     */
+    public function editStep2($id_inf)
+    {
+        // TO DO: Lógica para cargar el Informe, el Paso 2 y el formulario de edición
+        return view('informes-tecnicos.edit-step2', compact('id_inf'))->with('info', 'El Paso 2: Diagnóstico y observaciones aún no ha sido implementado.');
     }
 
 }

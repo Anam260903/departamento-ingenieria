@@ -15,10 +15,10 @@ return new class extends Migration
             $table->id('id_inf');
             $table->date('fecha_inf');
             $table->text('comunidad');
-            $table->text('antecedentes');
-            $table->text('planteamiento');
-            $table->text('resultados');
-            $table->text('recomendacion');
+            $table->text('antecedentes')->nullable();
+            $table->text('planteamiento')->nullable();
+            $table->text('resultados')->nullable();
+            $table->text('recomendacion')->nullable();
             $table->unsignedBigInteger('id_insp');
             $table->foreign('id_insp')->references('id_insp')->on('inspecciones');
             $table->timestamps();

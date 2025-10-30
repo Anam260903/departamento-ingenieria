@@ -67,8 +67,14 @@ Route::get('inspecciones/exportar/mes', [InspeccionesController::class, 'exporta
 // Ruta para el módulo de informes técnicos
 Route::get('informes', [InformesController::class, 'index'])->name('informes.index');
 
-// Ruta para mostrar el formulario de creación (recibirá el id de inspección)
-Route::get('informes/crear/{id_insp}', [InformesController::class, 'create'])->name('informes.create');
-
 // Ruta para manejar la selección de la inspección
 Route::get('informes/seleccionar', [InformesController::class, 'seleccionarInspeccion'])->name('informes.seleccionar');
+
+// Ruta para mostrar el primer paso del informe  (Datos Generales, recibirá el id de inspección)
+Route::get('informes/crear/{id_insp}', [InformesController::class, 'create'])->name('informes.create');
+
+// Ruta para guardar el primer paso del informe (Datos Generales)
+Route::post('informes/guardar-paso-1', [InformesController::class, 'storeStep1'])->name('informes.store.step1');
+
+// Ruta para la edición del siguiente paso (Paso 2: Diagnóstico y observaciones)
+Route::get('informes/editar/{id_inf}/paso-2', [InformesController::class, 'editStep2'])->name('informes.edit.step2');
