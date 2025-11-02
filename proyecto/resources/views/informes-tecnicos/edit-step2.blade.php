@@ -110,8 +110,8 @@
 
                         {{-- Botones de Navegación --}}
                         <div class="d-flex justify-content-between mt-4">
-                            {{-- Botón de retroceso al Paso 1 (Solo si es necesario editar los datos generales) --}}
-                            <a href="{{ route('informes.create', $informe->id_inf) }}" class="btn btn-secondary">
+                            {{-- Botón de retroceso al Paso 1 --}}
+                            <a href="{{ route('informes.edit.step1', $informe->id_inf) }}" class="btn btn-secondary">
                                 Volver
                             </a>
                             <button type="submit" class="btn btn-primary w-auto">

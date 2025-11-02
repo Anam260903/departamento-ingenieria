@@ -132,19 +132,94 @@ class InformesController extends Controller
 
                 $redirectUrl = route('informes.edit.step2', ['id_inf' => $informe->id_inf]);
 
-                // ❌ LÍNEA TEMPORAL DE DEBUGGING (descomenta esto para ver la URL generada) ❌
-                //dd("Redireccionando a:", $redirectUrl); 
-
-                return redirect($redirectUrl) // Usamos redirect() directo en lugar de route() para mayor certeza
+                return redirect($redirectUrl)
                     ->with('success', 'Paso 1: Datos generales guardados. Continúe con el paso 2.');
             }
 
         } catch (\Exception $e) {
-            // ❌ ¡CÓDIGO TEMPORAL DE DEBUGGING! ❌
-            // Descomenta la siguiente línea para ver el error exacto y luego elimínala.
-            //dd($e->getMessage(), $e->getFile(), $e->getLine());
 
             return back()->withInput()->with('error', 'Error de Transacción. Detalles: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Muestra el formulario de edición para el Paso 1 (Datos Generales)
+     */
+    public function editStep1($id_inf)
+    {
+        // 1. Buscar el informe existente y sus relaciones
+        $informe = Informe::with('inspeccion.vivienda.propietario')->findOrFail($id_inf);
+
+        // 2. Cargamos el objeto de Inspección (necesario para la vista create.blade.php)
+        $inspeccion = $informe->inspeccion;
+
+        // 3. Reutilizamos la vista create.blade.php, pasándole el informe existente
+        // para que los campos se rellenen con los datos guardados.
+        return view('informes-tecnicos.create', compact('informe', 'inspeccion'));
+    }
+
+    /**
+     * Actualiza los datos del Paso 1 (Datos Generales) para un informe existente.
+     */
+    public function updateStep1(Request $request, $id_inf)
+    {
+        // 1. Validación de datos
+        $validatedData = $request->validate([
+            'id_insp' => [
+                'required',
+                'integer',
+                Rule::exists('inspecciones', 'id_insp') // Solo verificar que existe
+            ],
+            // Datos del Informe
+            'fecha_inf' => 'required|date',
+            'comunidad' => 'required|string|max:100',
+
+            // Datos del Propietario (Responsable) - Se actualizarán
+            'propietario_cedula' => 'required|string|max:8|regex:/^[0-9]+$/',
+            'propietario_nombre' => 'required|string|max:30|regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/',
+            'propietario_apellido' => 'required|string|max:30|regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/',
+            'propietario_telefono' => 'required|string|max:11|regex:/^[0-9]+$/',
+
+            // Datos de la Vivienda (Dirección) - Se actualizarán
+            'direccion' => 'required|string|max:100',
+        ]);
+
+        try {
+            // 2. Usar una transacción para actualizar múltiples tablas
+            DB::transaction(function () use ($id_inf, $validatedData) {
+
+                // A. Buscar el informe existente y sus relaciones
+                $informe = Informe::with('inspeccion.vivienda.propietario')->findOrFail($id_inf);
+                $vivienda = $informe->inspeccion->vivienda;
+                $propietario = $vivienda->propietario;
+
+                // B. Actualizar datos del Propietario
+                $propietario->update([
+                    'cedula_propie' => $validatedData['propietario_cedula'],
+                    'nombre_propie' => $validatedData['propietario_nombre'],
+                    'apellido_propie' => $validatedData['propietario_apellido'],
+                    'telefono' => $validatedData['propietario_telefono'],
+                ]);
+
+                // C. Actualizar datos de la Vivienda
+                $vivienda->update([
+                    'direccion' => $validatedData['direccion'],
+                ]);
+
+                // D. Actualizar el registro del Informe
+                $informe->update([
+                    'fecha_inf' => $validatedData['fecha_inf'],
+                    'comunidad' => $validatedData['comunidad'],
+                    // El id_insp ya no se actualiza, solo se modifica la fecha y comunidad
+                ]);
+            });
+
+            // 3. Redirigir al siguiente paso (Paso 2)
+            return redirect()->route('informes.edit.step2', $id_inf)
+                ->with('success', 'Paso 1: Datos generales actualizados. Continúe con el paso 2.');
+
+        } catch (\Exception $e) {
+            return back()->withInput()->with('error', 'Error al actualizar los datos generales: ' . $e->getMessage());
         }
     }
 
@@ -205,11 +280,50 @@ class InformesController extends Controller
     }
 
     /**
-     * Placeholder para el siguiente paso (Paso 3: Recomendaciones).
+     * Muestra el formulario de edición para el Paso 3: Recomendaciones.
      */
     public function editStep3($id_inf)
     {
-        // TO DO: Implementar la lógica para cargar el Paso 3
-        return view('informes-tecnicos.edit-step3', compact('id_inf'))->with('info', 'El Paso 3: Recomendaciones aún no ha sido implementado.');
+        // 1. Buscar el informe existente
+        $informe = Informe::findOrFail($id_inf);
+
+        // 2. Cargar la vista (asumimos que la vista se llama edit-step3.blade.php)
+        return view('informes-tecnicos.edit-step3', compact('informe'));
+    }
+
+    /**
+     * Guarda y actualiza los datos del Paso 3 (columna 'recomendaciones').
+     */
+    public function updateStep3(Request $request, $id_inf)
+    {
+        // 1. Validación
+        $validatedData = $request->validate([
+            'recomendaciones' => 'required|string',
+        ]);
+
+        try {
+            // 2. Buscar y actualizar
+            $informe = Informe::findOrFail($id_inf);
+
+            $informe->update([
+                'recomendaciones' => $validatedData['recomendaciones'],
+            ]);
+
+            // 3. Redirigir al siguiente paso (Paso 4)
+            return redirect()->route('informes.edit.step4', ['id_inf' => $informe->id_inf])
+                ->with('success', 'Paso 3: Recomendaciones guardadas correctamente. Continúe con el paso 4.');
+
+        } catch (\Exception $e) {
+            return back()->withInput()->with('error', 'Error al guardar las recomendaciones: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Placeholder para el Paso 4 (Materiales y cálculos).
+     */
+    public function editStep4($id_inf)
+    {
+        // TO DO: Implementar la lógica para cargar el Paso 4
+        return view('informes-tecnicos.edit-step4', compact('id_inf'))->with('info', 'El Paso 4: Materiales y cálculos aún no ha sido implementado.');
     }
 }

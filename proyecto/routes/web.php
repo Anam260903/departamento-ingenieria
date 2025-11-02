@@ -69,11 +69,21 @@ Route::get('informes/crear/{id_insp}', [InformesController::class, 'create'])->n
 // Ruta para guardar el primer paso del informe (Datos Generales)
 Route::post('informes/guardar-paso-1', [InformesController::class, 'storeStep1'])->name('informes.store.step1');
 
+// Ruta para editar el primer paso del informe (Datos Generales)
+Route::get('informes/editar/{id_inf}/paso-1', [InformesController::class, 'editStep1'])->name('informes.edit.step1');
+
+// Ruta para actualizar/editar el primer paso del informe (cuando el informe ya existe)
+// Usamos PUT/PATCH y requerimos el ID del informe ($id_inf)
+Route::put('informes/actualizar/{id_inf}/paso-1', [InformesController::class, 'updateStep1'])->name('informes.update.step1');
+
 // Ruta para mostrar el segundo paso del informe (Diagnóstico y observaciones)
 Route::get('informes/editar/{id_inf}/paso-2', [InformesController::class, 'editStep2'])->name('informes.edit.step2');
 
-//Ruta para guardar el segundo paso del informe (Diagnóstico y observaciones)
+// Ruta para guardar/actualizar el segundo paso del informe (Diagnóstico y observaciones)
 Route::put('informes/actualizar/{id_inf}/paso-2', [InformesController::class, 'updateStep2'])->name('informes.update.step2');
 
-// Placeholder para el Paso 3
+// Ruta para mostrar el tercer paso del informe (Recomendciones)
 Route::get('informes/editar/{id_inf}/paso-3', [InformesController::class, 'editStep3'])->name('informes.edit.step3');
+
+//Ruta para guardar/actualizar el tercer paso del informe (Recomendaciones)
+Route::put('informes/actualizar/{id_inf}/paso-3', [InformesController::class, 'updateStep3'])->name('informes.update.step3');

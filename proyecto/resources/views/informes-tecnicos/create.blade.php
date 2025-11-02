@@ -48,9 +48,23 @@
                     </div>
 
                     <div class="card shadow-sm p-4">
-                        <form action="{{ route('informes.store.step1') }}" method="POST"> {{-- La acción será para
-                            guardar el primer paso --}}
+                        @php
+                            // Detectamos si es una edición (si existe el objeto $informe) o una creación
+                            $isEditing = isset($informe) && $informe->id_inf;
+
+                            // Si es edición, apuntamos a una nueva ruta de updateStep1 (que debes crear)
+                            $formAction = $isEditing
+                                ? route('informes.update.step1', $informe->id_inf)
+                                : route('informes.store.step1');
+                        @endphp
+                        <form action="{{ $formAction }}" method="POST">
                             @csrf
+
+                            {{-- Si estamos editando, usamos el método PUT --}}
+                            @if ($isEditing)
+                                @method('PUT')
+                                <input type="hidden" name="id_inf" value="{{ $informe->id_inf }}">
+                            @endif
 
                             <input type="hidden" name="id_insp" value="{{ $inspeccion->id_insp }}">
 
@@ -62,7 +76,8 @@
                                     <div class="col-md-6 mb-4">
                                         <label for="fecha_inf" class="form-label">Fecha de la Inspección</label>
                                         <input type="date" class="form-control @error('fecha_inf') is-invalid @enderror"
-                                            id="fecha_inf" name="fecha_inf" value="{{ old('fecha_inf', $fecha_inf) }}"
+                                            id="fecha_inf" name="fecha_inf"
+                                            value="{{ old('fecha_inf', $informe->fecha_inf ?? \Carbon\Carbon::now()->format('Y-m-d')) }}"
                                             required>
                                         @error('fecha_inf')
                                             <div class="invalid-feedback">{{ $message }}</div>
@@ -85,7 +100,8 @@
                                         <label for="comunidad" class="form-label">Comunidad y/o proyecto</label>
                                         <input type="text" class="form-control @error('comunidad') is-invalid @enderror"
                                             id="comunidad" name="comunidad" placeholder="Comunidad y/o proyecto"
-                                            maxlength="50" value="{{ old('comunidad') }}" required>
+                                            maxlength="50" value="{{ old('comunidad', $informe->comunidad ?? '') }}"
+                                            required>
                                         @error('comunidad')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
