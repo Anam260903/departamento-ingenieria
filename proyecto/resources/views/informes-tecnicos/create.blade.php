@@ -49,8 +49,7 @@
 
                     <div class="card shadow-sm p-4">
                         <form action="{{ route('informes.store.step1') }}" method="POST"> {{-- La acción será para
-                            guardar
-                            el primer paso --}}
+                            guardar el primer paso --}}
                             @csrf
 
                             <input type="hidden" name="id_insp" value="{{ $inspeccion->id_insp }}">
@@ -175,7 +174,8 @@
 
                     {{-- Botones de Navegación --}}
                     <div class="d-flex justify-content-end mt-4">
-                        <button type="submit" class="btn btn-primary w-auto me-2">Guardar y Continuar</button>
+                        <button type="submit" class="btn btn-primary w-auto me-2">Guardar y Continuar
+                        </button>
                         <a href="{{ route('informes.index') }}" class="btn btn-secondary">Cancelar</a>
                     </div>
 

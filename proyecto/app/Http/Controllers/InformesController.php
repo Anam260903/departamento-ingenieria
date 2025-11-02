@@ -94,6 +94,8 @@ class InformesController extends Controller
             'direccion' => 'required|string|max:100',
         ]);
 
+        $informe = null;
+
         try {
             // Usamos una transacción para asegurar que todas las operaciones se completen
             $informe = DB::transaction(function () use ($validatedData) {
@@ -126,21 +128,88 @@ class InformesController extends Controller
             });
 
             // 6. Redirigir al siguiente paso
-            return redirect()->route('informes.edit.step2', ['id_inf' => $informe->id_inf])
-                ->with('success', 'Paso 1: Datos generales guardados actualizados. Continúe con el paso 2.');
+            if ($informe) {
+
+                $redirectUrl = route('informes.edit.step2', ['id_inf' => $informe->id_inf]);
+
+                // ❌ LÍNEA TEMPORAL DE DEBUGGING (descomenta esto para ver la URL generada) ❌
+                //dd("Redireccionando a:", $redirectUrl); 
+
+                return redirect($redirectUrl) // Usamos redirect() directo en lugar de route() para mayor certeza
+                    ->with('success', 'Paso 1: Datos generales guardados. Continúe con el paso 2.');
+            }
 
         } catch (\Exception $e) {
-            return back()->withInput()->with('error', 'Error al guardar los datos generales: ' . $e->getMessage());
+            // ❌ ¡CÓDIGO TEMPORAL DE DEBUGGING! ❌
+            // Descomenta la siguiente línea para ver el error exacto y luego elimínala.
+            //dd($e->getMessage(), $e->getFile(), $e->getLine());
+
+            return back()->withInput()->with('error', 'Error de Transacción. Detalles: ' . $e->getMessage());
         }
     }
 
     /**
-     * Placeholder para el siguiente paso (necesario para que la redirección funcione)
+     * Muestra el formulario para el Paso 2 de informe técnico: Diagnóstico y observaciones.
      */
     public function editStep2($id_inf)
     {
-        // TO DO: Lógica para cargar el Informe, el Paso 2 y el formulario de edición
-        return view('informes-tecnicos.edit-step2', compact('id_inf'))->with('info', 'El Paso 2: Diagnóstico y observaciones aún no ha sido implementado.');
+        // 1. Buscar el informe existente y cargar las relaciones necesarias:
+        $informe = Informe::with('inspeccion.vivienda')->findOrFail($id_inf);
+
+        // La vista accede a $informe->inspeccion->vivienda->caracteristicas
+        return view('informes-tecnicos.edit-step2', compact('informe'));
     }
 
+    /**
+     * Guardar y actualizar los datos del Paso 2 (columna 'antecedentes').
+     */
+    public function updateStep2(Request $request, $id_inf)
+    {
+        // 1. Validación de los cuatro campos
+        $validatedData = $request->validate([
+            'antecedentes' => 'required|string',
+            'planteamiento' => 'required|string',
+            'resultados' => 'required|string',
+            'caracteristicas' => 'required|string',
+        ]);
+
+        try {
+            // 2. Buscar el informe existente y sus relaciones
+            $informe = Informe::with('inspeccion.vivienda')->findOrFail($id_inf);
+            $vivienda = $informe->inspeccion->vivienda;
+
+            DB::transaction(function () use ($informe, $vivienda, $validatedData) {
+
+                // A. Actualizar campos de la tabla informes
+                $informe->update([
+                    'antecedentes' => $validatedData['antecedentes'],
+                    'planteamiento' => $validatedData['planteamiento'],
+                    'resultados' => $validatedData['resultados'],
+                ]);
+
+                // B. Actualizar el campo 'caracteristicas' en la tabla viviendas
+                $vivienda->update([
+                    'caracteristicas' => $validatedData['caracteristicas'],
+                ]);
+
+            });
+
+            // 3. Redirigir al siguiente paso
+            return redirect()->route('informes.edit.step3', ['id_inf' => $informe->id_inf])
+                ->with('success', 'Paso 2: Diagnóstico y observaciones guardados correctamente. Continúe con el paso 3.');
+
+        } catch (\Exception $e) {
+            // En caso de error (ej. Mass Assignment, fallo de DB, etc.)
+            return back()->withInput()->with('error', 'Error al guardar los datos del Paso 2: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Placeholder para el siguiente paso (Paso 3: Recomendaciones).
+     */
+    public function editStep3($id_inf)
+    {
+        // TO DO: Implementar la lógica para cargar el Paso 3
+        return view('informes-tecnicos.edit-step3', compact('id_inf'))->with('info', 'El Paso 3: Recomendaciones aún no ha sido implementado.');
+    }
 }

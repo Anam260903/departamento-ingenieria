@@ -8,15 +8,8 @@ use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\InspeccionesController;
 use App\Http\Controllers\InformesController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
-route::get('/ejemplo', function () {
-    return view('ejemplo');
-});
-
 // Ruta para mostrar el formulario de inicio de sesión
-Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name ('login');
 
 // Ruta para procesar la solicitud de inicio de sesión
 Route::post('/login', [AuthController::class, 'login']);
@@ -76,5 +69,11 @@ Route::get('informes/crear/{id_insp}', [InformesController::class, 'create'])->n
 // Ruta para guardar el primer paso del informe (Datos Generales)
 Route::post('informes/guardar-paso-1', [InformesController::class, 'storeStep1'])->name('informes.store.step1');
 
-// Ruta para la edición del siguiente paso (Paso 2: Diagnóstico y observaciones)
+// Ruta para mostrar el segundo paso del informe (Diagnóstico y observaciones)
 Route::get('informes/editar/{id_inf}/paso-2', [InformesController::class, 'editStep2'])->name('informes.edit.step2');
+
+//Ruta para guardar el segundo paso del informe (Diagnóstico y observaciones)
+Route::put('informes/actualizar/{id_inf}/paso-2', [InformesController::class, 'updateStep2'])->name('informes.update.step2');
+
+// Placeholder para el Paso 3
+Route::get('informes/editar/{id_inf}/paso-3', [InformesController::class, 'editStep3'])->name('informes.edit.step3');

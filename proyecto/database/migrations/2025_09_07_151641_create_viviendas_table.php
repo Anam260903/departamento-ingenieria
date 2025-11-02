@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('viviendas', function (Blueprint $table) {
             $table->id('id_viv');
             $table->string('direccion', 100);
+            $table->text('ccaracteristicas');
             $table->unsignedBigInteger('id_propie');
             $table->foreign('id_propie')->references('id_propie')->on('propietarios');
             $table->timestamps();
