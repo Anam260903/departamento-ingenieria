@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Storage;
 
 class InformesController extends Controller
 {
@@ -65,7 +66,7 @@ class InformesController extends Controller
         $pasoActual = 1;
 
         // 3. Pasar los datos a la vista
-        return view('informes-tecnicos.create', compact('inspeccion', 'fecha_inf', 'pasoActual'));
+        return view ('informes-tecnicos.create', compact('inspeccion', 'fecha_inf', 'pasoActual'));
     }
 
     public function storeStep1(Request $request)
@@ -224,7 +225,7 @@ class InformesController extends Controller
     }
 
     /**
-     * Muestra el formulario para el Paso 2 de informe técnico: Diagnóstico y observaciones.
+     * Muestra el formulario para el Paso 2 de informe técnico (Diagnóstico y observaciones)
      */
     public function editStep2($id_inf)
     {
@@ -280,41 +281,79 @@ class InformesController extends Controller
     }
 
     /**
-     * Muestra el formulario de edición para el Paso 3: Recomendaciones.
+     * Muestra el formulario de edición para el Paso 3 (Recomendaciones)
      */
     public function editStep3($id_inf)
     {
         // 1. Buscar el informe existente
         $informe = Informe::findOrFail($id_inf);
 
-        // 2. Cargar la vista (asumimos que la vista se llama edit-step3.blade.php)
+        // 2. Cargar la vista
         return view('informes-tecnicos.edit-step3', compact('informe'));
     }
 
     /**
-     * Guarda y actualiza los datos del Paso 3 (columna 'recomendaciones').
+     * Guarda y actualiza los datos del Paso 3
      */
     public function updateStep3(Request $request, $id_inf)
     {
-        // 1. Validación
+        // 1. Validación de los campos, incluyendo la imagen
         $validatedData = $request->validate([
             'recomendaciones' => 'required|string',
+            'latitud' => 'required|numeric',
+            'longitud' => 'required|numeric',
+            // Validamos la subida del archivo: debe ser una imagen, máx 2MB, opcional si ya existe una (en una edición)
+            'map_screenshot' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         try {
-            // 2. Buscar y actualizar
-            $informe = Informe::findOrFail($id_inf);
+            $fileName = null;
 
-            $informe->update([
-                'recomendaciones' => $validatedData['recomendaciones'],
-            ]);
+            // 2. Manejo de la subida del archivo (Screenshot del Mapa)
+            if ($request->hasFile('map_screenshot')) {
+                $file = $request->file('map_screenshot');
+                // Generar un nombre único: id_informe + timestamp + extensión
+                $fileName = $id_inf . '-' . time() . '.' . $file->getClientOriginalExtension();
+                // Guardar el archivo en el storage (ej. storage/app/public/map_screenshots)
+                $path = $file->storeAs('public/map_screenshots', $fileName);
+                $fileName = basename($path); // Solo guardamos el nombre del archivo
+            }
 
-            // 3. Redirigir al siguiente paso (Paso 4)
-            return redirect()->route('informes.edit.step4', ['id_inf' => $informe->id_inf])
-                ->with('success', 'Paso 3: Recomendaciones guardadas correctamente. Continúe con el paso 4.');
+            // 3. Transacción de guardado
+            DB::transaction(function () use ($id_inf, $validatedData, $fileName) {
+
+                $informe = Informe::with('inspeccion.vivienda')->findOrFail($id_inf);
+                $vivienda = $informe->inspeccion->vivienda;
+
+                // A. Actualizar campos de la tabla informes
+                $informe->update([
+                    'recomendacion' => $validatedData['recomendaciones'],
+                ]);
+
+                // B. Actualizar campos de la tabla viviendas
+                $updateViviendaData = [
+                    'latitud' => $validatedData['latitud'],
+                    'longitud' => $validatedData['longitud'],
+                ];
+
+                // Si se subió un nuevo archivo, actualizamos el campo map_image_file
+                if ($fileName) {
+                    // Opcional: Eliminar el archivo viejo si existe uno
+                    if ($vivienda->map_image_file) {
+                        Storage::delete('public/map_screenshots/' . $vivienda->map_image_file);
+                    }
+                    $updateViviendaData['map_image_file'] = $fileName;
+                }
+
+                $vivienda->update($updateViviendaData);
+            });
+
+            // 4. Redirigir al siguiente paso (Paso 4)
+            return redirect()->route('informes.edit.step4', $id_inf)
+                ->with('success', 'Paso 3: Recomendaciones y ubicación guardados. Continúe con el paso 4.');
 
         } catch (\Exception $e) {
-            return back()->withInput()->with('error', 'Error al guardar las recomendaciones: ' . $e->getMessage());
+            return back()->withInput()->with('error', 'Error al guardar el Paso 3: ' . $e->getMessage());
         }
     }
 

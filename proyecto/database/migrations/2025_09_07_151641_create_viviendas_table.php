@@ -14,7 +14,10 @@ return new class extends Migration
         Schema::create('viviendas', function (Blueprint $table) {
             $table->id('id_viv');
             $table->string('direccion', 100);
-            $table->text('ccaracteristicas');
+            $table->text('caracteristicas')->nullable();;
+            $table->decimal('latitud', 10, 8)->nullable(); 
+            $table->decimal('longitud', 11, 8)->nullable(); 
+            $table->string('map_image_file', 255)->nullable();
             $table->unsignedBigInteger('id_propie');
             $table->foreign('id_propie')->references('id_propie')->on('propietarios');
             $table->timestamps();

@@ -20,6 +20,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_viv');
             $table->foreign('id_user')->references('id_user')->on('usuarios');
             $table->foreign('id_viv')->references('id_viv')->on('viviendas');
+            $table->timestamp('deleted_at')->nullable()->default(null);
             $table->timestamps();
         });
     }
