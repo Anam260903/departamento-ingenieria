@@ -14,8 +14,12 @@ class vivienda extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'direccion',
-        'id_propie',
+        'direccion', 
+        'id_propie', 
+        'caracteristicas', 
+        'latitud',
+        'longitud',
+        'map_image_file',
     ];
 
     public function propietario()

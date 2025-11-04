@@ -155,7 +155,6 @@ class InformesController extends Controller
         $inspeccion = $informe->inspeccion;
 
         // 3. Reutilizamos la vista create.blade.php, pasándole el informe existente
-        // para que los campos se rellenen con los datos guardados.
         return view('informes-tecnicos.create', compact('informe', 'inspeccion'));
     }
 
@@ -281,7 +280,7 @@ class InformesController extends Controller
     }
 
     /**
-     * Muestra el formulario de edición para el Paso 3 (Recomendaciones)
+     * Muestra el formulario de edición para el Paso 3 (Recomendaciones y mapa)
      */
     public function editStep3($id_inf)
     {
