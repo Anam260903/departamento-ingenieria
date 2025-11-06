@@ -151,7 +151,7 @@ class InformesController extends Controller
         // 1. Buscar el informe existente y sus relaciones
         $informe = Informe::with('inspeccion.vivienda.propietario')->findOrFail($id_inf);
 
-        // 2. Cargamos el objeto de Inspección (necesario para la vista create.blade.php)
+        // 2. Cargamos el objeto de Inspección
         $inspeccion = $informe->inspeccion;
 
         // 3. Reutilizamos la vista create.blade.php, pasándole el informe existente

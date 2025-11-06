@@ -40,7 +40,7 @@
                     <div class="step completed">1. Datos Generales</div>
                     <div class="step active">2. Diagnóstico y observaciones</div>
                     <div class="step">3. Recomendaciones</div>
-                    <div class="step">4. Materiales y calc.</div>
+                    <div class="step">4. Materiales</div>
                     <div class="step">5. Evidencia fotog.</div>
                 </div>
 

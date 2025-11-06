@@ -43,7 +43,7 @@
                         <div class="step active">1. Datos Generales</div>
                         <div class="step">2. Diagnóstico</div>
                         <div class="step">3. Recomendaciones</div>
-                        <div class="step">4. Materiales y calc.</div>
+                        <div class="step">4. Materiales</div>
                         <div class="step">4. Evidencia fotog.</div>
                     </div>
 

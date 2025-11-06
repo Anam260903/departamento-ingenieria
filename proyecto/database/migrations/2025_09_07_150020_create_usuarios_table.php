@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('usuarios', function (Blueprint $table)  {
             $table->id('id_user');
-            $table->string('cedula_user', 8)->unique();
-            $table->string('nombre', 15);
-            $table->string('apellido', 15);
+            $table->string('cedula_user', 15)->unique();
+            $table->string('nombre', 30);
+            $table->string('apellido', 30);
             $table->string('correo', 40)->unique();
             $table->string('password'); // Contraseña hasheada, VARCHAR(255)
             $table->timestamps();

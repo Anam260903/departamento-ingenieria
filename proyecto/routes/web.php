@@ -87,3 +87,9 @@ Route::get('informes/editar/{id_inf}/paso-3', [InformesController::class, 'editS
 
 //Ruta para guardar/actualizar el tercer paso del informe (Recomendaciones y mapa)
 Route::put('informes/actualizar/{id_inf}/paso-3', [InformesController::class, 'updateStep3'])->name('informes.update.step3');
+
+// Ruta para mostrar la vista del Paso 4 (Materiales)
+Route::get('informes/editar/{id_inf}/paso-4', [InformesController::class, 'editStep4'])->name('informes.edit.step4');
+
+// Ruta para procesar la actualización del Paso 4 y continuar al Paso 5
+Route::put('informes/update/paso-4/{id_inf}', [InformesController::class, 'updateStep4'])->name('informes.update.step4');
