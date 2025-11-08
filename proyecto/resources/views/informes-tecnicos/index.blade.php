@@ -125,7 +125,7 @@
                                         <td>
                                             <div class="d-flex gap-2">
                                                 {{-- 1. Botón de Editar --}}
-                                                <a href="#" class="btn btn-warning btn-sm" title="Editar informe">
+                                                <a href="{{ route('informes.edit.step1', $informe->id_inf) }}" class="btn btn-warning btn-sm" title="Editar informe">
                                                     <i class="bi bi-pencil"></i>
                                                 </a>
 
@@ -178,21 +178,21 @@
                                 {{-- Llenar el Dropdown con inspecciones disponibles --}}
                                 @php
 
-                                    $informesController = new App\Http\Controllers\InformesController();
-                                    $inspeccionesDisponibles = $informesController->obtenerInspeccionesDisponibles();
-                                    $limiteTexto = 55;
+$informesController = new App\Http\Controllers\InformesController();
+$inspeccionesDisponibles = $informesController->obtenerInspeccionesDisponibles();
+$limiteTexto = 55;
                                 @endphp
 
                                 @forelse ($inspeccionesDisponibles as $insp)
                                     @php
-                                        $propietario = $insp->vivienda->propietario;
-                                        $texto = ($propietario ? $propietario->nombre_propie . ' ' . $propietario->apellido_propie : 'N/A')
-                                            . ' - ' . ($insp->vivienda->direccion ?? 'N/A');
-                                        if (strlen($texto) > $limiteTexto) {
-                                            $textoMostrar = substr($texto, 0, $limiteTexto) . '...';
-                                        } else {
-                                            $textoMostrar = $texto;
-                                        }
+    $propietario = $insp->vivienda->propietario;
+    $texto = ($propietario ? $propietario->nombre_propie . ' ' . $propietario->apellido_propie : 'N/A')
+        . ' - ' . ($insp->vivienda->direccion ?? 'N/A');
+    if (strlen($texto) > $limiteTexto) {
+        $textoMostrar = substr($texto, 0, $limiteTexto) . '...';
+    } else {
+        $textoMostrar = $texto;
+    }
                                     @endphp
                                     <option value="{{ $insp->id_insp }}">{{ $textoMostrar }}</option>
                                 @empty

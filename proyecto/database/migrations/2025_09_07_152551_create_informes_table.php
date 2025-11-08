@@ -19,6 +19,7 @@ return new class extends Migration
             $table->text('planteamiento')->nullable();
             $table->text('resultados')->nullable();
             $table->text('recomendacion')->nullable();
+            $table->text('materials_info')->nullable();
             $table->unsignedBigInteger('id_insp');
             $table->foreign('id_insp')->references('id_insp')->on('inspecciones');
             $table->timestamps();

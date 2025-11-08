@@ -5,6 +5,8 @@ use App\Models\Informe;
 use App\Models\Inspeccion;
 use App\Models\Propietario;
 use App\Models\Vivienda;
+use App\Models\Calculos;
+use App\Models\evidencia_fotografica;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -66,7 +68,7 @@ class InformesController extends Controller
         $pasoActual = 1;
 
         // 3. Pasar los datos a la vista
-        return view ('informes-tecnicos.create', compact('inspeccion', 'fecha_inf', 'pasoActual'));
+        return view('informes-tecnicos.create', compact('inspeccion', 'fecha_inf', 'pasoActual'));
     }
 
     public function storeStep1(Request $request)
@@ -280,7 +282,7 @@ class InformesController extends Controller
     }
 
     /**
-     * Muestra el formulario de edición para el Paso 3 (Recomendaciones y mapa)
+     * Muestra el formulario para el Paso 3 (Recomendaciones y mapa)
      */
     public function editStep3($id_inf)
     {
@@ -357,11 +359,107 @@ class InformesController extends Controller
     }
 
     /**
-     * Placeholder para el Paso 4 (Materiales y cálculos).
+     * Muestra el formulario de edición para el Paso 4 (Materiales)
      */
     public function editStep4($id_inf)
     {
-        // TO DO: Implementar la lógica para cargar el Paso 4
-        return view('informes-tecnicos.edit-step4', compact('id_inf'))->with('info', 'El Paso 4: Materiales y cálculos aún no ha sido implementado.');
+        // Cargamos la relación 'calculos' para saber qué códigos están asociados.
+        $informe = Informe::with('calculos')->findOrFail($id_inf);
+
+        // Obtener todos los cálculos disponibles para el selector
+        $calculos = Calculos::select('id_calculo', 'codigo_calculo', 'contenido')->get();
+
+        // La vista se llama edit-step4
+        return view('informes-tecnicos.edit-step4', compact('informe', 'calculos'));
+    }
+
+    /**
+     * Almacena los datos del paso 4 (Relación Muchos a Muchos y Texto editable).
+     */
+    public function updateStep4(Request $request)
+    {
+        $request->validate([
+            'id_inf' => 'required|exists:informes,id_inf',
+            'calculos_codes' => 'nullable|array',
+            'calculos_codes.*' => 'exists:calculos,id_calculo', // Validar que los IDs existan
+            'materials_info' => 'nullable|string',
+        ]);
+
+        try {
+            $informe = Informe::findOrFail($request->id_inf);
+
+            // 1. Manejar la relación Muchos a Muchos: Sincronizar los IDs
+            // Laravel usa 'calculos_informes' gracias a la definición en el modelo.
+            $informe->calculos()->sync($request->calculos_codes ?? []);
+
+            // 2. Guardar el texto editable de materiales
+            $informe->materials_info = $request->materials_info;
+
+            $informe->save();
+
+            // Redirigir al siguiente paso (Paso 5)
+            return redirect()->route('informes.edit.step5', $informe->id_inf)
+                ->with('success', 'Paso 4: Materiales guardados. Continúe con el paso 5.');
+
+        } catch (\Exception $e) {
+            return back()->withInput()->with('error', 'Error al guardar el Paso 4: ' . $e->getMessage());
+        }
+
+    }
+
+
+    /**
+     * Muestra el formulario del paso 5 (Evidencia Fotográfica).
+     */
+    public function editStep5($id_inf)
+    {
+        // Cargamos la relación 'imagenes' (Asumiendo que así se llama la relación en el modelo Informe)
+        $informe = Informe::with('imagenes')->findOrFail($id_inf);
+        
+        return view('informes-tecnicos.edit-step5', compact('informe'));
+    }
+
+    /**
+     * Procesa y almacena los datos del paso 5 (Subida de múltiples archivos).
+     * Nomenclatura: updateStep5
+     */
+    public function updateStep5(Request $request)
+    {
+        $request->validate([
+            'id_inf' => 'required|exists:informes,id_inf', 
+            // Validación para múltiples archivos de imagen
+            'photos' => 'nullable|array',
+            'photos.*' => 'image|mimes:jpeg,png,jpg|max:5120', // Máx 5MB por archivo
+        ]);
+
+        $informe = Informe::findOrFail($request->id_inf);
+        
+        // Si hay archivos para subir
+        if ($request->hasFile('photos')) {
+            
+            $imagenesData = [];
+            
+            foreach ($request->file('photos') as $photo) {
+                // 1. Guardar el archivo en el disco
+                // La ruta será algo como: 'public/informes/123/'
+                $ruta = $photo->store('informes/' . $informe->id_inf, 'public'); 
+                
+                // 2. Preparar los datos para insertar en la BD
+                $imagenesData[] = [
+                    'id_inf' => $informe->id_inf,
+                    'ruta_archivo' => $ruta,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+            
+            // 3. Insertar todos los registros en la tabla evidencia_fotografica
+            evidencia_fotografica::insert($imagenesData);
+        }
+        
+        // FIN DEL INFORME: Redirigir a la página del listado de informes con un mensaje
+
+        return redirect()->route('informes.index')->with('success', 'Informe Técnico finalizado y guardado exitosamente.');
+
     }
 }

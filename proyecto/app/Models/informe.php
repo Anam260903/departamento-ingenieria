@@ -27,4 +27,22 @@ class Informe extends Model
     {
         return $this->belongsTo(Inspeccion::class, 'id_insp', 'id_insp');
     }
+
+    // Relación: Un informe tiene muchas evidencias fotográficas
+    public function imagenes()
+    {
+        return $this->hasMany(evidencia_fotografica::class, 'id_inf', 'id_inf');
+    }
+
+
+    //Relación muchos a muchos con CALCULOS a través de la tabla calculo_informes
+    public function calculos()
+    {
+        return $this->belongsToMany(
+            Calculos::class,
+            'calculo_informes',
+            'id_inf',
+            'id_calculo'
+        );
+    }
 }

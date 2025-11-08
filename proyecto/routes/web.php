@@ -7,6 +7,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\InspeccionesController;
 use App\Http\Controllers\InformesController;
+use App\Http\Controllers\CalculosController;
 
 // Ruta para mostrar el formulario de inicio de sesión
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name ('login');
@@ -88,8 +89,18 @@ Route::get('informes/editar/{id_inf}/paso-3', [InformesController::class, 'editS
 //Ruta para guardar/actualizar el tercer paso del informe (Recomendaciones y mapa)
 Route::put('informes/actualizar/{id_inf}/paso-3', [InformesController::class, 'updateStep3'])->name('informes.update.step3');
 
-// Ruta para mostrar la vista del Paso 4 (Materiales)
+// Ruta para mostrar la vista del cuarto paso del informe (Materiales)
 Route::get('informes/editar/{id_inf}/paso-4', [InformesController::class, 'editStep4'])->name('informes.edit.step4');
 
-// Ruta para procesar la actualización del Paso 4 y continuar al Paso 5
-Route::put('informes/update/paso-4/{id_inf}', [InformesController::class, 'updateStep4'])->name('informes.update.step4');
+// RUTA PARA OBTENER EL CONTENIDO DE LOS CÁLCULOS VÍA AJAX
+Route::post('calculos/get-contenido', [CalculosController::class, 'getContenido'])->name('calculos.getContenido');
+
+// Ruta para guardar/actualizar el cuarto paso del informe (Materiales)
+Route::post('informes/actualizar/paso-4/{id_inf}', [InformesController::class, 'updateStep4'])->name('informes.update.step4');
+
+// Ruta para mostrar la vista del quinto paso del informe (Evidencia fotográfica)
+Route::get('informes/editar/{id_inf}/paso-5', [InformesController::class, 'editStep5'])->name('informes.edit.step5');
+
+//Ruta para guardar/actualizar el quinto paso del informe (Evidencia fotográfica) y finalizar el informe
+Route::post('informes/actualizar/paso-5/{id_inf}', [InformesController::class, 'updateStep5'])->name('informes.update.step5');
+
