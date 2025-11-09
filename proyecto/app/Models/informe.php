@@ -19,6 +19,7 @@ class Informe extends Model
         'planteamiento',
         'resultados',
         'recomendacion',
+        'materials_info',
         'id_insp', // Clave foránea a inspeccion
     ];
 

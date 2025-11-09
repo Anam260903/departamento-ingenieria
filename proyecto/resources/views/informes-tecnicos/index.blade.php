@@ -130,7 +130,7 @@
                                                 </a>
 
                                                 {{-- 2. Botón de Descargar PDF --}}
-                                                <a href="#" class="btn btn-danger btn-sm" title="Descargar PDF">
+                                                <a href="{{ route('informes.generatePdf', $informe->id_inf) }}" class="btn btn-danger btn-sm" title="Descargar PDF">
                                                     <i class="bi bi-file-pdf-fill"></i>
                                                 </a>
                                             </div>

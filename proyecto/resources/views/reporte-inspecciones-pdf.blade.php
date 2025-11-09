@@ -20,7 +20,8 @@
         <div class="text-col">
             <p>REPÚBLICA BOLIVARIANA DE VENEZUELA</p>
             <p>GOBIERNO BOLIVARIANO DEL ESTADO SUCRE</p>
-            <p>CORPORACION DE VIVIENDA DEL ESTADO SUCRE (CORVISUCRE)</p>
+            <p>CORPORACION DE VIVIENDA DEL ESTADO SUCRE</p>
+            <p>(CORVISUCRE)</p>
             <p>RIF: G-200164492</p>
             <p>CARÚPANO - ESTADO SUCRE</p>
         </div>

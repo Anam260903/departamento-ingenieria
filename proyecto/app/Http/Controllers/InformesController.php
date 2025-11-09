@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Storage;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class InformesController extends Controller
 {
@@ -462,4 +463,24 @@ class InformesController extends Controller
         return redirect()->route('informes.index')->with('success', 'Informe Técnico finalizado y guardado exitosamente.');
 
     }
+
+    /**
+     * Genera y descarga el PDF de un informe técnico específico.
+     * @param int $id_inf El ID del informe.
+     */
+    public function downloadPdf($id_inf)
+    {
+        // 1. Obtener el informe con todas las relaciones necesarias
+        $informe = Informe::with([
+            'inspeccion.vivienda.propietario',
+            'inspeccion.usuario',
+            'imagenes', // Para la Memoria Fotográfica
+        ])->findOrFail($id_inf);
+
+        // 2. Cargar la vista Blade que contiene la estructura del PDF
+        $pdf = Pdf::loadView('informes-tecnicos.pdf.informe_tecnico', compact('informe'));
+
+        // 3. Configurar y retornar el PDF para descarga
+        return $pdf->setPaper('a4', 'portrait')->stream('Informe-Tecnico-' . $informe->id . '.pdf');
+    }    
 }
