@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Usuario; // Asumiendo que tu modelo de personal se llama 'User'
+use App\Models\Inspeccion;
+use App\Models\Vivienda;    // Asegurar la importación
+use App\Models\Propietario;
 use App\Models\roles;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -104,13 +107,91 @@ class PersonalController extends Controller
     }
 
     /**
-     * Redirige a la vista para asignar inspecciones.
+     * Muestra la lista de inspecciones disponibles, incluyendo el nombre del propietario, en JSON.
+     * @param \App\Models\Usuario $personal El usuario al que se asignará la inspección.
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function assignInspections(Usuario $personal)
+    public function getAvailableInspections(Usuario $personal)
     {
-        // Aquí se mostraría una vista con las inspecciones pendientes para asignar a este usuario
-        return view('personal.assign_inspections', compact('personal'));
+        // *** SOLUCIÓN CLAVE: EAGER LOADING ***
+        // Carga las inspecciones disponibles (id_user es NULL) junto a sus relaciones anidadas
+        $inspecciones = Inspeccion::whereNull('id_user')
+            ->with(['vivienda.propietario'])
+            ->get();
+
+        // Mapear la colección para crear el texto que se mostrará en el SELECT
+        $inspecciones_disponibles = $inspecciones->map(function ($insp) {
+
+            $nombre_propietario = 'Propietario Desconocido';
+            $ci_propietario = 'N/A';
+
+            // Verificamos si las relaciones anidadas existen para evitar errores
+            if ($insp->vivienda && $insp->vivienda->propietario) {
+                $prop = $insp->vivienda->propietario;
+
+                // Asumo que el modelo Propietario tiene los campos 'nombre' y 'apellido'
+                $nombre_propietario = $prop->nombre_propie . ' ' . $prop->apellido_propie;
+
+                // Asumo que el campo de cédula en Propietario es 'cedula_prop' o similar
+                // Por favor, ajusta 'cedula_prop' al nombre real de tu columna si es diferente.
+                $ci_propietario = $prop->cedula_propie ?? 'N/A';
+            }
+
+            return [
+                'id_insp' => $insp->id_insp,
+                // Campo que el JavaScript usará para mostrar el nombre/apellido en el select
+                'propietario_display' => "Inspección #{$insp->id_insp} | Propietario: {$nombre_propietario} (CI: {$ci_propietario})",
+            ];
+        });
+
+        // Retornar datos JSON
+        return response()->json([
+            'user_id' => $personal->id_user,
+            'user_name' => $personal->nombre . ' ' . $personal->apellido,
+            'inspecciones' => $inspecciones_disponibles,
+        ]);
     }
 
-    // Debes añadir los métodos store, update y destroy según tu flujo
+    /**
+     * Procesa la solicitud POST y asigna una inspección seleccionada al usuario.
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\Usuario $personal El usuario al que se asignará la inspección.
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function assignInspection(Request $request, Usuario $personal)
+    {
+        // 1. Validar la entrada
+        $request->validate([
+            // Valida que el ID de inspección sea requerido y exista
+            'id_insp' => [
+                'required',
+                'exists:inspecciones,id_insp',
+            ],
+        ]);
+
+        try {
+            // 2. Buscar la inspección
+            $inspeccion = Inspeccion::find($request->id_insp);
+
+            // Verificación final de disponibilidad antes de guardar
+            if (!is_null($inspeccion->id_user)) {
+                 return back()->with('error', 'Error: La inspección ya no está disponible.');
+            }
+            
+            // 3. Asignar el ID del usuario al campo id_user de la inspección
+            $inspeccion->id_user = $personal->id_user;
+            
+            // Opcional: Actualizar el estado si es necesario
+            // $inspeccion->estado_insp = 'Asignada'; 
+            
+            $inspeccion->save();
+
+            // Mensaje de éxito
+            return back()->with('success', 'Inspección #'. $inspeccion->id_insp . ' asignada a ' . $personal->nombre . ' correctamente.');
+
+        } catch (\Exception $e) {
+            // Manejo de errores
+            return back()->with('error', 'Hubo un error al asignar la inspección: ' . $e->getMessage());
+        }
+    }
 }

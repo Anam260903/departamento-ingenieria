@@ -54,21 +54,20 @@ Route::put('/personal/{personal}', [PersonalController::class, 'update'])
     ->name('personal.update')
     ->middleware('auth');
 
-// Ruta para cambiar el estado (Activar/Inactivar) del personal
+// Ruta para cambiar el estado (Activo/Inactivo) del personal
 // Usamos PATCH para esta acción específica
 Route::patch('/personal/{personal}/toggle-status', [PersonalController::class, 'toggleStatus'])
     ->name('personal.toggleStatus')
     ->middleware('auth');
 
 // Ruta para mostrar la interfaz de asignación de inspecciones al personal
-Route::get('/personal/{personal}/asignar-inspecciones', [PersonalController::class, 'assignInspections'])
-    ->name('personal.assignInspections')
-    ->middleware('auth');
+// 1. Ruta GET para que JavaScript obtenga las inspecciones disponibles (vía AJAX).
+Route::get('personal/{personal}/get-inspecciones', [PersonalController::class, 'getAvailableInspections'])
+    ->name('personal.getAvailableInspections');
 
-// Opcional: Ruta para guardar la asignación de inspecciones
-Route::post('/personal/{personal}/asignar-inspecciones', [PersonalController::class, 'saveInspectionsAssignment'])
-    ->name('personal.saveInspectionsAssignment')
-    ->middleware('auth');
+// 2. Ruta POST para guardar la asignación de la inspección al usuario.
+Route::post('personal/{personal}/asignar-inspeccion', [PersonalController::class, 'assignInspection'])
+    ->name('personal.assignInspection');
 
 // Ruta para actualizar los datos del perfil (POST, protegida por middleware)
 Route::post('/perfil/actualizar', [PerfilController::class, 'update'])->name('perfil.update')->middleware('auth');

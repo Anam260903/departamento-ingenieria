@@ -106,8 +106,8 @@ class InspeccionesController extends Controller
                 'fecha_insp' => $request->fecha,
                 'estado_insp' => $request->estado,
                 'observacion' => $request->observacion,
-                'id_user' => $userId,
                 'id_viv' => $vivienda->id_viv, // FK a Vivienda
+
             ]);
 
             // 5. Redirigir al usuario
