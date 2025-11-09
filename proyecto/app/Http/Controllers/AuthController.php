@@ -23,14 +23,30 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-
-
+        // 1. Intentar autenticar al usuario por credenciales
         if (Auth::attempt(['correo' => $credentials['correo'], 'password' => $credentials['password']])) {
-            $request->session()->regenerate();
 
+            $user = Auth::user(); // Obtener el usuario autenticado
+
+            // 2. Verificar el estado_user ('0' = inactivo, '1' = activo)
+            if ($user->estado_user === '0') {
+                // Si está inactivo, cerrar la sesión y bloquear el acceso
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+
+                return back()->withErrors([
+                    // Mostrar mensaje de bloqueo
+                    'correo' => 'Tu cuenta está inactiva y pendiente de aprobación por el administrador. Espera a ser activado.',
+                ])->onlyInput('correo');
+            }
+
+            // Si está activo ('1'), continuar con el inicio de sesión normal
+            $request->session()->regenerate();
             return redirect()->route('dashboard');
         }
-        // Si las credenciales son incorrectas, redirige de nuevo con un mensaje de error
+
+        // Si las credenciales son incorrectas
         return back()->withErrors([
             'correo' => 'Las credenciales proporcionadas no coinciden con nuestros registros.',
         ])->onlyInput('correo');
@@ -55,7 +71,7 @@ class AuthController extends Controller
     // Procesa el registro de un nuevo usuario
     public function register(Request $request)
     {
-        // 1. Validar los datos del formulario
+        // 1. Validar los datos del formulario (sin cambios)
         $request->validate([
             'nombre' => ['required', 'string', 'max:30', 'regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/'],
             'apellido' => ['required', 'string', 'max:30', 'regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/'],
@@ -70,10 +86,14 @@ class AuthController extends Controller
             'apellido' => $request->apellido,
             'cedula_user' => $request->cedula_user,
             'correo' => $request->correo,
-            'password' => Hash::make($request->password), // Hashear la contraseña
+            'password' => Hash::make($request->password), 
+            // ASIGNACIÓN AUTOMÁTICA
+            'estado_user' => '0', // Inactivo por defecto
+            'id_rol' => 2,      // Rol 'Usuario' por defecto
         ]);
 
-        // 3. Redirigir al usuario
-        return redirect()->route('login')->with('success', '¡Registro exitoso! Ahora puedes iniciar sesión.');
+        // 3. Redirigir al usuario con mensaje
+        return redirect()->route('login')->with('success', '¡Registro exitoso! Tu cuenta ha sido creada y está pendiente de activación por el administrador.');
+    
     }
 }

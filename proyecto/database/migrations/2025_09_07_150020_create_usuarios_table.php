@@ -18,6 +18,10 @@ return new class extends Migration
             $table->string('apellido', 30);
             $table->string('correo', 40)->unique();
             $table->string('password'); // Contraseña hasheada, VARCHAR(255)
+            $table->string('profesion', 30)->nullable();
+            $table->string('estado_user', 1);
+            $table->unsignedBigInteger('id_rol');
+            $table->foreign('id_rol')->references('id_rol')->on('roles');
             $table->timestamps();
         });
     }

@@ -5,12 +5,13 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PerfilController;
+use App\Http\Controllers\PersonalController;
 use App\Http\Controllers\InspeccionesController;
 use App\Http\Controllers\InformesController;
 use App\Http\Controllers\CalculosController;
 
 // Ruta para mostrar el formulario de inicio de sesión
-Route::get('/login', [AuthController::class, 'showLoginForm'])->name ('login');
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 
 // Ruta para procesar la solicitud de inicio de sesión
 Route::post('/login', [AuthController::class, 'login']);
@@ -37,6 +38,37 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
 
 // Ruta para mostrar el perfil (GET, protegida por middleware)
 Route::get('/perfil', [PerfilController::class, 'index'])->name('perfil')->middleware('auth');
+
+// Ruta para mostrar la lista del personal
+Route::get('personal', [PersonalController::class, 'index'])
+    ->name('personal.index')
+    ->middleware('auth');
+
+// Ruta para mostrar el formulario de edición de personal
+Route::get('/personal/{personal}/editar', [PersonalController::class, 'edit'])
+    ->name('personal.edit')
+    ->middleware('auth');
+
+// Ruta para actualizar los datos del personal
+Route::put('/personal/{personal}', [PersonalController::class, 'update'])
+    ->name('personal.update')
+    ->middleware('auth');
+
+// Ruta para cambiar el estado (Activar/Inactivar) del personal
+// Usamos PATCH para esta acción específica
+Route::patch('/personal/{personal}/toggle-status', [PersonalController::class, 'toggleStatus'])
+    ->name('personal.toggleStatus')
+    ->middleware('auth');
+
+// Ruta para mostrar la interfaz de asignación de inspecciones al personal
+Route::get('/personal/{personal}/asignar-inspecciones', [PersonalController::class, 'assignInspections'])
+    ->name('personal.assignInspections')
+    ->middleware('auth');
+
+// Opcional: Ruta para guardar la asignación de inspecciones
+Route::post('/personal/{personal}/asignar-inspecciones', [PersonalController::class, 'saveInspectionsAssignment'])
+    ->name('personal.saveInspectionsAssignment')
+    ->middleware('auth');
 
 // Ruta para actualizar los datos del perfil (POST, protegida por middleware)
 Route::post('/perfil/actualizar', [PerfilController::class, 'update'])->name('perfil.update')->middleware('auth');
