@@ -34,7 +34,8 @@
             <div class="container-fluid py-4">
                 <h1 class="mb-4 h3">GESTIÓN DE INSPECCIONES</h1>
 
-                @if (session('warning'))<div class="alert alert-warning alert-dismissible fade show mt-3" role="alert">
+                @if (session('warning'))
+                    <div class="alert alert-warning alert-dismissible fade show mt-3" role="alert">
                         <strong>Advertencia:</strong> {{ session('warning') }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
@@ -66,11 +67,14 @@
                     </div>
 
 
-                    {{-- Botón "Nueva Inspección"--}}
+                    {{-- Botón "Nueva Inspección" --}}
                     <div class="col-auto">
-                        <a href="{{ route('inspecciones.create') }}" class="btn btn-primary text-nowrap">
-                            <i class="bi bi-plus-circle me-2"></i>Nueva inspección
-                        </a>
+                        {{-- Verifica si el usuario autenticado tiene id_rol igual a 1 (Administrador) --}}
+                        @if (auth()->check() && auth()->user()->id_rol === 1)
+                            <a href="{{ route('inspecciones.create') }}" class="btn btn-primary text-nowrap">
+                                <i class="bi bi-plus-circle me-2"></i>Nueva inspección
+                            </a>
+                        @endif
                     </div>
                 </div>
 
@@ -265,7 +269,8 @@
                                     {{-- Listar los 12 meses --}}
                                     @for ($m = 1; $m <= 12; $m++)
                                         <option value="{{ $m }}">
-                                            {{ ucfirst(\Carbon\Carbon::create()->month($m)->monthName) }}</option>
+                                            {{ ucfirst(\Carbon\Carbon::create()->month($m)->monthName) }}
+                                        </option>
                                     @endfor
                                 </select>
                             </div>

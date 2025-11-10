@@ -13,19 +13,47 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Routing\Controller as BaseController;
 
-class InformesController extends Controller
+class InformesController extends BaseController
 {
+    use AuthorizesRequests;
+
+    // AÑADA ESTE CONSTRUCTOR
+    public function __construct()
+    {
+        // Esto asegura que todos los métodos del controlador requieren autenticación
+        $this->middleware('auth');
+    }
+    
     /**
      * Mostrar el listado de informes técnicos.
      */
     public function index()
     {
-        // 1. Obtener los informes
-        $informes = Informe::with([
+        // 1. Autorización: Verifica si el usuario puede acceder a la lista.
+        // La Policy ('viewAny') garantiza que id_rol=1 (admin) pase o id_rol=2 (normal) pase.
+        $this->authorize('viewAny', Informe::class);
+
+        // 2. Obtener los informes
+        $query = Informe::with([
             'inspeccion.vivienda.propietario',
             'inspeccion.usuario'
-        ])
+        ]);
+
+        // NUEVO: FILTRADO DE INFORMES PARA USUARIOS NORMALES (id_rol === 2)
+        $user = Auth::user();
+        if ($user->id_rol === 2) {
+            // Si es usuario normal, filtra los informes por su id_user
+            $query->whereHas('inspeccion', function ($q) use ($user) {
+                // Se une a la relación 'inspeccion' y se filtra por el ID del usuario logueado
+                $q->where('id_user', $user->id_user);
+            });
+        }
+
+        $informes = $query
             ->orderBy('fecha_inf', 'desc')
             ->paginate(10); // Paginación
 
@@ -42,11 +70,17 @@ class InformesController extends Controller
         $inspeccionesConInforme = Informe::pluck('id_insp');
 
         // 2. Obtener las inspecciones que están 'Completadas' y no tienen un informe
-        $inspecciones = Inspeccion::where('estado_insp', 1)
+        $query = Inspeccion::where('estado_insp', 1)
             ->whereNotIn('id_insp', $inspeccionesConInforme)
-            ->with('vivienda.propietario')
-            ->get();
+            ->with('vivienda.propietario');
 
+        // NUEVO: FILTRAR INSPECCIONES PARA USUARIOS NORMALES
+        $user = Auth::user();
+        if ($user->id_rol === 2) {
+            $query->where('id_user', $user->id_user);
+        }
+
+        $inspecciones = $query->get();
         return $inspecciones;
     }
 
@@ -154,6 +188,10 @@ class InformesController extends Controller
         // 1. Buscar el informe existente y sus relaciones
         $informe = Informe::with('inspeccion.vivienda.propietario')->findOrFail($id_inf);
 
+        // AUTORIZACIÓN: Se usa la política 'update'.
+        $this->authorize('update', $informe); // Pasa el modelo para la verificación de pertenencia
+
+
         // 2. Cargamos el objeto de Inspección
         $inspeccion = $informe->inspeccion;
 
@@ -193,6 +231,8 @@ class InformesController extends Controller
 
                 // A. Buscar el informe existente y sus relaciones
                 $informe = Informe::with('inspeccion.vivienda.propietario')->findOrFail($id_inf);
+                // AUTORIZACIÓN: Se usa la política 'update'.
+                $this->authorize('update', $informe); // Pasa el modelo para la verificación de pertenencia
                 $vivienda = $informe->inspeccion->vivienda;
                 $propietario = $vivienda->propietario;
 
@@ -234,6 +274,9 @@ class InformesController extends Controller
         // 1. Buscar el informe existente y cargar las relaciones necesarias:
         $informe = Informe::with('inspeccion.vivienda')->findOrFail($id_inf);
 
+        // AUTORIZACIÓN: Se usa la política 'update'.
+        $this->authorize('update', $informe); // Pasa el modelo para la verificación de pertenencia
+
         // La vista accede a $informe->inspeccion->vivienda->caracteristicas
         return view('informes-tecnicos.edit-step2', compact('informe'));
     }
@@ -254,6 +297,8 @@ class InformesController extends Controller
         try {
             // 2. Buscar el informe existente y sus relaciones
             $informe = Informe::with('inspeccion.vivienda')->findOrFail($id_inf);
+            // AUTORIZACIÓN: Se usa la política 'update'.
+            $this->authorize('update', $informe); // Pasa el modelo para la verificación de pertenencia
             $vivienda = $informe->inspeccion->vivienda;
 
             DB::transaction(function () use ($informe, $vivienda, $validatedData) {
@@ -290,6 +335,9 @@ class InformesController extends Controller
         // 1. Buscar el informe existente
         $informe = Informe::findOrFail($id_inf);
 
+        // AUTORIZACIÓN: Se usa la política 'update'.
+        $this->authorize('update', $informe); // Pasa el modelo para la verificación de pertenencia
+
         // 2. Cargar la vista
         return view('informes-tecnicos.edit-step3', compact('informe'));
     }
@@ -325,6 +373,8 @@ class InformesController extends Controller
             DB::transaction(function () use ($id_inf, $validatedData, $fileName) {
 
                 $informe = Informe::with('inspeccion.vivienda')->findOrFail($id_inf);
+                // AUTORIZACIÓN: Se usa la política 'update'.
+                $this->authorize('update', $informe); // Pasa el modelo para la verificación de pertenencia
                 $vivienda = $informe->inspeccion->vivienda;
 
                 // A. Actualizar campos de la tabla informes
@@ -367,6 +417,9 @@ class InformesController extends Controller
         // Cargamos la relación 'calculos' para saber qué códigos están asociados.
         $informe = Informe::with('calculos')->findOrFail($id_inf);
 
+        // AUTORIZACIÓN: Se usa la política 'update'.
+        $this->authorize('update', $informe); // Pasa el modelo para la verificación de pertenencia
+
         // Obtener todos los cálculos disponibles para el selector
         $calculos = Calculos::select('id_calculo', 'codigo_calculo', 'contenido')->get();
 
@@ -388,6 +441,8 @@ class InformesController extends Controller
 
         try {
             $informe = Informe::findOrFail($request->id_inf);
+            // AUTORIZACIÓN: Se usa la política 'update'.
+            $this->authorize('update', $informe); // Pasa el modelo para la verificación de pertenencia
 
             // 1. Manejar la relación Muchos a Muchos: Sincronizar los IDs
             // Laravel usa 'calculos_informes' gracias a la definición en el modelo.
@@ -416,7 +471,9 @@ class InformesController extends Controller
     {
         // Cargamos la relación 'imagenes' (Asumiendo que así se llama la relación en el modelo Informe)
         $informe = Informe::with('imagenes')->findOrFail($id_inf);
-        
+        // AUTORIZACIÓN: Se usa la política 'update'.
+        $this->authorize('update', $informe); // Pasa el modelo para la verificación de pertenencia
+
         return view('informes-tecnicos.edit-step5', compact('informe'));
     }
 
@@ -427,24 +484,26 @@ class InformesController extends Controller
     public function updateStep5(Request $request)
     {
         $request->validate([
-            'id_inf' => 'required|exists:informes,id_inf', 
+            'id_inf' => 'required|exists:informes,id_inf',
             // Validación para múltiples archivos de imagen
             'photos' => 'nullable|array',
             'photos.*' => 'image|mimes:jpeg,png,jpg|max:5120', // Máx 5MB por archivo
         ]);
 
         $informe = Informe::findOrFail($request->id_inf);
-        
+        // AUTORIZACIÓN: Se usa la política 'update'.
+        $this->authorize('update', $informe); // Pasa el modelo para la verificación de pertenencia
+
         // Si hay archivos para subir
         if ($request->hasFile('photos')) {
-            
+
             $imagenesData = [];
-            
+
             foreach ($request->file('photos') as $photo) {
                 // 1. Guardar el archivo en el disco
                 // La ruta será algo como: 'public/informes/123/'
-                $ruta = $photo->store('informes/' . $informe->id_inf, 'public'); 
-                
+                $ruta = $photo->store('informes/' . $informe->id_inf, 'public');
+
                 // 2. Preparar los datos para insertar en la BD
                 $imagenesData[] = [
                     'id_inf' => $informe->id_inf,
@@ -453,16 +512,37 @@ class InformesController extends Controller
                     'updated_at' => now(),
                 ];
             }
-            
+
             // 3. Insertar todos los registros en la tabla evidencia_fotografica
             evidencia_fotografica::insert($imagenesData);
         }
-        
+
         // FIN DEL INFORME: Redirigir a la página del listado de informes con un mensaje
 
         return redirect()->route('informes.index')->with('success', 'Informe Técnico finalizado y guardado exitosamente.');
 
     }
+
+    /**
+     * Elimina el informe y sus relaciones.
+     * @param int $id_inf
+     */
+    public function destroy($id_inf)
+    {
+        // 1. Buscar el informe y cargar la relación 'inspeccion'
+        $informe = Informe::with('inspeccion')->findOrFail($id_inf);
+
+        // AUTORIZACIÓN: Se usa la política 'delete'.
+        // La Policy denegará el acceso a los usuarios con id_rol === 2.
+        $this->authorize('delete', $informe);
+        
+        // 2. Eliminar el informe
+        // ... Lógica para eliminar ...
+        
+        // 3. Redirigir
+        return redirect()->route('informes.index')->with('success', 'El Informe Técnico ha sido eliminado correctamente.');
+    }
+
 
     /**
      * Genera y descarga el PDF de un informe técnico específico.
@@ -475,12 +555,17 @@ class InformesController extends Controller
             'inspeccion.vivienda.propietario',
             'inspeccion.usuario',
             'imagenes', // Para la Memoria Fotográfica
+            'inspeccion',
         ])->findOrFail($id_inf);
+
+        // AUTORIZACIÓN: Usamos el método 'download' de la Policy.
+        $this->authorize('download', $informe);
+        
 
         // 2. Cargar la vista Blade que contiene la estructura del PDF
         $pdf = Pdf::loadView('informes-tecnicos.pdf.informe_tecnico', compact('informe'));
 
         // 3. Configurar y retornar el PDF para descarga
-        return $pdf->setPaper('a4', 'portrait')->stream('Informe-Tecnico-' . $informe->id . '.pdf');
-    }    
+        return $pdf->setPaper('a4', 'portrait')->stream('Informe-Tecnico-' . $informe->id_inf . '.pdf');
+    }
 }
