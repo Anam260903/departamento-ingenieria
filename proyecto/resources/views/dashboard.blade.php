@@ -64,7 +64,7 @@
                     <div class="col-12">
                         <div class="card shadow-sm p-4">
                             <h5 class="text-center mb-4">Informes realizados por mes</h5>
-                            <canvas id="informesChart">
+                            <canvas id="informesChart"
                                 data-chart-data="{{ json_encode($datosGrafico) }}"
                                 data-chart-labels="{{ json_encode($meses) }}">
                             </canvas>

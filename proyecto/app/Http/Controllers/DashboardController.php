@@ -5,35 +5,78 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Inspeccion;
 use App\Models\Informe;
+use App\Models\Dashboard;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
-class DashboardController extends Controller
+class DashboardController extends BaseController
 {
+
+    use AuthorizesRequests;
+    // Aseguramos que solo usuarios autenticados puedan acceder
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function index()
     {
-        // Contar el número de inspecciones pendientes y completadas
-        $inspeccionesPendientes = Inspeccion::where('estado_insp', '0')->count();
-        $inspeccionesCompletadas = Inspeccion::where('estado_insp', '1')->count();
 
-        // Contar el total de informes técnicos
-        $totalInformes = Informe::count();
+        // 2. Obtener el usuario autenticado
+        $user = Auth::user();
 
-        // Obtener el recuento de informes por mes
-        $informesPorMes = Informe::select(DB::raw('count(*) as total'), DB::raw('MONTH(created_at) as mes'))
+        // 3. Autorización: Usamos la política para verificar el acceso general
+        $this->authorize('viewDashboard', Dashboard::class);
+
+
+        // 4. Determinar si se debe filtrar por id_user
+        $isUserRole = ($user->id_rol === 2);
+        $userId = $user->id_user;
+
+
+        // 5. Conteo de inspecciones
+        $inspeccionQuery = Inspeccion::query();
+        if ($isUserRole) {
+            // id_rol=2 solo ve las inspecciones que él creó.
+            $inspeccionQuery->where('id_user', $userId);
+        }
+        
+        $inspeccionesPendientes = (clone $inspeccionQuery)->where('estado_insp', '0')->count();
+        $inspeccionesCompletadas = (clone $inspeccionQuery)->where('estado_insp', '1')->count();
+
+
+        // 6. Conteo de informes
+        $informeQuery = Informe::query();
+        if ($isUserRole) {
+            // id_rol=2 solo ve los informes que él creó
+            $informeQuery->whereHas('inspeccion', function ($q) use ($userId) {
+                $q->where('id_user', $userId);
+            });
+        }
+        $totalInformes = $informeQuery->count();
+
+
+        // 7. Recuento de informes por mes (GRÁFICO)
+        $informesPorMes = $informeQuery->select(
+            DB::raw('count(*) as total'), 
+            DB::raw('MONTH(created_at) as mes')
+        )
             ->groupBy('mes')
             ->orderBy('mes', 'asc')
             ->get();
 
-        // Inicializar un array para los datos del gráfico
-        $meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-        $datosGrafico = array_fill(0, 12, 0); // Crea un array de 12 ceros
 
-        // Rellenar el array de datos con los valores de la base de datos
+        // 8. Lógica del gráfico
+        $meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+        $datosGrafico = array_fill(0, 12, 0);
+
         foreach ($informesPorMes as $informe) {
             $datosGrafico[$informe->mes - 1] = $informe->total;
         }
 
-        // Pasar todos los datos a la vista
+        // 9. Pasar todos los datos a la vista
         return view('dashboard', compact('inspeccionesPendientes', 'inspeccionesCompletadas', 'totalInformes', 'datosGrafico', 'meses'));
     }
 }

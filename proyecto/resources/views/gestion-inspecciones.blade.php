@@ -177,7 +177,7 @@
 
                                                 @if($inspeccion->estado_insp == 0)
 
-                                                    {{-- Formulario para mrcar como completada --}}
+                                                    {{-- Formulario para marcar como completada --}}
                                                     <form action="{{ route('inspecciones.complete', $inspeccion->id_insp) }}"
                                                         method="POST" class="d-inline">
                                                         @csrf
@@ -192,6 +192,7 @@
                                                             <i class="bi bi-check-circle"></i>
                                                         </button>
                                                     </form>
+                                                @endif
 
                                                 {{-- 5. Botón de eliminar --}}
                                                 <form action="{{ route('inspecciones.destroy', $inspeccion->id_insp) }}"
