@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 scales: {
                     y: {
                         beginAtZero: true,
-                        max: 20, // o 20, como mencionaste, si esperas valores más altos
+                        max: 20,
                     },
                 },
             },
