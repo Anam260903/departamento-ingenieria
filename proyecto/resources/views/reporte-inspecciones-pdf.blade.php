@@ -8,15 +8,15 @@
 
 <body>
 
-    {{-- ENCABEZADO --}}
+    {{-- Encabezado --}}
     <div class="header-container">
 
-        {{-- Logo Izquierdo --}}
+        {{-- Logo izquierdo --}}
         <div class="logo-col">
             <img src="{{ asset('images/logo2.jpg') }}" class="logo-img">
         </div>
 
-        {{-- Texto Centrado --}}
+        {{-- Texto centrado --}}
         <div class="text-col">
             <p>REPÚBLICA BOLIVARIANA DE VENEZUELA</p>
             <p>GOBIERNO BOLIVARIANO DEL ESTADO SUCRE</p>
@@ -26,16 +26,16 @@
             <p>CARÚPANO - ESTADO SUCRE</p>
         </div>
 
-        {{-- Logo Derecho --}}
+        {{-- Logo derecho --}}
         <div class="logo-col" style="text-align: right;">
             <img src="{{ asset('images/logo3.jpg') }}" class="logo-img">
         </div>
     </div>
 
-    {{-- LÍNEA ROJA DE SEPARACIÓN --}}
+    {{-- Línea roja de separación --}}
     <div class="separator-line"></div>
 
-    {{-- TÍTULOS DEL REPORTE --}}
+    {{-- Títulos del reporte --}}
     <div class="report-title">REPORTE DE INSPECCIONES</div>
     <div class="report-subtitle">Departamento de Ingeniería -
         @isset($fechaReporte)
@@ -45,7 +45,7 @@
         @endisset
     </div>
     
-    {{-- TABLA DE DATOS --}}
+    {{-- Tabla de datos --}}
     <table class="table">
         <thead>
             <tr>
@@ -86,7 +86,7 @@
         </tbody>
     </table>
 
-    {{-- PIE DE PÁGINA Y NÚMERO DE PÁGINA --}}
+    {{-- Pie de página y número de páginas --}}
     <div class="footer">
         CORVISUCRE
         | Página

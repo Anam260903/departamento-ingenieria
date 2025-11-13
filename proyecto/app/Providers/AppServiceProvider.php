@@ -12,12 +12,10 @@ use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvid
 class AppServiceProvider extends ServiceProvider
 {
     /**
-     * The model to policy mappings for the application.
-     *
-     * @var array<class-string, class-string>
+     * Correspondencia entre el modelo y las políticas de la aplicación.
      */
     protected $policies = [
-            // Mapeo de la Política al Modelo de Inspección
+        // Mapeo de la política al modelo de inspección
         Inspeccion::class => InspeccionPolicy::class,
         Informe::class => InformePolicy::class,
     ];

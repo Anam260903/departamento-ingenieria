@@ -22,8 +22,11 @@
             <div class="container-fluid">
                 <h1 class="mt-4 h3">INICIO</h1>
 
+                {{-- Panel de inicio--}}
                 <div class="row mt-4 gy-4 gx-md-4">
                     <div class="col-12 col-md-6 col-lg-4">
+
+                        {{-- Card inspecciones pendientes --}}
                         <div class="card text-center shadow-sm h-100">
                             <div class="card-body d-flex flex-column justify-content-center">
                                 <i class="bi bi-exclamation-circle-fill display-4 text-warning"></i>
@@ -32,6 +35,8 @@
                             </div>
                         </div>
                     </div>
+
+                    {{-- Card inspeccioes completadas --}}
                     <div class="col-12 col-md-6 col-lg-4">
                         <div class="card text-center shadow-sm h-100">
                             <div class="card-body d-flex flex-column justify-content-center">
@@ -41,6 +46,8 @@
                             </div>
                         </div>
                     </div>
+
+                    {{-- Card total de informes --}}
                     <div class="col-12 col-md-6 col-lg-4">
                         <div class="card text-center shadow-sm h-100">
                             <div class="card-body d-flex flex-column justify-content-center">
@@ -52,6 +59,7 @@
                     </div>
                 </div>
 
+                {{-- Gráfico informes por mes --}}
                 <div class="row mt-4">
                     <div class="col-12">
                         <div class="card shadow-sm p-4">

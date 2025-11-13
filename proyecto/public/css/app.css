@@ -1,3 +1,7 @@
+/* Import Google Fonts - Open Sans */
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap");
+
+/* Estilos globales */
 html,
 body {
     height: 100%;

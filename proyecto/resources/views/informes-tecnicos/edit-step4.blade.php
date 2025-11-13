@@ -19,7 +19,7 @@
             @include('components._navbar')
             <div class="container-fluid py-4">
 
-                {{-- Bloque para mostrar mensajes de Sesión --}}
+                {{-- Bloque para mostrar mensajes de sesión --}}
                 @if (session('success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         {{ session('success') }}
@@ -35,7 +35,7 @@
 
                 <h1 class="mb-4 h3">NUEVO INFORME TÉCNICO</h1>
 
-                {{-- Barra de Progreso: El paso 4 debe estar 'active' --}}
+                {{-- Barra de progreso --}}
                 <div class="step-container">
                     <div class="step completed">1. Datos Generales</div>
                     <div class="step completed">2. Diagnóstico y observaciones</div>
@@ -57,8 +57,8 @@
                             </label>
 
                             <?php
-// Obtenemos los IDs previamente seleccionados de la relación
-$selectedIds = old('calculos_codes', $informe->calculos->pluck('id_calculo')->toArray() ?? []);
+                                // Obtenemos los IDs previamente seleccionados de la relación
+                                $selectedIds = old('calculos_codes', $informe->calculos->pluck('id_calculo')->toArray() ?? []);
                             ?>
 
                             <select class="form-select" id="calculos_codes" name="calculos_codes[]" multiple size="5">
@@ -91,9 +91,7 @@ $selectedIds = old('calculos_codes', $informe->calculos->pluck('id_calculo')->to
                         </div>
 
 
-
-                        {{-- Botonos deNavegación --}}
-
+                        {{-- Botonos de navegación --}}
                         <div class="d-flex justify-content-between mt-4">
                             <a href="{{ route('informes.edit.step3', $informe->id_inf) }}" class="btn btn-secondary">
                                 Volver
@@ -104,9 +102,6 @@ $selectedIds = old('calculos_codes', $informe->calculos->pluck('id_calculo')->to
                         </div>
 
                     </form>
-
-
-
                 </div>
             </div>
         </div>
@@ -152,7 +147,7 @@ $selectedIds = old('calculos_codes', $informe->calculos->pluck('id_calculo')->to
                             materialsTextarea.value = 'ERROR: No se pudo cargar la información de los cálculos.';
                         });
                 } else {
-                    materialsTextarea.value = ''; // Limpiar si no se selecciona nada
+                    materialsTextarea.value = '';
                 }
             });
         });

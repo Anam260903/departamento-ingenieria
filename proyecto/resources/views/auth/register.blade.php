@@ -16,6 +16,7 @@
 </head>
 
 <body>
+    {{-- Vista de registro de usuario --}}
     <div class="container-fluid register-container">
         <div class="row register-row">
 
@@ -44,11 +45,13 @@
                     <form method="POST" action="{{ route('register') }}">
                         @csrf
 
+                        {{-- Correo --}}
                         <div class="mb-3">
                             <input type="email" class="form-control" name="correo" maxlength="40"
                                 placeholder="Correo electrónico" value="{{ old('correo') }}" required>
                         </div>
-
+                        
+                        {{-- Nombre y Apellido --}}
                         <div class="row mb-3">
                             <div class="col-6">
                                 <input type="text" class="form-control" name="nombre" maxlength="30"
@@ -61,7 +64,7 @@
                                     title="Solo se permiten letras y espacios">
                             </div>
                         </div>
-
+                        {{-- Cédula y Contraseña --}}
                         <div class="row mb-3">
                             <div class="col-6">
                                 <input type="text" class="form-control" name="cedula_user"
@@ -78,7 +81,7 @@
                                 </div>
                             </div>
                         </div>
-
+                        {{-- Confirmación de contraseña --}}
                         <div class="mb-3">
                             <div class="input-group">
                                 <input type="password" class="form-control" id="password-confirm-field"

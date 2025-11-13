@@ -67,7 +67,7 @@
                                             <p class="text-xs font-weight-bold mb-0">{{ $user->cedula_user ?? 'N/A' }}</p>
                                         </td>
 
-                                        {{-- Nombre y Apellido --}}
+                                        {{-- Nombre y apellido --}}
                                         <td class="align-middle text-sm">
                                             <p class="text-xs font-weight-bold mb-0">{{ $user->nombre }}
                                                 {{ $user->apellido }}
@@ -88,12 +88,12 @@
                                         {{-- Estado (Activo/Inactivo) --}}
                                         <td class="align-middle text-center text-sm">
                                             @php
-    $estado_numerico = $user->estado_user;
+                                                $estado_numerico = $user->estado_user;
 
-    $estado = ($estado_numerico == 1) ? 'ACIVO' : 'INACTIVO';
+                                                $estado = ($estado_numerico == 1) ? 'ACIVO' : 'INACTIVO';
 
-    $esActivo = ($estado_numerico === '1');
-    $badgeClass = $esActivo ? 'bg-success' : 'bg-secondary';
+                                                $esActivo = ($estado_numerico === '1');
+                                                $badgeClass = $esActivo ? 'bg-success' : 'bg-secondary';
                                             @endphp
                                             <span class="badge {{ $badgeClass }} text-white text-uppercase">
                                                 {{ $estado }}
@@ -104,29 +104,28 @@
                                         <td class="align-middle">
                                             <div class="btn-group" role="group">
 
-                                                {{-- 1. Botón de Estado (Activar/Inactivar) --}}
-                                                {{-- Usamos un formulario con PATCH para la acción de cambio de estado --}}
+                                                {{-- 1. Botón de estado (Activar/Inactivar) --}}
                                                 <form action="{{ route('personal.toggleStatus', $user->id_user) }}"
                                                     method="POST" style="display: inline;">
                                                     @csrf
                                                     @method('PATCH')
                                                     <button type="submit"
                                                         class="btn btn-sm btn-icon-only 
-                                                                                                                                                                {{ $esActivo ? 'btn-warning' : 'btn-success' }}"
+                                                                                                                                                                    {{ $esActivo ? 'btn-warning' : 'btn-success' }}"
                                                         data-bs-toggle="tooltip" data-bs-placement="top"
                                                         title="{{ $esActivo ? 'Desactivar Personal' : 'Activar Personal' }}">
                                                         <i class="bi {{ $esActivo ? 'bi-lock' : 'bi-unlock' }}"></i>
                                                     </button>
                                                 </form>
 
-                                                {{-- 2. Botón de Editar Información --}}
+                                                {{-- 2. Botón de editar información --}}
                                                 <a href="{{ route('personal.edit', $user->id_user) }}"
                                                     class="btn btn-sm btn-info btn-icon-only mx-1" data-bs-toggle="tooltip"
                                                     data-bs-placement="top" title="Editar Información">
                                                     <i class="bi bi-pencil-square"></i>
                                                 </a>
 
-                                                {{-- 3. Botón de Asignar Inspecciones --}}
+                                                {{-- 3. Botón de asignar inspecciones --}}
                                                 <button type="button"
                                                     class="btn btn-sm btn-primary btn-icon-only assign-inspection-btn"
                                                     data-user-id="{{ $user->id_user }}"
@@ -147,10 +146,7 @@
         </div>
     </div>
 
-
-    {{-- ================================================= --}}
-    {{-- DEFINICIÓN DE LA MODAL PARA ASIGNACIÓN --}}
-    {{-- ================================================= --}}
+    {{-- Modal para asignación de inspecciones --}}
     <div class="modal fade" id="assignInspectionModal" tabindex="-1" aria-labelledby="assignInspectionModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -162,7 +158,6 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                         aria-label="Close"></button>
                 </div>
-                {{-- El 'action' del formulario se llena dinámicamente con JavaScript --}}
                 <form id="assignInspectionForm" method="POST">
                     @csrf
                     <div class="modal-body">
@@ -194,8 +189,6 @@
     <script src=" https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ asset('js/dashboard.js') }}"></script>
 
-    {{-- Agrega esto en tu layout si no lo tienes para que los tooltips
-    de Bootstrap funcionen --}}
     @push('scripts')
         <script>
             document.addEventListener('DOMContentLoaded', function () {
@@ -216,7 +209,7 @@
             const noInspectionsAlert = document.getElementById('no-inspections-alert');
             const assignButton = document.getElementById('assign-btn');
 
-            // Escucha el evento 'show.bs.modal' de Bootstrap
+            // Escucha el evento de Bootstrap
             modal.addEventListener('show.bs.modal', function (event) {
                 const button = event.relatedTarget;
                 const userId = button.getAttribute('data-user-id');
@@ -236,13 +229,13 @@
 
                 form.setAttribute('action', postUrl);
 
-                // 3. Petición AJAX (fetch) para obtener las inspecciones disponibles
+                // 3. Petición AJAX para obtener las inspecciones disponibles
                 fetch(fetchUrl)
                     .then(response => {
                         if (!response.ok) {
-                            // Si el servidor devuelve un error (ej. 500)
+                            // Si el servidor devuelve un error
                             return response.json().then(err => {
-                                // Intenta obtener el mensaje de error del JSON (si existe)
+                                // Intenta obtener el mensaje de error del JSON
                                 throw new Error(err.message || 'Error desconocido del servidor (Código: ' + response.status + ')');
                             });
                         }
@@ -260,7 +253,6 @@
                             // Rellenar el select
                             select.innerHTML += '<option value="">-- Seleccione una inspección --</option>';
                             data.inspecciones.forEach(inspeccion => {
-                                // *** CLAVE: Usamos el campo propietario_display ***
                                 const optionText = inspeccion.propietario_display;
                                 select.innerHTML += `<option value="${inspeccion.id_insp}">${optionText}</option>`;
                             });
@@ -276,9 +268,9 @@
                         }
                     })
                     .catch(error => {
-                        console.error('Error al cargar inspecciones (Detalle en Consola):', error);
+                        console.error('Error al cargar inspecciones', error);
                         // Mostrar mensaje de error claro al usuario
-                        select.innerHTML = '<option value="">ERROR: No se pudo cargar la lista. Revise la consola del navegador.</option>';
+                        select.innerHTML = '<option value="">ERROR: No se pudo cargar la lista.</option>';
                         assignButton.setAttribute('disabled', 'true');
                     });
             });

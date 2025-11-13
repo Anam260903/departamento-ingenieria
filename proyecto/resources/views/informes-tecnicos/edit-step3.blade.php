@@ -44,7 +44,7 @@
 
                 <h1 class="mb-4 h3">NUEVO INFORME TÉCNICO</h1>
 
-                {{-- Barra de Progreso: El paso 3 debe estar 'active' --}}
+                {{-- Barra de Progreso --}}
                 <div class="step-container">
                     <div class="step completed">1. Datos Generales</div>
                     <div class="step completed">2. Diagnóstico y observaciones</div>
@@ -76,7 +76,7 @@
                                 @enderror
                             </div>
 
-                            {{-- Columna para Mapa y Carga de Archivo --}}
+                            {{-- Columna para mapa y carga de archivo --}}
                             <div class="col-md-6">
                                 <label class="form-label h5">Ubicación de la Vivienda</label>
 
@@ -86,7 +86,7 @@
                                 <p class="mt-2 mb-1 text-muted small">Arrastre el marcador, ingrese las coordenadas
                                     manualmente o use el buscador.</p>
 
-                                {{-- 2. Campos Visibles para Entrada Manual (y Display) --}}
+                                {{-- 2. Campos visibles para entrada manual) --}}
                                 <div class="row g-2 mb-3">
                                     <div class="col-md-6">
                                         <label for="latitud_manual" class="form-label small mb-1">Latitud</label>
@@ -105,9 +105,9 @@
                                 {{-- 3. Campo para subir la imagen del mapa --}}
                                 <label for="map_screenshot" class="form-label h5">Captura de Pantalla del Mapa</label>
                                 <input type="file" class="form-control @error('map_screenshot') is-invalid @enderror"
-                                    id="map_screenshot" name="map_screenshot" accept="image/*" {{-- Hacemos la subida de
-                                    archivo opcional si ya existe uno guardado --}} @if (!($informe->inspeccion->vivienda->map_image_file ?? false)) required @endif>
-                                <p class="text-muted small">Por favor, suba una captura de pantalla del mapa para el
+                                    id="map_screenshot" name="map_screenshot" accept="image">
+                                    @if (!($informe->inspeccion->vivienda->map_image_file ?? false)) required @endif>
+                                <p class= "text-muted small">Por favor, suba una captura de pantalla del mapa para el
                                     informe PDF. (Archivo actual:
                                     {{ $informe->inspeccion->vivienda->map_image_file ?? 'Ninguno' }})
                                 </p>
@@ -116,7 +116,7 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
 
-                                {{-- 4. Campos OCULTOS para enviar al controlador (siempre deben estar) --}}
+                                {{-- 4. Campos ocultos para enviar al controlador --}}
                                 <input type="hidden" name="latitud" id="latitud_input"
                                     value="{{ old('latitud', $informe->inspeccion->vivienda->latitud) }}">
                                 <input type="hidden" name="longitud" id="longitud_input"
@@ -125,7 +125,7 @@
                                     value="{{ old('map_image_file', $informe->inspeccion->vivienda->map_image_file) }}">
                             </div>
 
-                            {{-- Botones de Navegación --}}
+                            {{-- Botones de navegación --}}
                             <div class="d-flex justify-content-between mt-4">
                                 <a href="{{ route('informes.edit.step2', $informe->id_inf) }}"
                                     class="btn btn-secondary">

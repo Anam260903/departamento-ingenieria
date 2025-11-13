@@ -20,11 +20,9 @@ use Illuminate\Routing\Controller as BaseController;
 class InformesController extends BaseController
 {
     use AuthorizesRequests;
-
-    // AÑADA ESTE CONSTRUCTOR
     public function __construct()
     {
-        // Esto asegura que todos los métodos del controlador requieren autenticación
+        // Esto asegura que todos los métodos del controlador requieran autenticación
         $this->middleware('auth');
     }
     
@@ -34,7 +32,6 @@ class InformesController extends BaseController
     public function index()
     {
         // 1. Autorización: Verifica si el usuario puede acceder a la lista.
-        // La Policy ('viewAny') garantiza que id_rol=1 (admin) pase o id_rol=2 (normal) pase.
         $this->authorize('viewAny', Informe::class);
 
         // 2. Obtener los informes
@@ -43,7 +40,7 @@ class InformesController extends BaseController
             'inspeccion.usuario'
         ]);
 
-        // NUEVO: FILTRADO DE INFORMES PARA USUARIOS NORMALES (id_rol === 2)
+        // 3. Filtrado de informes para usuarios normales (id_rol === 2)
         $user = Auth::user();
         if ($user->id_rol === 2) {
             // Si es usuario normal, filtra los informes por su id_user
@@ -56,7 +53,8 @@ class InformesController extends BaseController
         $informes = $query
             ->orderBy('fecha_inf', 'desc')
             ->paginate(10); // Paginación
-
+        
+        // 4. Pasar los datos a la vista
         return view('informes-tecnicos.index', compact('informes'));
     }
 
@@ -74,7 +72,7 @@ class InformesController extends BaseController
             ->whereNotIn('id_insp', $inspeccionesConInforme)
             ->with('vivienda.propietario');
 
-        // NUEVO: FILTRAR INSPECCIONES PARA USUARIOS NORMALES
+        // 3. Filtrar inspecciones para usuarios normales
         $user = Auth::user();
         if ($user->id_rol === 2) {
             $query->where('id_user', $user->id_user);
@@ -85,8 +83,7 @@ class InformesController extends BaseController
     }
 
     /**
-     * Muestra el formulario de creación del Informe Técnico.
-     * @param int $id_insp
+     * Muestra el formulario de creación del informe técnico.
      */
     public function create($id_insp)
     {
@@ -106,6 +103,9 @@ class InformesController extends BaseController
         return view('informes-tecnicos.create', compact('inspeccion', 'fecha_inf', 'pasoActual'));
     }
 
+    /**
+     * Almacena los datos del Paso 1 (Datos Generales) de un nuevo informe técnico.
+     */
     public function storeStep1(Request $request)
     {
         // 1. Validación de los datos del Paso 1
@@ -118,32 +118,34 @@ class InformesController extends BaseController
                 // Asegurar que NO haya ya un informe asociado (Creación inicial)
                 Rule::unique('informes', 'id_insp')
             ],
-            // Datos del Informe (fecha_inf y comunidad)
+            // Datos del Informe
             'fecha_inf' => 'required|date',
             'comunidad' => 'required|string|max:50',
 
-            // Datos del Propietario (Responsable) - Se actualizarán si cambian
+            // Datos del Propietario - Se actualizarán si cambian
             'propietario_cedula' => 'required|string|max:8|regex:/^[0-9]+$/',
             'propietario_nombre' => 'required|string|max:30|regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/',
             'propietario_apellido' => 'required|string|max:30|regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/',
             'propietario_telefono' => 'required|string|max:11|regex:/^[0-9]+$/',
 
-            // Datos de la Vivienda (Dirección) - Se actualizarán si cambian
+            // Datos de la Vivienda - Se actualizarán si cambian
             'direccion' => 'required|string|max:100',
         ]);
 
+        // 2. Inicializar la variable informe
         $informe = null;
 
+        // 3. Usar una transacción para crear el informe y actualizar las tablas relacionadas
         try {
             // Usamos una transacción para asegurar que todas las operaciones se completen
             $informe = DB::transaction(function () use ($validatedData) {
 
-                // 2. Obtener la Inspección y sus relaciones para obtener IDs
+                // 2. Obtener la inspección y sus relaciones para obtener IDs
                 $inspeccion = Inspeccion::with('vivienda.propietario')->findOrFail($validatedData['id_insp']);
                 $vivienda = $inspeccion->vivienda;
                 $propietario = $vivienda->propietario;
 
-                // 3. Actualizar datos del Propietario (Responsable)
+                // 3. Actualizar datos del Propietario
                 $propietario->update([
                     'cedula_propie' => $validatedData['propietario_cedula'],
                     'nombre_propie' => $validatedData['propietario_nombre'],
@@ -151,7 +153,7 @@ class InformesController extends BaseController
                     'telefono' => $validatedData['propietario_telefono'],
                 ]);
 
-                // 4. Actualizar datos de la Vivienda (Dirección)
+                // 4. Actualizar datos de la Vivienda
                 $vivienda->update([
                     'direccion' => $validatedData['direccion'],
                 ]);
@@ -169,11 +171,12 @@ class InformesController extends BaseController
             if ($informe) {
 
                 $redirectUrl = route('informes.edit.step2', ['id_inf' => $informe->id_inf]);
-
+            
                 return redirect($redirectUrl)
                     ->with('success', 'Paso 1: Datos generales guardados. Continúe con el paso 2.');
             }
 
+        // En caso de error en la transacción
         } catch (\Exception $e) {
 
             return back()->withInput()->with('error', 'Error de Transacción. Detalles: ' . $e->getMessage());
@@ -188,14 +191,14 @@ class InformesController extends BaseController
         // 1. Buscar el informe existente y sus relaciones
         $informe = Informe::with('inspeccion.vivienda.propietario')->findOrFail($id_inf);
 
-        // AUTORIZACIÓN: Se usa la política 'update'.
+        // Autorización: Verifica si el usuario puede editar los datos
         $this->authorize('update', $informe); // Pasa el modelo para la verificación de pertenencia
 
 
-        // 2. Cargamos el objeto de Inspección
+        // 2. Cargamos el objeto de inspección
         $inspeccion = $informe->inspeccion;
 
-        // 3. Reutilizamos la vista create.blade.php, pasándole el informe existente
+        // 3. Pasamos los datos a la vista
         return view('informes-tecnicos.create', compact('informe', 'inspeccion'));
     }
 
@@ -215,13 +218,13 @@ class InformesController extends BaseController
             'fecha_inf' => 'required|date',
             'comunidad' => 'required|string|max:100',
 
-            // Datos del Propietario (Responsable) - Se actualizarán
+            // Datos del Propietario - Se actualizarán
             'propietario_cedula' => 'required|string|max:8|regex:/^[0-9]+$/',
             'propietario_nombre' => 'required|string|max:30|regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/',
             'propietario_apellido' => 'required|string|max:30|regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/',
             'propietario_telefono' => 'required|string|max:11|regex:/^[0-9]+$/',
 
-            // Datos de la Vivienda (Dirección) - Se actualizarán
+            // Datos de la Vivienda - Se actualizarán
             'direccion' => 'required|string|max:100',
         ]);
 
@@ -231,7 +234,7 @@ class InformesController extends BaseController
 
                 // A. Buscar el informe existente y sus relaciones
                 $informe = Informe::with('inspeccion.vivienda.propietario')->findOrFail($id_inf);
-                // AUTORIZACIÓN: Se usa la política 'update'.
+                // Autorización: Verifica si el usuario puede actualizar los datos
                 $this->authorize('update', $informe); // Pasa el modelo para la verificación de pertenencia
                 $vivienda = $informe->inspeccion->vivienda;
                 $propietario = $vivienda->propietario;
@@ -260,21 +263,22 @@ class InformesController extends BaseController
             // 3. Redirigir al siguiente paso (Paso 2)
             return redirect()->route('informes.edit.step2', $id_inf)
                 ->with('success', 'Paso 1: Datos generales actualizados. Continúe con el paso 2.');
-
+        
+        // En caso de error
         } catch (\Exception $e) {
             return back()->withInput()->with('error', 'Error al actualizar los datos generales: ' . $e->getMessage());
         }
     }
 
     /**
-     * Muestra el formulario para el Paso 2 de informe técnico (Diagnóstico y observaciones)
+     * Muestra el formulario para el Paso 2 del informe técnico (Diagnóstico y observaciones)
      */
     public function editStep2($id_inf)
     {
         // 1. Buscar el informe existente y cargar las relaciones necesarias:
         $informe = Informe::with('inspeccion.vivienda')->findOrFail($id_inf);
 
-        // AUTORIZACIÓN: Se usa la política 'update'.
+        // Autorización: Verifica si el usuario puede acceder
         $this->authorize('update', $informe); // Pasa el modelo para la verificación de pertenencia
 
         // La vista accede a $informe->inspeccion->vivienda->caracteristicas
@@ -282,11 +286,11 @@ class InformesController extends BaseController
     }
 
     /**
-     * Guardar y actualizar los datos del Paso 2 (columna 'antecedentes').
+     * Guardar y actualizar los datos del Paso 2
      */
     public function updateStep2(Request $request, $id_inf)
     {
-        // 1. Validación de los cuatro campos
+        // 1. Validación de los campos
         $validatedData = $request->validate([
             'antecedentes' => 'required|string',
             'planteamiento' => 'required|string',
@@ -297,7 +301,7 @@ class InformesController extends BaseController
         try {
             // 2. Buscar el informe existente y sus relaciones
             $informe = Informe::with('inspeccion.vivienda')->findOrFail($id_inf);
-            // AUTORIZACIÓN: Se usa la política 'update'.
+            // Autorización: Verifica si el usuario puede actulizar los datos
             $this->authorize('update', $informe); // Pasa el modelo para la verificación de pertenencia
             $vivienda = $informe->inspeccion->vivienda;
 
@@ -321,21 +325,21 @@ class InformesController extends BaseController
             return redirect()->route('informes.edit.step3', ['id_inf' => $informe->id_inf])
                 ->with('success', 'Paso 2: Diagnóstico y observaciones guardados correctamente. Continúe con el paso 3.');
 
+        // En caso de error
         } catch (\Exception $e) {
-            // En caso de error (ej. Mass Assignment, fallo de DB, etc.)
             return back()->withInput()->with('error', 'Error al guardar los datos del Paso 2: ' . $e->getMessage());
         }
     }
 
     /**
-     * Muestra el formulario para el Paso 3 (Recomendaciones y mapa)
+     * Muestra el formulario para el Paso 3 del informe técnico (Recomendaciones y mapa)
      */
     public function editStep3($id_inf)
     {
         // 1. Buscar el informe existente
         $informe = Informe::findOrFail($id_inf);
 
-        // AUTORIZACIÓN: Se usa la política 'update'.
+        // Autorización: Verifica si el usuario puede acceder a la vista
         $this->authorize('update', $informe); // Pasa el modelo para la verificación de pertenencia
 
         // 2. Cargar la vista
@@ -359,21 +363,22 @@ class InformesController extends BaseController
         try {
             $fileName = null;
 
-            // 2. Manejo de la subida del archivo (Screenshot del Mapa)
+            // 2. Manejo de la subida del archivo (Imagen del mapa)
             if ($request->hasFile('map_screenshot')) {
                 $file = $request->file('map_screenshot');
-                // Generar un nombre único: id_informe + timestamp + extensión
-                $fileName = $id_inf . '-' . time() . '.' . $file->getClientOriginalExtension();
-                // Guardar el archivo en el storage (ej. storage/app/public/map_screenshots)
-                $path = $file->storeAs('public/map_screenshots', $fileName);
-                $fileName = basename($path); // Solo guardamos el nombre del archivo
+                // Generar un nombre único y guardar en el mismo disco que las fotos
+                $fileBaseName = 'map_' . $id_inf . '-' . time() . '.' . $file->getClientOriginalExtension();
+                // Guardar la imagen y obtener la ruta relativa en el disco 'public'
+                $ruta = $file->storeAs('informes/' . $id_inf, $fileBaseName, 'public');
+                // Guardamos la ruta para persistirla en la BD
+                $fileName = $ruta;
             }
 
             // 3. Transacción de guardado
             DB::transaction(function () use ($id_inf, $validatedData, $fileName) {
 
                 $informe = Informe::with('inspeccion.vivienda')->findOrFail($id_inf);
-                // AUTORIZACIÓN: Se usa la política 'update'.
+                // Autorización: Verifica si el usuario puede actualizar los datos
                 $this->authorize('update', $informe); // Pasa el modelo para la verificación de pertenencia
                 $vivienda = $informe->inspeccion->vivienda;
 
@@ -390,7 +395,6 @@ class InformesController extends BaseController
 
                 // Si se subió un nuevo archivo, actualizamos el campo map_image_file
                 if ($fileName) {
-                    // Opcional: Eliminar el archivo viejo si existe uno
                     if ($vivienda->map_image_file) {
                         Storage::delete('public/map_screenshots/' . $vivienda->map_image_file);
                     }
@@ -404,31 +408,32 @@ class InformesController extends BaseController
             return redirect()->route('informes.edit.step4', $id_inf)
                 ->with('success', 'Paso 3: Recomendaciones y ubicación guardados. Continúe con el paso 4.');
 
+        // En caso de error
         } catch (\Exception $e) {
             return back()->withInput()->with('error', 'Error al guardar el Paso 3: ' . $e->getMessage());
         }
     }
 
     /**
-     * Muestra el formulario de edición para el Paso 4 (Materiales)
+     * Muestra el formulario de edición para el Paso 4 del informe técnico (Materiales)
      */
     public function editStep4($id_inf)
     {
         // Cargamos la relación 'calculos' para saber qué códigos están asociados.
         $informe = Informe::with('calculos')->findOrFail($id_inf);
 
-        // AUTORIZACIÓN: Se usa la política 'update'.
+        // Autorización: Verifica si el usuario puede acceder a la vista
         $this->authorize('update', $informe); // Pasa el modelo para la verificación de pertenencia
 
         // Obtener todos los cálculos disponibles para el selector
         $calculos = Calculos::select('id_calculo', 'codigo_calculo', 'contenido')->get();
 
-        // La vista se llama edit-step4
+        // Pasamos los datos a la vista
         return view('informes-tecnicos.edit-step4', compact('informe', 'calculos'));
     }
 
     /**
-     * Almacena los datos del paso 4 (Relación Muchos a Muchos y Texto editable).
+     * Almacena los datos del paso 4
      */
     public function updateStep4(Request $request)
     {
@@ -441,11 +446,10 @@ class InformesController extends BaseController
 
         try {
             $informe = Informe::findOrFail($request->id_inf);
-            // AUTORIZACIÓN: Se usa la política 'update'.
+            // Autorización: Verifica si el usuario pude actualizar los datos
             $this->authorize('update', $informe); // Pasa el modelo para la verificación de pertenencia
 
-            // 1. Manejar la relación Muchos a Muchos: Sincronizar los IDs
-            // Laravel usa 'calculos_informes' gracias a la definición en el modelo.
+            // 1. Manejar la relación Muchos a Muchos: Sincronizar los IDs de cálculos seleccionados
             $informe->calculos()->sync($request->calculos_codes ?? []);
 
             // 2. Guardar el texto editable de materiales
@@ -457,6 +461,7 @@ class InformesController extends BaseController
             return redirect()->route('informes.edit.step5', $informe->id_inf)
                 ->with('success', 'Paso 4: Materiales guardados. Continúe con el paso 5.');
 
+        // En caso de error
         } catch (\Exception $e) {
             return back()->withInput()->with('error', 'Error al guardar el Paso 4: ' . $e->getMessage());
         }
@@ -465,21 +470,20 @@ class InformesController extends BaseController
 
 
     /**
-     * Muestra el formulario del paso 5 (Evidencia Fotográfica).
+     * Muestra el formulario del Paso 5 del informe técnico (Evidencia Fotográfica)
      */
     public function editStep5($id_inf)
     {
-        // Cargamos la relación 'imagenes' (Asumiendo que así se llama la relación en el modelo Informe)
+        // Cargamos la relación 'imagenes' para mostrar las imágenes ya subidas.
         $informe = Informe::with('imagenes')->findOrFail($id_inf);
-        // AUTORIZACIÓN: Se usa la política 'update'.
+        // Autorización: Verifica si el usuario puede acceder a la vista
         $this->authorize('update', $informe); // Pasa el modelo para la verificación de pertenencia
 
         return view('informes-tecnicos.edit-step5', compact('informe'));
     }
 
     /**
-     * Procesa y almacena los datos del paso 5 (Subida de múltiples archivos).
-     * Nomenclatura: updateStep5
+     * Procesa y almacena los datos del paso 5 (Subida de múltiples archivos)
      */
     public function updateStep5(Request $request)
     {
@@ -491,7 +495,7 @@ class InformesController extends BaseController
         ]);
 
         $informe = Informe::findOrFail($request->id_inf);
-        // AUTORIZACIÓN: Se usa la política 'update'.
+        // Autorización: Verifica si el usuario puede actualizar los datos
         $this->authorize('update', $informe); // Pasa el modelo para la verificación de pertenencia
 
         // Si hay archivos para subir
@@ -501,7 +505,6 @@ class InformesController extends BaseController
 
             foreach ($request->file('photos') as $photo) {
                 // 1. Guardar el archivo en el disco
-                // La ruta será algo como: 'public/informes/123/'
                 $ruta = $photo->store('informes/' . $informe->id_inf, 'public');
 
                 // 2. Preparar los datos para insertar en la BD
@@ -517,7 +520,7 @@ class InformesController extends BaseController
             evidencia_fotografica::insert($imagenesData);
         }
 
-        // FIN DEL INFORME: Redirigir a la página del listado de informes con un mensaje
+        // Fin del informe: Redirigir a la página del listado de informes con un mensaje
 
         return redirect()->route('informes.index')->with('success', 'Informe Técnico finalizado y guardado exitosamente.');
 
@@ -525,14 +528,13 @@ class InformesController extends BaseController
 
     /**
      * Elimina el informe y sus relaciones.
-     * @param int $id_inf
      */
     public function destroy($id_inf)
     {
         // 1. Buscar el informe y cargar la relación 'inspeccion'
         $informe = Informe::with('inspeccion')->findOrFail($id_inf);
 
-        // AUTORIZACIÓN: Se usa la política 'delete'.
+        // Autorización: Verifica si el usuario puede eliminar el registro
         // La Policy denegará el acceso a los usuarios con id_rol === 2.
         $this->authorize('delete', $informe);
         
@@ -545,8 +547,7 @@ class InformesController extends BaseController
 
 
     /**
-     * Genera y descarga el PDF de un informe técnico específico.
-     * @param int $id_inf El ID del informe.
+     * Genera y descarga el PDF de un informe técnico específico
      */
     public function downloadPdf($id_inf)
     {
@@ -558,14 +559,10 @@ class InformesController extends BaseController
             'inspeccion',
         ])->findOrFail($id_inf);
 
-        // AUTORIZACIÓN: Usamos el método 'download' de la Policy.
-        $this->authorize('download', $informe);
-        
-
-        // 2. Cargar la vista Blade que contiene la estructura del PDF
+        // 2. Cargar la vista que contiene la estructura del PDF
         $pdf = Pdf::loadView('informes-tecnicos.pdf.informe_tecnico', compact('informe'));
 
-        // 3. Configurar y retornar el PDF para descarga
+        // 3. Configurar y retornar el PDF para la descarga
         return $pdf->setPaper('a4', 'portrait')->stream('Informe-Tecnico-' . $informe->id_inf . '.pdf');
     }
 }

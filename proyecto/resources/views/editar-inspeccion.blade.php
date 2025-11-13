@@ -30,12 +30,12 @@
                 @endif
 
                 <div class="card shadow-sm p-4">
-                    {{-- FORMULARIO DE EDICIÓN --}}
+
                     <form action="{{ route('inspecciones.update', $inspeccion->id_insp) }}" method="POST">
                         @csrf
                         @method('PUT')
 
-                        {{-- SECCIÓN DATOS DE LA INSPECCIÓN --}}
+                        {{-- Sección de datos de la inspección --}}
                         <h5 class="mb-3">Datos de la Inspección</h5>
                         <div class="row mb-4">
                             <div class="col-md-6 mb-3">
@@ -62,7 +62,7 @@
                             </div>
                         </div>
 
-                        {{-- SECCIÓN DATOS DEL PROPIETARIO --}}
+                        {{-- Sección de datos del propietario --}}
                         <h5 class="mb-3">Datos del Propietario (Se modificará el registro existente si se cambia la
                             información)</h5>
                         <div class="row mb-4">
@@ -124,7 +124,7 @@
                             </div>
                         </div>
 
-                        {{-- SECCIÓN DATOS DE LA VIVIENDA / OBSERVACIÓN --}}
+                        {{-- Sección datos de vivienda / observacion --}}
                         <h5 class="mb-3">Dirección y Observaciones</h5>
                         <div class="mb-3">
                             <label for="direccion" class="form-label">Dirección</label>

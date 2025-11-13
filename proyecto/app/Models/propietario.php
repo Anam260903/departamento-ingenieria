@@ -20,6 +20,7 @@ class propietario extends Model
         'telefono',
     ];
 
+    // Relación: Un propietario tiene muchas viviendas
     public function viviendas()
     {
         return $this->hasMany(Vivienda::class, 'id_propie');

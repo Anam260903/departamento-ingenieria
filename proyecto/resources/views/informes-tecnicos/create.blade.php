@@ -20,7 +20,7 @@
             @include('components._navbar')
             <div class="container-fluid py-4">
 
-                {{-- Bloque para mostrar mensajes de Éxito o Error de Sesión --}}
+                {{-- Bloque para mostrar mensajes de éxito o error de sesión --}}
                 @if (session('success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         {{ session('success') }}
@@ -38,7 +38,7 @@
                 <div class="container-fluid py-4">
                     <h1 class="mb-4 h3">NUEVO INFORME TÉCNICO</h1>
 
-                    {{-- Barra de Progreso --}}
+                    {{-- Barra de progreso --}}
                     <div class="step-container">
                         <div class="step active">1. Datos Generales</div>
                         <div class="step">2. Diagnóstico</div>
@@ -49,10 +49,10 @@
 
                     <div class="card shadow-sm p-4">
                         @php
-                            // Detectamos si es una edición (si existe el objeto $informe) o una creación
+                            // Detectamos si es una edición o una creación
                             $isEditing = isset($informe) && $informe->id_inf;
 
-                            // Si es edición, apuntamos a una nueva ruta de updateStep1 (que debes crear)
+                            // Si es edición, apuntamos a la ruta de edición
                             $formAction = $isEditing
                                 ? route('informes.update.step1', $informe->id_inf)
                                 : route('informes.store.step1');
@@ -68,7 +68,7 @@
 
                             <input type="hidden" name="id_insp" value="{{ $inspeccion->id_insp }}">
 
-                            {{-- DATOS GENERALES DEL INFORME (Primer paso del formulario) --}}
+                            {{-- DATOS GENERALES DEL INFORME (Paso 1 del informe técnico) --}}
                             <div class="row mb-4">
 
                                 <div class="row mb-6">

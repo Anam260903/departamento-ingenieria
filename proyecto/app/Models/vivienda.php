@@ -22,11 +22,13 @@ class vivienda extends Model
         'map_image_file',
     ];
 
+    // Relación: Una vivienda pertenece a un propietario
     public function propietario()
     {
         return $this->belongsTo(Propietario::class, 'id_propie');
     }
 
+    // Relación: Una vivienda tiene muchas inspecciones
     public function inspecciones()
     {
         return $this->hasMany(Inspeccion::class, 'id_viv');

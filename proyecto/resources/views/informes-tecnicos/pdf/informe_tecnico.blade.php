@@ -8,19 +8,17 @@
 
 <body>
 
-    <!-- ************************************ -->
-    <!--          PÁGINA PRINCIPAL            -->
-    <!-- ************************************ -->
+    {{-- PÁGINA PRINCIPAL --}}
 
-    {{-- ENCABEZADO --}}
+    {{-- Encabezado --}}
     <div class="header-container">
 
-        {{-- Logo Izquierdo --}}
+        {{-- Logo izquierdo --}}
         <div class="logo-col">
             <img src="{{ public_path('images/logo2.jpg') }}" class="logo-img">
         </div>
 
-        {{-- Texto Centrado --}}
+        {{-- Texto centrado --}}
         <div class="text-col">
             <p>REPÚBLICA BOLIVARIANA DE VENEZUELA</p>
             <p>GOBIERNO BOLIVARIANO DEL ESTADO SUCRE</p>
@@ -30,17 +28,17 @@
             <p>CARÚPANO - ESTADO SUCRE</p>
         </div>
 
-        {{-- Logo Derecho --}}
+        {{-- Logo derecho --}}
         <div class="logo-col" style="text-align: right;">
             <img src="{{ public_path('images/logo3.jpg') }}" class="logo-img">
         </div>
     </div>
 
 
-    {{-- LÍNEA ROJA DE SEPARACIÓN --}}
+    {{-- Línea roja de separación --}}
     <div class="separator-line"></div>
 
-    {{-- TÍTULOS DEL REPORTE --}}
+    {{-- Títulos del informe --}}
 
     <div class="report-title">INFORME DE INSPECCIÓN TÉCNICA N° {{ $informe->id_inf }}</div>
     <div class="report-subtitle">VIVIENDA {{ $informe->inspeccion->vivienda->propietario->nombre_propie ?? 'N/A' }}
@@ -48,7 +46,8 @@
 
     </div>
 
-<table class="data-table">
+    {{-- Datos generales --}}
+    <table class="data-table">
         <tr>
             <td class="label">PROFESIONAL(ES) ASIGNADO(S):</td>
             <td class="data-content">
@@ -82,11 +81,12 @@
             <td colspan="2" class="data-content">
                 {{ $informe->inspeccion->vivienda->direccion ?? 'N/A' }}
             </td>
-             <td class="label">TLF:</td>
-             <td class="data-content">{{ $informe->inspeccion->vivienda->propietario->telefono ?? 'N/A' }}</td>
+            <td class="label">TLF:</td>
+            <td class="data-content">{{ $informe->inspeccion->vivienda->propietario->telefono ?? 'N/A' }}</td>
         </tr>
     </table>
 
+    {{-- Contenido de la inspección --}}
     <div class="section-title">1. ANTECEDENTES</div>
     <div class="content-box">
         {{ $informe->antecedentes ?? 'No se proporcionaron antecedentes.' }}
@@ -119,22 +119,20 @@
 
     {{-- PIE DE PÁGINA Y NÚMERO DE PÁGINA --}}
 
-    
 
-    <!-- ************************************ -->
-    <!--          MEMORIA FOTOGRÁFICA         -->
-    <!-- ************************************ -->
+    {{-- MEMORIA FOTOGRÁFICA --}}
 
     <div class="page-break"></div>
-    {{-- ENCABEZADO --}}
+
+    {{-- Encabezado --}}
     <div class="header-container">
 
-        {{-- Logo Izquierdo --}}
+        {{-- Logo izquierdo --}}
         <div class="logo-col">
             <img src="{{ public_path('images/logo2.jpg') }}" class="logo-img">
         </div>
 
-        {{-- Texto Centrado --}}
+        {{-- Texto cntrado --}}
         <div class="text-col">
             <p>REPÚBLICA BOLIVARIANA DE VENEZUELA</p>
             <p>GOBIERNO BOLIVARIANO DEL ESTADO SUCRE</p>
@@ -144,32 +142,33 @@
             <p>CARÚPANO - ESTADO SUCRE</p>
         </div>
 
-        {{-- Logo Derecho --}}
+        {{-- Logo derecho --}}
         <div class="logo-col" style="text-align: right;">
             <img src="{{ public_path('images/logo3.jpg') }}" class="logo-img">
         </div>
     </div>
 
 
-    {{-- LÍNEA ROJA DE SEPARACIÓN --}}
+    {{-- Línea roja de separación --}}
     <div class="separator-line"></div>
 
-    {{-- TÍTULO --}}
+    {{-- Título --}}
 
     <div class="report-title">MEMORIA FOTOGRÁFICA</div>
 
+    {{-- Imagénes --}}
     @if ($informe->imagenes->count() > 0)
         <div class="photo-grid">
             @foreach ($informe->imagenes as $imagen)
                 @php
-        // ******* ARREGLO 2: IMÁGENES EN BASE64 PARA FIABILIDAD *******
+
         $storagePath = storage_path('app/public/' . $imagen->ruta_archivo);
         $imageData = '';
         if (file_exists($storagePath)) {
             $imageData = 'data:image/' . pathinfo($storagePath, PATHINFO_EXTENSION) . ';base64,' . base64_encode(file_get_contents($storagePath));
         }
                 @endphp
-                
+
                 <div class="photo-item">
                     @if ($imageData)
                         <img src="{{ $imageData }}" alt="Foto de Evidencia">
@@ -187,20 +186,20 @@
 
     {{-- PIE DE PÁGINA Y NÚMERO DE PÁGINA --}}
 
-    <!-- ************************************ -->
-    <!--                MAPA                  -->
-    <!-- ************************************ -->
+
+    {{-- MAPA --}}
 
     <div class="page-break"></div>
-    {{-- ENCABEZADO --}}
+
+    {{-- Encabezado --}}
     <div class="header-container">
 
-        {{-- Logo Izquierdo --}}
+        {{-- Logo izquierdo --}}
         <div class="logo-col">
             <img src="{{ public_path('images/logo2.jpg') }}" class="logo-img">
         </div>
 
-        {{-- Texto Centrado --}}
+        {{-- Texto centrado --}}
         <div class="text-col">
             <p>REPÚBLICA BOLIVARIANA DE VENEZUELA</p>
             <p>GOBIERNO BOLIVARIANO DEL ESTADO SUCRE</p>
@@ -210,18 +209,17 @@
             <p>CARÚPANO - ESTADO SUCRE</p>
         </div>
 
-        {{-- Logo Derecho --}}
+        {{-- Logo derecho --}}
         <div class="logo-col" style="text-align: right;">
             <img src="{{ public_path('images/logo3.jpg') }}" class="logo-img">
         </div>
     </div>
 
 
-    {{-- LÍNEA ROJA DE SEPARACIÓN --}}
+    {{-- Línea roja de separación --}}
     <div class="separator-line"></div>
 
-    {{-- TÍTULO --}}
-
+    {{-- Titulo --}}
     <div class="report-title">CROQUIS DE UBICACIÓN DEL TERRENO</div>
 
     @php
@@ -230,13 +228,17 @@ $vivienda = $informe->inspeccion->vivienda;
 $lat = $vivienda->latitud ?? 'N/A';
 $long = $vivienda->longitud ?? 'N/A';
 
-// ******* ARREGLO 3: MAPA EN BASE64 USANDO COLUMNA CORRECTA *******
-$mapStoragePath = storage_path('app/public/' . ($vivienda->map_image_file ?? ''));
+// Obtenemos la imagen del mapa
+$mapStoragePath = storage_path('app/public/' . $vivienda->map_image_file);
 $mapImageData = '';
-if ($vivienda->map_image_file && file_exists($mapStoragePath)) {
+if (file_exists($mapStoragePath)) {
     $mapImageData = 'data:image/' . pathinfo($mapStoragePath, PATHINFO_EXTENSION) . ';base64,' . base64_encode(file_get_contents($mapStoragePath));
 }
+
+
     @endphp
+
+    {{-- Datos relacionados con el mapa--}}
 
     <div class="section-title">DETALLES DE UBICACIÓN</div>
     <p style="font-size: 10pt;">
@@ -248,9 +250,8 @@ if ($vivienda->map_image_file && file_exists($mapStoragePath)) {
     <div class="section-title">MAPA</div>
     <div style="text-align: center; margin-top: 15px;">
         @if ($mapImageData)
-            <img src="{{ $mapImageData }}" 
-                 alt="Mapa de Ubicación" 
-                 style="max-width: 90%; height: auto; border: 1px solid #ccc;">
+            <img src="{{ $mapImageData }}" alt="Mapa de Ubicación"
+                style="max-width: 90%; height: auto; border: 1px solid #ccc;">
         @else
             <div style="border: 1px solid #ccc; padding: 50px; background-color: #f9f9f9;">
                 <p>Mapa de ubicación no disponible.</p>
@@ -267,7 +268,7 @@ if ($vivienda->map_image_file && file_exists($mapStoragePath)) {
                         $font = $pdf->getFontMetrics()->get_font("Arial");
                         $pdf->page_text(500, 800, "Página {PAGE_NUM} de {PAGE_COUNT}", $font, 9, array(0,0,0));
                     }
-                </script>
+            </script>
         </p>
     </div>
 

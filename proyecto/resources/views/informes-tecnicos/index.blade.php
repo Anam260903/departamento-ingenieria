@@ -24,7 +24,7 @@
 
                 <h1 class="mb-4 h3">INFORMES TÉCNICOS</h1>
 
-                {{-- Bloque de Alertas --}}
+                {{-- Bloque de alertas --}}
                 @if (session('warning'))
                     <div class="alert alert-warning alert-dismissible fade show mt-3" role="alert">
                         <strong>Advertencia:</strong> {{ session('warning') }}
@@ -40,7 +40,7 @@
 
                 <div class="row justify-content-end mb-3">
 
-                    {{-- Botón "Nuevo informe" --}}
+                    {{-- Botón nuevo informe --}}
                     <div class="col-auto">
                         <a href="#" class="btn btn-primary text-nowrap" data-bs-toggle="modal"
                             data-bs-target="#modalSeleccionarInspeccion">
@@ -53,25 +53,25 @@
                 <div class="card shadow-sm p-4 mb-4">
                     <form action="{{ route('informes.index') }}" method="GET">
                         <div class="row g-3">
-                            {{-- Filtro por Palabra Clave --}}
+                            {{-- Filtro por palabra clave --}}
                             <div class="col-md-4">
                                 <input type="text" class="form-control" name="keyword"
                                     placeholder="Buscar por Propietario, Dirección o Ingeniero"
                                     value="{{ request('keyword') }}">
                             </div>
-                            {{-- Filtro por Ingeniero
+                            {{-- Filtro por ingeniero --}}
                             <div class="col-md-3">
                                 <select class="form-select" name="ingeniero">
                                     <option value="">Filtrar por Ingeniero</option>
                                 </select>
-                            </div> --}}
-                            {{-- Filtro por Fecha --}}
+                            </div>
+                            {{-- Filtro por fecha --}}
                             <div class="col-md-3">
                                 <label for="fecha_inicio" class="form-label visually-hidden">Fecha Desde</label>
                                 <input type="date" class="form-control" id="fecha_inicio" name="fecha_inicio"
                                     title="Fecha Desde" value="{{ request('fecha_inicio') }}">
                             </div>
-                            {{-- Botones de Acción --}}
+                            {{-- Botones de acción --}}
                             <div class="col-md-2 d-flex">
                                 <button type="submit" class="btn btn-secondary w-100 me-2">
                                     <i class="bi bi-funnel"></i> Filtrar
@@ -124,13 +124,15 @@
                                         {{-- Acciones --}}
                                         <td>
                                             <div class="d-flex gap-2">
-                                                {{-- 1. Botón de Editar --}}
-                                                <a href="{{ route('informes.edit.step1', $informe->id_inf) }}" class="btn btn-warning btn-sm" title="Editar informe">
+                                                {{-- 1. Botón de editar --}}
+                                                <a href="{{ route('informes.edit.step1', $informe->id_inf) }}"
+                                                    class="btn btn-warning btn-sm" title="Editar informe">
                                                     <i class="bi bi-pencil"></i>
                                                 </a>
 
-                                                {{-- 2. Botón de Descargar PDF --}}
-                                                <a href="{{ route('informes.generatePdf', $informe->id_inf) }}" class="btn btn-danger btn-sm" title="Descargar PDF">
+                                                {{-- 2. Botón de descargar PDF --}}
+                                                <a href="{{ route('informes.generatePdf', $informe->id_inf) }}"
+                                                    class="btn btn-danger btn-sm" title="Descargar PDF">
                                                     <i class="bi bi-file-pdf-fill"></i>
                                                 </a>
                                             </div>
@@ -145,7 +147,7 @@
                         </table>
                     </div>
 
-                    {{-- Enlaces de Paginación --}}
+                    {{-- Enlaces de paginación --}}
                     <div class="d-flex justify-content-center mt-3">
                         {{ $informes->links('pagination::bootstrap-5') }}
                     </div>
@@ -178,21 +180,21 @@
                                 {{-- Llenar el Dropdown con inspecciones disponibles --}}
                                 @php
 
-$informesController = new App\Http\Controllers\InformesController();
-$inspeccionesDisponibles = $informesController->obtenerInspeccionesDisponibles();
-$limiteTexto = 55;
+                                    $informesController = new App\Http\Controllers\InformesController();
+                                    $inspeccionesDisponibles = $informesController->obtenerInspeccionesDisponibles();
+                                    $limiteTexto = 55;
                                 @endphp
 
                                 @forelse ($inspeccionesDisponibles as $insp)
                                     @php
-    $propietario = $insp->vivienda->propietario;
-    $texto = ($propietario ? $propietario->nombre_propie . ' ' . $propietario->apellido_propie : 'N/A')
-        . ' - ' . ($insp->vivienda->direccion ?? 'N/A');
-    if (strlen($texto) > $limiteTexto) {
-        $textoMostrar = substr($texto, 0, $limiteTexto) . '...';
-    } else {
-        $textoMostrar = $texto;
-    }
+                                        $propietario = $insp->vivienda->propietario;
+                                        $texto = ($propietario ? $propietario->nombre_propie . ' ' . $propietario->apellido_propie : 'N/A')
+                                            . ' - ' . ($insp->vivienda->direccion ?? 'N/A');
+                                        if (strlen($texto) > $limiteTexto) {
+                                            $textoMostrar = substr($texto, 0, $limiteTexto) . '...';
+                                        } else {
+                                            $textoMostrar = $texto;
+                                        }
                                     @endphp
                                     <option value="{{ $insp->id_insp }}">{{ $textoMostrar }}</option>
                                 @empty
@@ -215,35 +217,32 @@ $limiteTexto = 55;
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ asset('js/dashboard.js') }}"></script>
-    
+
     <script>
-    // Este código está justo al final del body, asegurando que el botón ya exista.
-    document.addEventListener('DOMContentLoaded', function() {
-        const btnContinuar = document.getElementById('btnContinuarInforme');
+        document.addEventListener('DOMContentLoaded', function () {
+            const btnContinuar = document.getElementById('btnContinuarInforme');
 
-        if (btnContinuar) {
-            btnContinuar.addEventListener('click', function() {
-                
-                const selectElement = document.getElementById('id_insp_select');
-                const id_insp = selectElement.value;
-                const baseUrl = btnContinuar.getAttribute('data-base-url');
+            if (btnContinuar) {
+                btnContinuar.addEventListener('click', function () {
 
-                // Validamos que el ID exista y no sea la cadena vacía del placeholder
-                if (id_insp && id_insp !== "") { 
-                    
-                    // Redirección GARANTIZADA
-                    window.location.href = baseUrl + id_insp;
-                    
-                } else {
-                    alert('Por favor, seleccione una inspección válida para continuar.');
-                    selectElement.focus();
-                }
-            });
-        }
-    });
+                    const selectElement = document.getElementById('id_insp_select');
+                    const id_insp = selectElement.value;
+                    const baseUrl = btnContinuar.getAttribute('data-base-url');
 
-    // Advertencia ARIA: Es seguro ignorarla. Es una advertencia de accesibilidad de Bootstrap/Chrome.
-</script>
+                    // Validamos que el ID exista y no sea la cadena vacía del placeholder
+                    if (id_insp && id_insp !== "") {
+
+                        // Redirección
+                        window.location.href = baseUrl + id_insp;
+
+                    } else {
+                        alert('Por favor, seleccione una inspección válida para continuar.');
+                        selectElement.focus();
+                    }
+                });
+            }
+        });
+    </script>
 
 </body>
 

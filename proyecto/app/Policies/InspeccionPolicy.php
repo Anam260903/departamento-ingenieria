@@ -12,8 +12,7 @@ class InspeccionPolicy
     use HandlesAuthorization;
 
     /**
-     * Determine whether the user can view any inspections (Scope before query).
-     * This is only used in index() and is handled directly in the Controller.
+     * Determina si el usuario puede ver las inspecciones (Alcance antes de la consulta).
      */
     public function viewAny(Usuario $user): bool
     {
@@ -23,12 +22,8 @@ class InspeccionPolicy
     }
 
     /**
-     * Determine whether the user can view the model.
-     * Los administradores pueden ver cualquiera. Los usuarios solo los propios.
-     *
-     * @param  \App\Models\Usuario  $user
-     * @param  \App\Models\Inspeccion  $inspeccion
-     * @return \Illuminate\Auth\Access\Response|bool
+     * Determinar si el usuario puede ver las inspecciones.
+     * Los administradores pueden ver cualquiera. Los usuarios solo las propias.
      */
     public function view(Usuario $user, Inspeccion $inspeccion): Response
     {
@@ -44,12 +39,7 @@ class InspeccionPolicy
     }
 
     /**
-     * Determine whether the user can update the model.
-     * Sigue la misma lógica que 'view'.
-     *
-     * @param  \App\Models\Usuario  $user
-     * @param  \App\Models\Inspeccion  $inspeccion
-     * @return \Illuminate\Auth\Access\Response|bool
+     * Determinar si el usuario puede actualizar la inspeccion.
      */
     public function update(Usuario $user, Inspeccion $inspeccion): Response
     {
@@ -65,12 +55,7 @@ class InspeccionPolicy
     }
 
     /**
-     * Determine whether the user can delete the model.
-     * Sigue la misma lógica que 'view' y 'update'.
-     *
-     * @param  \App\Models\Usuario  $user
-     * @param  \App\Models\Inspeccion  $inspeccion
-     * @return \Illuminate\Auth\Access\Response|bool
+     * Determinar si el usuario puede eliminar la inspección.
      */
     public function delete(Usuario $user, Inspeccion $inspeccion): Response
     {
@@ -85,9 +70,6 @@ class InspeccionPolicy
 
     /**
      * Determine whether the user can create inspections.
-     *
-     * @param  \App\Models\Usuario  $user
-     * @return \Illuminate\Auth\Access\Response|bool
      */
     public function create(Usuario $user): Response
     {

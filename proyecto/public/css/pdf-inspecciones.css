@@ -1,8 +1,11 @@
+/* Estilos Generales para PDF de Inspecciones */
+
 body {
     font-family: "Times New Roman", Times, serif;
     margin: 0;
     padding: 0;
 }
+
 /* Estilos del Encabezado */
 .header-container {
     width: 100%;
@@ -10,19 +13,23 @@ body {
     border-collapse: collapse;
     margin-bottom: 5px;
 }
+
 .logo-col,
 .text-col {
     display: table-cell;
     vertical-align: top;
     padding: 0;
 }
+
 .logo-col {
     width: 15%;
 }
+
 .text-col {
     width: 70%;
     text-align: center;
 }
+
 .header-container p {
     margin: 8px 0;
     font-size: 12px;

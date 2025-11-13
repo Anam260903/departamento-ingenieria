@@ -35,8 +35,7 @@ class Informe extends Model
         return $this->hasMany(evidencia_fotografica::class, 'id_inf', 'id_inf');
     }
 
-
-    //Relación muchos a muchos con CALCULOS a través de la tabla calculo_informes
+    // Relación: Un informe tiene muchos calculos
     public function calculos()
     {
         return $this->belongsToMany(

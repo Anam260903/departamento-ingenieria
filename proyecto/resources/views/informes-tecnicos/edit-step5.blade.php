@@ -19,7 +19,7 @@
             @include('components._navbar')
             <div class="container-fluid py-4">
 
-                {{-- Bloque para mostrar mensajes de Sesión --}}
+                {{-- Bloque para mostrar mensajes de sesión --}}
                 @if (session('success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         {{ session('success') }}
@@ -35,7 +35,7 @@
 
                 <h1 class="mb-4 h3">NUEVO INFORME TÉCNICO</h1>
 
-                {{-- Barra de Progreso: El paso 4 debe estar 'active' --}}
+                {{-- Barra de progreso--}}
                 <div class="step-container">
                     <div class="step completed">1. Datos Generales</div>
                     <div class="step completed">2. Diagnóstico y observaciones</div>
@@ -110,9 +110,6 @@
         document.addEventListener('DOMContentLoaded', function () {
             // Llamada a la función de inicialización del Paso 5
             initStep5PhotoUpload();
-
-            // Si tuvieras que inicializar lógica del paso 4 u otros pasos aquí:
-            // initStep4Calculos();
         });
     </script>
 

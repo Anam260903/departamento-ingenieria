@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Usuario; // Asumiendo que tu modelo de personal se llama 'User'
+use App\Models\Usuario; //
 use App\Models\Inspeccion;
-use App\Models\Vivienda;    // Asegurar la importación
+use App\Models\Vivienda;
 use App\Models\Propietario;
 use App\Models\roles;
 use Illuminate\Http\Request;
@@ -15,29 +15,30 @@ use Illuminate\Support\Facades\Hash;
 class PersonalController extends Controller
 {
     /**
-     * Muestra la lista de personal técnico (usuarios).
+     * Muestra la lista de personal técnico (usuarios)
      */
     public function index()
     {
         // Obtener todo el personal ordenado por apellido
-        // Asegúrate de que tu modelo User tiene las columnas: cedula, nombre, apellido, email, profesion, estado/activo.
         $personal = Usuario::with('rol')->orderBy('nombre', 'asc')->get();
         return view('personal.index', compact('personal'));
     }
 
     /**
-     * Redirige al formulario de edición (debes crear el método 'update' y la vista 'edit').
+     * Muestra el formulario de edición para un usuario específico
      */
     public function edit(Usuario $personal)
     {
         // Cargar todos los roles disponibles para el selector
         $roles = roles::all();
 
-        // Muestra la vista de edición, pasando el usuario ($personal) y los roles
+        // Muestra la vista de edición, pasando el usuario y los roles
         return view('personal.edit', compact('personal', 'roles'));
     }
 
-
+    /**
+     * Actualiza la información de un usuario específico
+     */
     public function update(Request $request, Usuario $personal)
     {
         // 1. Validar los datos de entrada
@@ -60,8 +61,8 @@ class PersonalController extends Controller
                 Rule::unique('usuarios')->ignore($personal->id_user, 'id_user')
             ],
             'profesion' => ['nullable', 'string', 'max:50'],
-            'id_rol' => ['required', 'exists:roles,id_rol'], // Asegura que el rol exista
-            'password' => ['nullable', 'string', 'min:8', 'confirmed'], // Opcional, solo si se cambia
+            'id_rol' => ['required', 'exists:roles,id_rol'],
+            'password' => ['nullable', 'string', 'min:8', 'confirmed'],
         ]);
 
         // 2. Preparar los datos para la actualización
@@ -88,7 +89,7 @@ class PersonalController extends Controller
 
 
     /**
-     * Cambia el estado del usuario ('0' a '1' o '1' a '0').
+     * Cambia el estado del usuario (activo o inactivo).
      */
     public function toggleStatus(Usuario $personal)
     {
@@ -107,19 +108,16 @@ class PersonalController extends Controller
     }
 
     /**
-     * Muestra la lista de inspecciones disponibles, incluyendo el nombre del propietario, en JSON.
-     * @param \App\Models\Usuario $personal El usuario al que se asignará la inspección.
-     * @return \Illuminate\Http\JsonResponse
+     * Muestra la lista de inspecciones disponibles, incluyendo el nombre del propietario
      */
     public function getAvailableInspections(Usuario $personal)
     {
-        // *** SOLUCIÓN CLAVE: EAGER LOADING ***
-        // Carga las inspecciones disponibles (id_user es NULL) junto a sus relaciones anidadas
+        // Carga las inspecciones disponibles junto a sus relaciones anidadas
         $inspecciones = Inspeccion::whereNull('id_user')
             ->with(['vivienda.propietario'])
             ->get();
 
-        // Mapear la colección para crear el texto que se mostrará en el SELECT
+        // Mapear la colección para crear el texto que se mostrará en el select
         $inspecciones_disponibles = $inspecciones->map(function ($insp) {
 
             $nombre_propietario = 'Propietario Desconocido';
@@ -128,18 +126,12 @@ class PersonalController extends Controller
             // Verificamos si las relaciones anidadas existen para evitar errores
             if ($insp->vivienda && $insp->vivienda->propietario) {
                 $prop = $insp->vivienda->propietario;
-
-                // Asumo que el modelo Propietario tiene los campos 'nombre' y 'apellido'
                 $nombre_propietario = $prop->nombre_propie . ' ' . $prop->apellido_propie;
-
-                // Asumo que el campo de cédula en Propietario es 'cedula_prop' o similar
-                // Por favor, ajusta 'cedula_prop' al nombre real de tu columna si es diferente.
                 $ci_propietario = $prop->cedula_propie ?? 'N/A';
             }
 
             return [
                 'id_insp' => $insp->id_insp,
-                // Campo que el JavaScript usará para mostrar el nombre/apellido en el select
                 'propietario_display' => "Inspección #{$insp->id_insp} | Propietario: {$nombre_propietario} (CI: {$ci_propietario})",
             ];
         });
@@ -153,10 +145,7 @@ class PersonalController extends Controller
     }
 
     /**
-     * Procesa la solicitud POST y asigna una inspección seleccionada al usuario.
-     * @param \Illuminate\Http\Request $request
-     * @param \App\Models\Usuario $personal El usuario al que se asignará la inspección.
-     * @return \Illuminate\Http\RedirectResponse
+     * Procesa la solicitud y asigna una inspección seleccionada al usuario
      */
     public function assignInspection(Request $request, Usuario $personal)
     {
@@ -181,16 +170,13 @@ class PersonalController extends Controller
             // 3. Asignar el ID del usuario al campo id_user de la inspección
             $inspeccion->id_user = $personal->id_user;
             
-            // Opcional: Actualizar el estado si es necesario
-            // $inspeccion->estado_insp = 'Asignada'; 
-            
             $inspeccion->save();
 
             // Mensaje de éxito
             return back()->with('success', 'Inspección #'. $inspeccion->id_insp . ' asignada a ' . $personal->nombre . ' correctamente.');
 
         } catch (\Exception $e) {
-            // Manejo de errores
+            // En caso de error
             return back()->with('error', 'Hubo un error al asignar la inspección: ' . $e->getMessage());
         }
     }

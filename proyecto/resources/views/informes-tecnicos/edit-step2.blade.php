@@ -19,7 +19,7 @@
             @include('components._navbar')
             <div class="container-fluid py-4">
 
-                {{-- Bloque para mostrar mensajes de Sesión --}}
+                {{-- Bloque para mostrar mensajes de sesión --}}
                 @if (session('success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         {{ session('success') }}
@@ -35,7 +35,7 @@
 
                 <h1 class="mb-4 h3">NUEVO INFORME TÉCNICO</h1>
 
-                {{-- Barra de Progreso: El paso 2 debe estar 'active' --}}
+                {{-- Barra de Progreso --}}
                 <div class="step-container">
                     <div class="step completed">1. Datos Generales</div>
                     <div class="step active">2. Diagnóstico y observaciones</div>
@@ -45,15 +45,15 @@
                 </div>
 
                 <div class="card shadow-sm p-4 mt-3">
-                    {{-- Formulario apunta a la nueva ruta de actualización --}}
+                    
                     <form action="{{ route('informes.update.step2', $informe->id_inf) }}" method="POST">
                         @csrf
-                        @method('PUT') {{-- Usamos PUT para actualizar el recurso existente --}}
+                        @method('PUT')
 
                         {{-- ID del informe que estamos editando --}}
                         <input type="hidden" name="id_inf" value="{{ $informe->id_inf }}">
 
-                        {{-- DIAGNÓSTICO Y OBSERVACIONES DEL INFORME (Segundo paso del formulario) --}}
+                        {{-- DIAGNÓSTICO Y OBSERVACIONES DEL INFORME (Paso 2 del informe técnico) --}}
 
                         <div class="row mb-4">
                             {{-- Campo: Antecedentes --}}
@@ -127,7 +127,6 @@
     {{-- SCRIPTS --}}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ asset('js/dashboard.js') }}"></script>
-    {{-- No necesitamos el script de informes.js aquí, la funcionalidad está en el controlador --}}
 </body>
 
 </html>

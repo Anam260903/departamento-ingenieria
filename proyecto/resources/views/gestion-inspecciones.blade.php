@@ -67,7 +67,7 @@
                     </div>
 
 
-                    {{-- Botón "Nueva Inspección" --}}
+                    {{-- Botón nueva inspección --}}
                     <div class="col-auto">
                         {{-- Verifica si el usuario autenticado tiene id_rol igual a 1 (Administrador) --}}
                         @if (auth()->check() && auth()->user()->id_rol === 1)
@@ -81,14 +81,14 @@
                 <div class="card shadow-sm p-4 mb-4">
                     <form action="{{ route('inspecciones.index') }}" method="GET">
                         <div class="row g-3">
-                            {{-- Filtro por Palabra Clave (Nombre, Dirección, Observación) --}}
+                            {{-- Filtro por palabra clave --}}
                             <div class="col-md-4">
                                 <input type="text" class="form-control" name="keyword"
                                     placeholder="Buscar por Nombre, Dirección o Palabras Clave"
                                     value="{{ request('keyword') }}">
                             </div>
 
-                            {{-- Filtro por Estado --}}
+                            {{-- Filtro por estado --}}
                             <div class="col-md-3">
                                 <select class="form-select" name="estado">
                                     <option value="">Filtrar por Estado</option>
@@ -98,14 +98,14 @@
                                 </select>
                             </div>
 
-                            {{-- Filtro por Fecha (Rango de Inicio) --}}
+                            {{-- Filtro por fecha --}}
                             <div class="col-md-3">
                                 <label for="fecha_inicio" class="form-label visually-hidden">Fecha Desde</label>
                                 <input type="date" class="form-control" id="fecha_inicio" name="fecha_inicio"
                                     title="Fecha Desde" value="{{ request('fecha_inicio') }}">
                             </div>
 
-                            {{-- Botones de Acción --}}
+                            {{-- Botones de acción --}}
                             <div class="col-md-2 d-flex">
                                 <button type="submit" class="btn btn-secondary w-100 me-2">
                                     <i class="bi bi-funnel"></i> Filtrar
@@ -121,6 +121,7 @@
 
                 <div class="card shadow-sm p-4">
 
+                    {{-- Tabla con datos de inspecciones --}}
                     <div class="table-responsive">
                         <table class="table table-striped table-hover">
                             <thead class="table-header-custom">
@@ -160,7 +161,7 @@
                                         </td>
                                         <td>
                                             <div class="d-flex gap-2">
-                                                {{-- 1. Botón de Ver Detalles (SIEMPRE VISIBLE) --}}
+                                                {{-- 1. Botón de ver detalles --}}
                                                 <a href="#" class="btn btn-info btn-sm btn-ver-observacion"
                                                     title="Ver detalles" data-bs-toggle="modal"
                                                     data-bs-target="#observacionModal"
@@ -168,7 +169,7 @@
                                                     <i class="bi bi-eye"></i>
                                                 </a>
 
-                                                {{-- 2. Botón de Editar (SIEMPRE VISIBLE) --}}
+                                                {{-- 2. Botón de editar --}}
                                                 <a href="{{ route('inspecciones.edit', $inspeccion->id_insp) }}"
                                                     class="btn btn-warning btn-sm" title="Editar inspección">
                                                     <i class="bi bi-pencil"></i>
@@ -176,7 +177,7 @@
 
                                                 @if($inspeccion->estado_insp == 0)
 
-                                                    {{-- Formulario para Marcar como Completada (Botón Verde) --}}
+                                                    {{-- Formulario para mrcar como completada --}}
                                                     <form action="{{ route('inspecciones.complete', $inspeccion->id_insp) }}"
                                                         method="POST" class="d-inline">
                                                         @csrf
@@ -191,14 +192,8 @@
                                                             <i class="bi bi-check-circle"></i>
                                                         </button>
                                                     </form>
-                                                @else
-                                                    {{-- 4. Botón de Generar Informe (COMPLETADA) --}}
-                                                    <a href="#" class="btn btn-success btn-sm" title="Generar Informe Técnico">
-                                                        <i class="bi bi-file-earmark-plus-fill"></i>
-                                                    </a>
-                                                @endif
 
-                                                {{-- 5. Botón de Eliminar (SIEMPRE VISIBLE) --}}
+                                                {{-- 5. Botón de eliminar --}}
                                                 <form action="{{ route('inspecciones.destroy', $inspeccion->id_insp) }}"
                                                     method="POST" class="d-inline">
                                                     @csrf
@@ -225,7 +220,7 @@
         </div>
     </div>
 
-    {{-- Modal de Observación --}}
+    {{-- Modal de observación --}}
     <div class="modal fade" id="observacionModal" tabindex="-1" aria-labelledby="observacionModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -243,7 +238,7 @@
         </div>
     </div>
 
-    {{-- Modal de Decargar PDF Mensual --}}
+    {{-- Modal de decargar PDF Mensual --}}
     <div class="modal fade" id="modalDescargaMensual" tabindex="-1" aria-labelledby="modalDescargaMensualLabel"
         aria-hidden="true">
         <div class="modal-dialog">
@@ -275,7 +270,7 @@
                                 </select>
                             </div>
 
-                            {{-- Selector de Año --}}
+                            {{-- Selector de año --}}
                             <div class="col-md-6">
                                 <label for="ano_modal" class="form-label">Año</label>
                                 <select id="ano_modal" name="ano" class="form-select" required>

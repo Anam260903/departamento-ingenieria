@@ -21,16 +21,16 @@ class Usuario extends Authenticatable
         'password',
         'profesion',
         'estado_user',
-        'id_rol', // FK para el rol del usuario
+        'id_rol', // FK para de rol
     ];
 
-
-    //Funcion para la relación con rol
+    // Relación: Un usuario pertenece a un rol
     public function rol()
     {
         return $this->belongsTo(Roles::class, 'id_rol');
     }
 
+    // Campos que deben ocultarse al serializar el modelo
     protected $hidden = [
         'password',
     ];

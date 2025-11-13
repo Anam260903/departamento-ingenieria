@@ -16,6 +16,7 @@
 </head>
 
 <body>
+    {{-- Barra lateral --}}
     <div class="bg-white" id="sidebar-wrapper">
         <div class="list-group list-group-flush pt-4">
 

@@ -10,7 +10,7 @@ body {
     overflow-x: hidden;
 }
 
-/* Estilos para el sidebar en pantallas de escritorio (lg) */
+/* Estilos para el sidebar en pantallas de escritorio  */
 @media (min-width: 992px) {
     #sidebar-wrapper {
         margin-left: 0 !important;

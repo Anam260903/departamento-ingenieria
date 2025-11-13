@@ -16,6 +16,7 @@
 </head>
 
 <body>
+    {{-- Barra de navegación  --}}
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top navegacion">
         <div class="container-fluid">
 

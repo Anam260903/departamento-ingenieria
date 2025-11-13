@@ -2,7 +2,7 @@
 
 namespace App\Policies;
 
-use App\Models\Usuario; // Asumimos que su modelo de usuario se llama 'User'
+use App\Models\Usuario;
 use App\Models\Informe;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Auth\Access\Response;
@@ -24,9 +24,8 @@ class InformePolicy
     }
 
     /**
-     * Determine whether the user can view any informes (la lista).
-     * El Administrador ya está cubierto por 'before'. El usuario normal
-     * puede acceder a la lista, pero el controlador filtrará los resultados.
+     * Determina si el usuario puede ver algún informe
+     * El usuario normal puede acceder a la lista, pero el controlador filtrará los resultados.
      */
     public function viewAny(Usuario $user)
     {
@@ -35,10 +34,8 @@ class InformePolicy
     }
 
     /**
-     * Determine whether the user can view a single informe.
+     * Determinar si el usuario puede ver un informe.
      * El usuario normal (id_rol === 2) solo puede ver los informes que creó.
-     * Se asume que el Informe tiene cargada la relación 'inspeccion' y que
-     * la inspección tiene el 'id_user' del creador.
      */
     public function view(Usuario $user, Informe $informe)
     {
@@ -48,7 +45,7 @@ class InformePolicy
     }
 
     /**
-     * Determine whether the user can create informes.
+     * Determinar si el usuario puede crear informes.
      * Se permite la creación al usuario normal (id_rol === 2).
      */
     public function create(Usuario $user)
@@ -57,7 +54,7 @@ class InformePolicy
     }
 
     /**
-     * Determine whether the user can update the informe.
+     * Determinar si el usuario puede actualizar al informe.
      * El usuario normal (id_rol === 2) solo puede actualizar los informes que creó.
      */
     public function update(Usuario $user, Informe $informe)
@@ -68,21 +65,22 @@ class InformePolicy
     }
 
     /**
-     * Determine whether the user can delete the informe.
-     * REGLA CLAVE: El usuario normal (id_rol === 2) NO PUEDE ELIMINAR informes.
+     * Determinar si el usuario puede eliminar el informe.
+     * El usuario normal (id_rol === 2) no puede eliminar informes.
      */
     public function delete(Usuario $user, Informe $informe)
     {
-        // Se deniega la acción de eliminación explícitamente.
+        // Se niega la acción de eliminación explícitamente.
         // El administrador (id_rol=1) pasa la verificación en 'before()'.
         return false;
     }
 
     /**
-     * Método adicional para la descarga del PDF, que usa la misma lógica que 'view'.
-     */
-    public function download(Usuario $user, Informe $informe)
-    {
-        return $this->view($user, $informe);
-    }
+     * Método adicional para la descarga del PDF
+    
+    *public function download(Usuario $user, Informe $informe)
+    *{
+       * return $this->view($user, $informe);
+    *}
+    */
 }

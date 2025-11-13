@@ -22,6 +22,8 @@
 
             <div class="container-fluid py-4">
                 <h1 class="mb-4 h3">MI PERFIL</h1>
+                
+                {{-- Mensajes de sesión --}}
                 @if(session('success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         {{ session('success') }}
@@ -47,6 +49,8 @@
                         <h5 class="card-title text-center mb-4">Editar perfil</h5>
                         <form action="{{ route('perfil.update') }}" method="POST">
                             @csrf
+
+                            {{-- Datos personales --}}
                             <div class="mb-3">
                                 <label for="nombre" class="form-label">Nombre</label>
                                 <input type="text" class="form-control" id="nombre" name="nombre" maxlength="30"
@@ -77,6 +81,7 @@
                 </div>
 
                 <div class="col-lg-6 mb-4">
+                    {{-- Cambio de contraseña--}}
                     <div class="card shadow-sm p-4">
                         <h5 class="card-title text-center mb-4">Cambiar contraseña</h5>
                         <form action="{{ route('perfil.change-password') }}" method="POST">
@@ -122,8 +127,12 @@
                     </div>
                 </div>
 
-                <script src="{{ asset('js/dashboard.js') }}"></script>
-                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+            </div>
+        </div>
+
+    </div>
+    <script src="{{ asset('js/dashboard.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

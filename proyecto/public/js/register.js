@@ -44,7 +44,6 @@ document.addEventListener("DOMContentLoaded", function () {
         .querySelectorAll('[name="nombre"], [name="apellido"]')
         .forEach((input) => {
             input.addEventListener("input", function () {
-                // Reemplaza cualquier carácter que no sea una letra (incluyendo ñ, tildes) o un espacio.
                 this.value = this.value.replace(/[^A-Za-zñÑáéíóúÁÉÍÓÚ\s]/g, "");
             });
         });

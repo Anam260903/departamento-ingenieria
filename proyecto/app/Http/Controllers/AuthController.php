@@ -28,7 +28,7 @@ class AuthController extends Controller
 
             $user = Auth::user(); // Obtener el usuario autenticado
 
-            // 2. Verificar el estado_user ('0' = inactivo, '1' = activo)
+            // 2. Verificar el estado del usuario ('0' = inactivo, '1' = activo)
             if ($user->estado_user === '0') {
                 // Si está inactivo, cerrar la sesión y bloquear el acceso
                 Auth::logout();
@@ -71,7 +71,7 @@ class AuthController extends Controller
     // Procesa el registro de un nuevo usuario
     public function register(Request $request)
     {
-        // 1. Validar los datos del formulario (sin cambios)
+        // 1. Validar los datos del formulario
         $request->validate([
             'nombre' => ['required', 'string', 'max:30', 'regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/'],
             'apellido' => ['required', 'string', 'max:30', 'regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/'],
@@ -86,8 +86,7 @@ class AuthController extends Controller
             'apellido' => $request->apellido,
             'cedula_user' => $request->cedula_user,
             'correo' => $request->correo,
-            'password' => Hash::make($request->password), 
-            // ASIGNACIÓN AUTOMÁTICA
+            'password' => Hash::make($request->password),
             'estado_user' => '0', // Inactivo por defecto
             'id_rol' => 2,      // Rol 'Usuario' por defecto
         ]);

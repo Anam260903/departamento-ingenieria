@@ -28,43 +28,46 @@
 
 /* Estilos para el informe PDF */
 
+/** Define márgenes y contador de páginas **/
+@page {
+    margin: 1cm 1.5cm;
+}
 
-       /** Define márgenes y contador de páginas **/
-        @page {
-            margin: 1cm 1.5cm;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            font-size: 11pt;
-            line-height: 1.3;
-        }
+body {
+    font-family: Arial, sans-serif;
+    font-size: 11pt;
+    line-height: 1.3;
+}
 
 
-        /* Estilos del Encabezado */
+/* Estilos del Encabezado */
 .header-container {
     width: 100%;
     display: table;
     border-collapse: collapse;
     margin-bottom: 5px;
 }
-.logo-col,
-.text-col {
+
+.logo-col, .text-col {
     display: table-cell;
     vertical-align: top;
     padding: 0;
 }
+
 .logo-col {
     width: 15%;
 }
+
 .text-col {
     width: 70%;
     text-align: center;
+
 }
 .header-container p {
     margin: 8px 0;
     font-size: 12px;
 }
+
 .logo-img {
     max-width: 150px;
     height: auto;
@@ -88,108 +91,117 @@
     margin-bottom: 25px;
 }
 
-  /* --- TABLA DE DATOS DE IDENTIFICACIÓN (Sección 1) --- */
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 15px;
-            font-size: 10pt;
-        }
-        .data-table td {
-            padding: 3px 5px;
-            vertical-align: top;
-            /* Usamos 4 columnas lógicas para alinear CI y TLF */
-            width: 25%; 
-        }
-        .data-table .label {
-            font-weight: bold;
-            text-align: left;
-            width: 20%; /* Ajuste fino */
-            padding-right: 5px;            
-            white-space: nowrap;
-        }
-        .data-table .data-content {
-             width: 30%; /* Ajuste fino */
-             white-space: normal;
-             word-wrap: break-word;
-        }
+/* Tabe de datos de identificación (Sección 1) */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 15px;
+    font-size: 10pt;
+}
+
+.data-table td {
+    padding: 3px 5px;
+    vertical-align: top;
+    /* Usamos 4 columnas lógicas para alinear CI y TLF */
+    width: 25%; 
+}
+
+.data-table .label {
+    font-weight: bold;
+    text-align: left;
+    width: 20%;
+    padding-right: 5px;            
+    white-space: nowrap;
+}
+
+.data-table .data-content {
+    width: 30%;
+    white-space: normal;
+    word-wrap: break-word;
+}
         
-        /* Ajuste para filas colspan */
-        .data-table .full-row-label {
-            width: 20%;
-            font-weight: bold;
-            text-align: left;
-            white-space: nowrap;
-        }
-        .data-table .full-row-content {
-            width: 80%;
-        }
+/* Ajuste para filas colspan */
+.data-table .full-row-label {
+    width: 20%;
+    font-weight: bold;
+    text-align: left;
+    white-space: nowrap;
+}
 
-        /* --- SECCIONES DE TEXTO --- */
-        .section-title {
-            font-size: 11pt;
-            font-weight: bold;
-            margin-top: 15px;
-            margin-bottom: 5px;
-            border-bottom: 1px solid #000;
-            padding-bottom: 3px;
-        }
-        .content-box {
-            padding: 5px;
-            min-height: 40px;
-            margin-bottom: 10px;
-            text-align: justify;
-            font-size: 10pt;
-        }
+.data-table .full-row-content {
+    width: 80%;
+}
+
+/* Secciones de texto */
+.section-title {
+    font-size: 11pt;
+    font-weight: bold;
+    margin-top: 15px;
+    margin-bottom: 5px;
+    border-bottom: 1px solid #000;
+    padding-bottom: 3px;
+}
+
+.content-box {
+    padding: 5px;
+    min-height: 40px;
+    margin-bottom: 10px;
+    text-align: justify;
+    font-size: 10pt;
+}
         
-        /* --- SALTO DE PÁGINA --- */
-        .page-break {
-            page-break-before: always;
-        }
+/* Salto de página */
+.page-break {
+    page-break-before: always;
+}
 
-        /* --- MEMORIA FOTOGRÁFICA (2X2) --- */
-        .photo-grid {
-            width: 100%;
-            margin-top: 15px;
-            overflow: hidden; /* Limpia los floats */
-        }
-        .photo-item {
-            width: 48%; /* Esto fuerza dos elementos por fila (48% + 48% + margen) */
-            float: left;
-            margin-right: 4%; /* Espacio entre las columnas */
-            margin-bottom: 20px;
-            text-align: center;
-            /* clear: both; se necesitaría si hubieran descripciones largas */
-        }
-        .photo-item:nth-child(2n) {
-            margin-right: 0; /* Elimina el margen en la segunda columna */
-            float: right;
-        }
+/* --- Memoria fotográfica (2X2) --- */
+.photo-grid {
+    width: 100%;
+    margin-top: 15px;
+    overflow: hidden; /* Limpia los floats */
+}
 
-        .photo-item:nth-child(2n+1) {
+.photo-item {
+    width: 48%; /* Esto fuerza dos elementos por fila (48% + 48% + margen) */
+    float: left;
+    margin-right: 4%; /* Espacio entre las columnas */
+    margin-bottom: 20px;
+    text-align: center;
+    /* clear: both; se necesitaría si hubieran descripciones largas */
+}
+
+.photo-item:nth-child(2n) {
+    margin-right: 0; /* Elimina el margen en la segunda columna */
+    float: right;
+}
+
+.photo-item:nth-child(2n+1) {
     /* CLAVE: Aseguramos que la primera columna siempre flote a la izquierda */
     clear: left;
 }
-        .photo-item img {
-            width: 100%;
-            max-height: 250px;
-            object-fit: contain;
-            border: 1px solid #ccc;
-        }
-        .photo-item p {
-            font-size: 9pt;
-            margin-top: 5px;
-            text-align: center;
-        }
+
+.photo-item img {
+    width: 100%;
+    max-height: 250px;
+    object-fit: contain;
+    border: 1px solid #ccc;
+}
+
+.photo-item p {
+    font-size: 9pt;
+    margin-top: 5px;
+    text-align: center;
+}
         
-        /* --- FOOTER Y PAGINACIÓN (ARREGLO) --- */
-        .footer {
-            position: fixed;
-            bottom: -50px; /* Ajusta la posición vertical */
-            left: 0;
-            right: 0;
-            height: 20px;
-            text-align: center;
-            font-size: 9pt;
-            line-height: 1;
-        }
+/* --- Footer y páginación --- */
+.footer {
+    position: fixed;
+    bottom: -50px; /* Ajusta la posición vertical */
+    left: 0;
+    right: 0;
+    height: 20px;
+    text-align: center;
+    font-size: 9pt;
+    line-height: 1;
+}

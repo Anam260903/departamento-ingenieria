@@ -17,7 +17,7 @@ class calculos extends Model
         'id_user', // Clave foránea a usuario
     ];
 
-    //Relación muchos a muchos con INFORME a través de la tabla calculo_informes
+    //Relación: Un infrome tiene muchos calculos
     public function informes()
     {
         return $this->belongsToMany(

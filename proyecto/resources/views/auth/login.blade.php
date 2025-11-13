@@ -17,6 +17,7 @@
 </head>
 
 <body>
+    {{-- Vista de inicio de sesión --}}
     <div class="container-fluid">
         <div class="row login-row">
             <div class="col-md-7 left-panel">
@@ -42,6 +43,8 @@
 
                     <form method="POST" action="{{ route('login') }}">
                         @csrf
+
+                        {{-- Credenciales de acceso --}}
                         <div class="mb-3">
                             <input type="email" class="form-control" name="correo" maxlength="40"
                                 placeholder="Correo electrónico" required autofocus>
@@ -55,9 +58,11 @@
                                 </span>
                             </div>
                         </div>
+                        {{-- Botón de acción --}}
                         <button type="submit" class="btn btn-primary">Acceder</button>
                     </form>
 
+                    {{-- Enlaces de navegación --}}
                     <div class="d-flex justify-content-between mt-3">
                         <a href="{{ route('password.request') }}" class="text-decoration-none">¿Has olvidado tu
                             contraseña?</a>

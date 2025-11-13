@@ -9,8 +9,6 @@ class CalculosController extends Controller
 {
     /**
      * Recupera el contenido de uno o más cálculos por sus IDs.
-     * * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\JsonResponse
      */
     public function getContenido(Request $request)
     {
@@ -27,7 +25,7 @@ class CalculosController extends Controller
 
         try {
             // 2. Consultar la base de datos
-            // Buscamos solo los campos 'id_calculo' (opcional, para referencia) y el 'contenido'
+            // Buscamos solo los campos 'id_calculo' y el 'contenido'
             // donde el 'id_calculo' esté dentro del array de IDs recibidos.
             $calculos = calculos::whereIn('id_calculo', $calculoIds)
                                  ->select('id_calculo', 'contenido')
@@ -48,7 +46,7 @@ class CalculosController extends Controller
             // Devolvemos una respuesta de error 500 (Internal Server Error)
             return response()->json([
                 'error' => 'Error interno del servidor al procesar la solicitud.',
-                'message' => $e->getMessage() // Útil para depuración, pero se debe evitar en producción.
+                'message' => $e->getMessage() // Esto es útil para depuración, pero se debe evitar en producción.
             ], 500);
         }
     }

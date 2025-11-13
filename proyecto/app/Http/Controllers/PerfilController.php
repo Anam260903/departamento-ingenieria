@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Hash;
 
 class PerfilController extends Controller
 {
+    /**
+     * Muestra la vista del perfil del usuario autenticado
+     */
     public function index()
     {
         // Obtener la información del usuario autenticado
@@ -18,6 +21,10 @@ class PerfilController extends Controller
         // Pasar el objeto de usuario a la vista
         return view('perfil', compact('usuario'));
     }
+
+    /**
+     * Actualiza la información del perfil del usuario autenticado
+     */
     public function update(Request $request)
     {
         // Obtener el usuario autenticado
@@ -46,6 +53,10 @@ class PerfilController extends Controller
         // Redirigir al usuario de vuelta a la página de perfil con un mensaje de éxito
         return redirect()->route('perfil')->with('success', '¡Tu perfil ha sido actualizado con éxito!');
     }
+
+    /**
+     * Actualiza la contraseña del usuario autenticado
+     */
     public function changePassword(Request $request)
     {
         // Validar las contraseñas
@@ -69,4 +80,3 @@ class PerfilController extends Controller
         return redirect()->route('perfil')->with('success', '¡Tu contraseña ha sido actualizada con éxito!');
     }
 }
-

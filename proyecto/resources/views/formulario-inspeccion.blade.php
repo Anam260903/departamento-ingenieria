@@ -37,9 +37,10 @@
                     <form action="{{ route('inspecciones.store') }}" method="POST">
                         @csrf
 
-                        {{-- SECCIÓN DATOS DE LA INSPECCIÓN --}}
+                        {{-- Sección datos de la inspección --}}
                         <h5 class="mb-3">Datos de la Inspección</h5>
                         <div class="row mb-4">
+                            {{-- Fecha --}}
                             <div class="col-md-6 mb-3">
                                 <label for="fecha" class="form-label">Fecha</label>
                                 <input type="date" class="form-control @error('fecha') is-invalid @enderror" id="fecha"
@@ -48,6 +49,7 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
+                            {{-- Estado --}}
                             <div class="col-md-6 mb-3">
                                 <label for="estado" class="form-label">Estado</label>
                                 <select class="form-select @error('estado') is-invalid @enderror" id="estado"
@@ -62,7 +64,7 @@
                             </div>
                         </div>
 
-                        {{-- SECCIÓN DATOS DEL PROPIETARIO --}}
+                        {{-- Sección datos del propietario --}}
                         <h5 class="mb-3">Datos del Propietario</h5>
                         <div class="row mb-4">
                             {{-- Nombre --}}
@@ -119,7 +121,7 @@
                             </div>
                         </div>
 
-                        {{-- SECCIÓN DATOS DE LA VIVIENDA / OBSERVACIÓN --}}
+                        {{-- Sección datos de la vivienda / observación --}}
                         <h5 class="mb-3">Datos de la Vivienda y Observaciones</h5>
                         <div class="mb-3">
                             <label for="direccion" class="form-label">Dirección</label>
@@ -141,6 +143,7 @@
                             @enderror
                         </div>
 
+                        {{-- Botón registrar inspección--}}
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-primary">Registrar Inspección</button>
                         </div>
