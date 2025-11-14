@@ -35,6 +35,33 @@ class Usuario extends Authenticatable
         'password',
     ];
 
+    // Mutadores para formatear los datos antes de guardarlos en la base de datos
+    // 1. CORREO: Guardar siempre en minúsculas
+    public function setCorreoAttribute($value)
+    {
+        $this->attributes['correo'] = strtolower($value);
+    }
+
+    // 2. CÉDULA: Limpiar y guardar solo números
+    public function setCedulaUserAttribute($value)
+    {
+        $cedulaLimpia = (string) $value;
+        $cedulaLimpia = str_replace(['.', '-', ' '], '', $cedulaLimpia);
+        $this->attributes['cedula_user'] = $cedulaLimpia;
+    }
+
+    // 3. NOMBRE: Guardar en formato título
+    public function setNombreAttribute($value)
+    {
+        $this->attributes['nombre'] = ucwords(strtolower($value));
+    }
+
+    // 4. APELLIDO: Guardar en formato título
+    public function setApellidoAttribute($value)
+    {
+        $this->attributes['apellido'] = ucwords(strtolower($value));
+    }
+
     //Funcion para enviar el correo de restablecimiento de contraseña
     public function getEmailForPasswordReset()
     {

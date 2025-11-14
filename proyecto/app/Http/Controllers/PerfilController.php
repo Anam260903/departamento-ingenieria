@@ -41,6 +41,9 @@ class PerfilController extends Controller
                 'max:255',
                 Rule::unique('usuarios', 'correo')->ignore($usuario),
             ],
+          ], [
+            // Mensaje personalizado para la Regex
+            'correo.regex' => 'Solo se permiten direcciones de correo electrónico con el dominio @gmail.com.',
         ]);
 
         // Actualizar los datos del usuario
@@ -62,7 +65,19 @@ class PerfilController extends Controller
         // Validar las contraseñas
         $request->validate([
             'password_actual' => 'required',
-            'password_nueva' => 'required|min:8|confirmed',
+            'password_nueva' => [
+                'required',
+                'string',
+                'min:8',
+                'max:15',
+                'confirmed',
+                'regex:/^.*((?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!$#%@]).*$/'
+            ],
+        ], [
+            // Mensaje personalizado para la Regex
+            'password.regex' => 'La contraseña debe contener al menos una mayúscula, una minúscula, un número y un símbolo (! $ # % @).',
+            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
+            'password.max' => 'La contraseña no puede exceder los 15 caracteres.',
         ]);
 
         $usuario = Auth::user();

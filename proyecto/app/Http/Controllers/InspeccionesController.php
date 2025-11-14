@@ -27,7 +27,7 @@ class InspeccionesController extends Controller
         $query = Inspeccion::with('vivienda.propietario');
 
         // Lógica de autorización (Filtro en listado)
-  
+
         // Si el usuario es de Rol ID 2 (Usuario), restringir a sus propios registros.
         if ($user && $user->id_rol === 2) {
             $query->where('id_user', $user->id_user);
@@ -94,7 +94,15 @@ class InspeccionesController extends Controller
             'fecha' => 'required|date',
             'propietario_nombre' => ['required', 'string', 'max:30', 'regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/'],
             'propietario_apellido' => ['required', 'string', 'max:30', 'regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/'],
-            'propietario_cedula' => 'required|string|max:8|unique:propietarios,cedula_propie',
+            'propietario_cedula' => [
+                'required',
+                'string',
+                'min:7',
+                'max:8',
+                'unique:propietarios',
+                'regex:/^(?!0+$)(?!12345678$)(?!1234567$)(?!1{6,8}$)(?!2{6,8}$)(?!3{6,8}$)(?!4{6,8}$)(?!5{6,8}$)(?!6{6,8}$)(?!7{6,8}$)(?!8{6,8}$)(?!9{6,8}$)(\d{6,8})$/',
+                'regex:/^(?!0+$)(?!1{6,8}$)(?!2{6,8}$)(?!3{6,8}$)(?!4{6,8}$)(?!5{6,8}$)(?!6{6,8}$)(?!7{6,8}$)(?!8{6,8}$)(?!9{6,8}$)(?!123456$)(?!1234567$)(?!12345678$)(?!87654321$)(?!7654321$)(?!654321$)(?!(\d)\1+$)(\d{6,8})$/'
+            ],
             'propietario_telefono' => 'required|string|max:11',
             'direccion' => 'required|string|max:100',
             'estado' => 'required|numeric|in:0,1',
@@ -175,7 +183,15 @@ class InspeccionesController extends Controller
             'propietario_nombre' => ['required', 'string', 'max:30', 'regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/'],
             'propietario_apellido' => ['required', 'string', 'max:30', 'regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/'],
             // Validar unique excluyendo el propio propietario
-            'propietario_cedula' => 'required|string|max:8|unique:propietarios,cedula_propie,' . $propietario->id_propie . ',id_propie',
+            'propietario_cedula' =>
+                [
+                    'required',
+                    'string',
+                    'min:7',
+                    'max:8',
+                    'unique:propietarios,cedula_propie,' . $propietario->id_propie . ',id_propie',
+                    'regex:/^(?!0+$)(?!1{6,8}$)(?!2{6,8}$)(?!3{6,8}$)(?!4{6,8}$)(?!5{6,8}$)(?!6{6,8}$)(?!7{6,8}$)(?!8{6,8}$)(?!9{6,8}$)(?!123456$)(?!1234567$)(?!12345678$)(?!87654321$)(?!7654321$)(?!654321$)(?!(\d)\1+$)(\d{6,8})$/'
+                ],
             'propietario_telefono' => 'required|string|max:11',
             'direccion' => 'required|string|max:100',
             'estado' => 'required|numeric|in:0,1',
@@ -301,7 +317,7 @@ class InspeccionesController extends Controller
     {
         $user = Auth::user();
 
-    
+
         // 1. Obtener el mes y el año del formulario
         $mes = $request->input('mes');
         $ano = $request->input('ano');

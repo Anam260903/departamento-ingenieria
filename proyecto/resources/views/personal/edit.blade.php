@@ -41,12 +41,12 @@
                 @endif
 
                 <div class="card shadow-sm p-4">
-                    {{-- FORMULARIO DE EDICIÓN DE PERSONAL --}}
+                    {{-- Formulario de edición de personal --}}
                     <form action="{{ route('personal.update', $personal->id_user) }}" method="POST">
                         @csrf
                         @method('PUT')
 
-                        {{-- SECCIÓN DATOS PERSONALES --}}
+                        {{-- Sección de datos personales --}}
                         <h5 class="mb-3">Datos de Identificación</h5>
                         <div class="row mb-4">
 
@@ -55,7 +55,7 @@
                                 <label for="cedula_user" class="form-label">Cédula</label>
                                 <input type="text" class="form-control @error('cedula_user') is-invalid @enderror"
                                     id="cedula_user" name="cedula_user" placeholder="Cédula de identidad"
-                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57" maxlength="8"
+                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57" minlength="7" maxlength="8"
                                     value="{{ old('cedula_user', $personal->cedula_user) }}" required>
                                 @error('cedula_user')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -87,15 +87,14 @@
                             </div>
 
                             
-                            {{-- CAMPO DE ROL (La Solución) --}}
+                            {{-- Campo de rol --}}
                             <div class="col-lg-3 col-md-6 mb-3">
                                 <label for="id_rol" class="form-label">Rol del Usuario</label>
                                 <select class="form-select @error('id_rol') is-invalid @enderror" id="id_rol" name="id_rol" required>
                                     <option value="">Seleccione un Rol</option>
                                     {{-- Recorremos la lista de roles que vienen del controlador --}}
                                     @foreach($roles as $rol)
-                                        <option value="{{ $rol->id_rol }}" {{-- Lógica crucial: Si el ID del rol es el mismo que el id_rol del usuario,
-                                            lo marca como seleccionado --}} @selected(old('id_rol', $personal->id_rol) == $rol->id_rol)>
+                                        <option value="{{ $rol->id_rol }}"  @selected(old('id_rol', $personal->id_rol) == $rol->id_rol)>
                                             {{ $rol->nombre_rol }}
                                         </option>
                                     @endforeach
@@ -104,9 +103,9 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
-                        </div> {{-- Fin Fila Datos Personales --}}
+                        </div> 
 
-                        {{-- SECCIÓN CONTACTO Y PROFESIÓN --}}
+                        {{-- Sección de contacto y profesión --}}
                         <h5 class="mb-3">Contacto y Profesión</h5>
                         <div class="row mb-4">
                             {{-- Correo --}}
@@ -120,7 +119,7 @@
                                 @enderror
                             </div>
 
-                            {{-- Profesión (nullable) --}}
+                            {{-- Profesión --}}
                             <div class="col-lg-6 col-md-6 mb-3">
                                 <label for="profesion" class="form-label">Profesión (Opcional)</label>
                                 <input type="text" class="form-control @error('profesion') is-invalid @enderror"
@@ -130,9 +129,9 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
-                        </div> {{-- Fin Fila Contacto/Profesión --}}
+                        </div>
 
-                        {{-- SECCIÓN CAMBIO DE CONTRASEÑA --}}
+                        {{-- sección cambio de contraseña --}}
                         <h5 class="mb-3">Cambio de Contraseña (Opcional)</h5>
                         <p class="text-muted small">Solo llena estos campos si deseas cambiar la contraseña del usuario.
                         </p>
@@ -142,7 +141,8 @@
                             <div class="col-md-6 mb-3">
                                 <label for="password" class="form-label">Nueva Contraseña</label>
                                 <input type="password" class="form-control @error('password') is-invalid @enderror"
-                                    id="password" name="password" minlength="8" placeholder="Mínimo 8 caracteres">
+                                    id="password" name="password" minlength="8" maxlength="15" placeholder="Nueva contraseña">
+                                    
                                 @error('password')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -154,7 +154,7 @@
                                 <input type="password" class="form-control" id="password_confirmation"
                                     name="password_confirmation" placeholder="Repite la nueva contraseña">
                             </div>
-                        </div> {{-- Fin Fila Contraseña --}}
+                        </div>
 
                         <div class="d-flex justify-content-end gap-2 mt-4">
                             {{-- Botón Cancelar: Vuelve al listado de personal --}}

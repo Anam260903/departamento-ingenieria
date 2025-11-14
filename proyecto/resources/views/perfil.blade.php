@@ -22,7 +22,7 @@
 
             <div class="container-fluid py-4">
                 <h1 class="mb-4 h3">MI PERFIL</h1>
-                
+
                 {{-- Mensajes de sesión --}}
                 @if(session('success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -102,10 +102,15 @@
                                 <label for="password_nueva" class="form-label">Nueva contraseña</label>
                                 <div class="input-group">
                                     <input type="password" class="form-control" id="password_nueva"
-                                        name="password_nueva" maxlength="10" required>
+                                        name="password_nueva" minlength="8" maxlength="15" required>
                                     <button class="btn btn-outline-secondary toggle-password" type="button">
                                         <i class="bi bi-eye"></i>
                                     </button>
+                                    {{-- Parametros para la contraseña --}}
+                                    <span class="input-group-text" data-bs-toggle="tooltip" data-bs-placement="top"
+                                        title="8-15 caracteres. Debe incluir: Una letra mayúscula (A-Z). Una letra minúscula (a-z). Un número (0-9). Un símbolo (! $ # % @, etc.)">
+                                        <i class="bi bi-info-circle"></i>
+                                    </span>
                                 </div>
                             </div>
 
@@ -132,6 +137,17 @@
 
     </div>
     <script src="{{ asset('js/dashboard.js') }}"></script>
+    <script>
+        // Inicializar Tooltips y Popovers
+        document.addEventListener('DOMContentLoaded', function () {
+            // Inicializa Tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            })
+        });
+    </script>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 

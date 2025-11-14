@@ -123,7 +123,13 @@ class InformesController extends BaseController
             'comunidad' => 'required|string|max:50',
 
             // Datos del Propietario - Se actualizarán si cambian
-            'propietario_cedula' => 'required|string|max:8|regex:/^[0-9]+$/',
+            'propietario_cedula' => [
+                'required',
+                'string',
+                'min:7',
+                'max:8',
+                'regex:/^(?!0+$)(?!1{6,8}$)(?!2{6,8}$)(?!3{6,8}$)(?!4{6,8}$)(?!5{6,8}$)(?!6{6,8}$)(?!7{6,8}$)(?!8{6,8}$)(?!9{6,8}$)(?!123456$)(?!1234567$)(?!12345678$)(?!87654321$)(?!7654321$)(?!654321$)(?!(\d)\1+$)(\d{6,8})$/'
+            ],
             'propietario_nombre' => 'required|string|max:30|regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/',
             'propietario_apellido' => 'required|string|max:30|regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/',
             'propietario_telefono' => 'required|string|max:11|regex:/^[0-9]+$/',
@@ -219,7 +225,13 @@ class InformesController extends BaseController
             'comunidad' => 'required|string|max:100',
 
             // Datos del Propietario - Se actualizarán
-            'propietario_cedula' => 'required|string|max:8|regex:/^[0-9]+$/',
+            'propietario_cedula' => [
+                'required',
+                'string',
+                'min:7',
+                'max:8',
+                'regex:/^(?!0+$)(?!1{6,8}$)(?!2{6,8}$)(?!3{6,8}$)(?!4{6,8}$)(?!5{6,8}$)(?!6{6,8}$)(?!7{6,8}$)(?!8{6,8}$)(?!9{6,8}$)(?!123456$)(?!1234567$)(?!12345678$)(?!87654321$)(?!7654321$)(?!654321$)(?!(\d)\1+$)(\d{6,8})$/'
+            ],
             'propietario_nombre' => 'required|string|max:30|regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/',
             'propietario_apellido' => 'required|string|max:30|regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/',
             'propietario_telefono' => 'required|string|max:11|regex:/^[0-9]+$/',

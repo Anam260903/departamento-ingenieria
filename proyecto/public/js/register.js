@@ -47,4 +47,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 this.value = this.value.replace(/[^A-Za-zñÑáéíóúÁÉÍÓÚ\s]/g, "");
             });
         });
+
+    // Script para inicializar Tooltips de Bootstrap
+    if (typeof bootstrap !== 'undefined' && typeof bootstrap.Tooltip !== 'undefined') {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            // Inicializa Tooltips
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+    }
 });

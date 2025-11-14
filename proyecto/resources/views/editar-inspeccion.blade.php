@@ -101,7 +101,7 @@
                                     class="form-control @error('propietario_cedula') is-invalid @enderror"
                                     id="propietario_cedula" name="propietario_cedula"
                                     placeholder="Cédula del propietario"
-                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57" maxlength="8"
+                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57" minlength="7" maxlength="8"
                                     value="{{ old('propietario_cedula', $inspeccion->vivienda->propietario->cedula_propie ?? '') }}"
                                     required>
                                 @error('propietario_cedula')

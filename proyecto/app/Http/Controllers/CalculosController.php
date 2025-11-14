@@ -17,7 +17,7 @@ class CalculosController extends Controller
 
         // 1. Validar que los IDs sean un array y contengan valores
         if (!is_array($calculoIds) || empty($calculoIds)) {
-            // Devolvemos una respuesta de error 400 (Bad Request)
+            // Devolvemos una respuesta de error 400
             return response()->json([
                 'error' => 'Se requieren IDs de cálculos válidos.'
             ], 400);
@@ -36,17 +36,16 @@ class CalculosController extends Controller
             $contenidosArray = $calculos->pluck('contenido')->toArray();
             
             // 4. Devolver la respuesta en el formato JSON esperado por el frontend
-            // El frontend espera la clave 'contenido' que es un ARRAY de strings.
             return response()->json([
                 'contenido' => $contenidosArray
             ]);
 
         } catch (\Exception $e) {
             
-            // Devolvemos una respuesta de error 500 (Internal Server Error)
+            // Devolvemos una respuesta de error 500
             return response()->json([
                 'error' => 'Error interno del servidor al procesar la solicitud.',
-                'message' => $e->getMessage() // Esto es útil para depuración, pero se debe evitar en producción.
+                'message' => $e->getMessage() // Nota: Esto es útil para depuración, pero se debe evitar en producción.
             ], 500);
         }
     }

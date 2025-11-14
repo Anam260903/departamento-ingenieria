@@ -68,19 +68,25 @@
                         <div class="row mb-3">
                             <div class="col-6">
                                 <input type="text" class="form-control" name="cedula_user"
-                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57" maxlength="8"
+                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57" minlength="7" maxlength="8"
                                     placeholder="Cédula" value="{{ old('cedula_user') }}" required>
                             </div>
                             <div class="col-6">
                                 <div class="input-group">
                                     <input type="password" class="form-control" id="password-field" name="password"
-                                        maxlength="10" placeholder="Contraseña" required>
+                                        minlength="8" maxlength="15" placeholder="Contraseña" required>
                                     <span class="input-group-text" id="toggle-password">
                                         <i class="bi bi-eye-fill" id="eye-icon"></i>
+                                    </span>
+                                    {{-- Parametros para la contraseña --}}
+                                    <span class="input-group-text" data-bs-toggle="tooltip" data-bs-placement="top"
+                                        title="8-15 caracteres. Debe incluir: Una letra mayúscula (A-Z). Una letra minúscula (a-z). Un número (0-9). Un símbolo (! $ # % @, etc.)">
+                                        <i class="bi bi-info-circle"></i>
                                     </span>
                                 </div>
                             </div>
                         </div>
+                        
                         {{-- Confirmación de contraseña --}}
                         <div class="mb-3">
                             <div class="input-group">
@@ -105,6 +111,7 @@
         </div>
     </div>
     <script src="{{ asset('js/register.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

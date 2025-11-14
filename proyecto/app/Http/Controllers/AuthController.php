@@ -75,9 +75,38 @@ class AuthController extends Controller
         $request->validate([
             'nombre' => ['required', 'string', 'max:30', 'regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/'],
             'apellido' => ['required', 'string', 'max:30', 'regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/'],
-            'cedula_user' => 'required|string|max:8|unique:usuarios',
-            'correo' => 'required|string|email|max:40|unique:usuarios',
-            'password' => 'required|string|min:8|confirmed',
+            'cedula_user' => [
+                'required',
+                'string',
+                'min:7',
+                'max:8',
+                'unique:usuarios',
+                'regex:/^(?!0+$)(?!1{6,8}$)(?!2{6,8}$)(?!3{6,8}$)(?!4{6,8}$)(?!5{6,8}$)(?!6{6,8}$)(?!7{6,8}$)(?!8{6,8}$)(?!9{6,8}$)(?!123456$)(?!1234567$)(?!12345678$)(?!87654321$)(?!7654321$)(?!654321$)(?!(\d)\1+$)(\d{6,8})$/'
+            ],
+
+            'correo' => [
+                'required',
+                'string',
+                'email',
+                'max:40',
+                'unique:usuarios',
+                'regex:/@gmail\.com$/i'
+            ],
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'max:15',
+                'confirmed',
+                'regex:/^.*((?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!$#%@]).*$/'
+            ],
+        ], [
+            // Mensaje personalizado para la Regex
+            'cedula_user.regex' => 'La cédula ingresada no cumple con el formato válido. Por favor, ingrese un número de cédula real.',
+            'correo.regex' => 'Solo se permiten direcciones de correo electrónico con el dominio @gmail.com.',
+            'password.regex' => 'La contraseña debe contener al menos una mayúscula, una minúscula, un número y un símbolo (! $ # % @).',
+            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
+            'password.max' => 'La contraseña no puede exceder los 15 caracteres.',
         ]);
 
         // 2. Crear el nuevo usuario
@@ -93,6 +122,6 @@ class AuthController extends Controller
 
         // 3. Redirigir al usuario con mensaje
         return redirect()->route('login')->with('success', '¡Registro exitoso! Tu cuenta ha sido creada y está pendiente de activación por el administrador.');
-    
+
     }
 }
