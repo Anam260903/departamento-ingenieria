@@ -23,6 +23,9 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
+        // Estandarizar el correo a minúsculas antes de la autenticación
+        $credentials['correo'] = strtolower($credentials['correo']);
+
         // 1. Intentar autenticar al usuario por credenciales
         if (Auth::attempt(['correo' => $credentials['correo'], 'password' => $credentials['password']])) {
 
@@ -37,7 +40,7 @@ class AuthController extends Controller
 
                 return back()->withErrors([
                     // Mostrar mensaje de bloqueo
-                    'correo' => 'Tu cuenta está inactiva y pendiente de aprobación por el administrador. Espera a ser activado.',
+                    'correo' => 'Tu usuario está inactivo. Contacta a la administración.',
                 ])->onlyInput('correo');
             }
 

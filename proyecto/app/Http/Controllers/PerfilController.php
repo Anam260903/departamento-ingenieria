@@ -38,8 +38,9 @@ class PerfilController extends Controller
                 'required',
                 'string',
                 'email',
-                'max:255',
+                'max:40',
                 Rule::unique('usuarios', 'correo')->ignore($usuario),
+                'regex:/@gmail\.com$/i'
             ],
           ], [
             // Mensaje personalizado para la Regex

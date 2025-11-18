@@ -75,13 +75,13 @@
                                 <div class="input-group">
                                     <input type="password" class="form-control" id="password-field" name="password"
                                         minlength="8" maxlength="15" placeholder="Contraseña" required>
-                                    <span class="input-group-text" id="toggle-password">
-                                        <i class="bi bi-eye-fill" id="eye-icon"></i>
-                                    </span>
                                     {{-- Parametros para la contraseña --}}
                                     <span class="input-group-text" data-bs-toggle="tooltip" data-bs-placement="top"
                                         title="8-15 caracteres. Debe incluir: Una letra mayúscula (A-Z). Una letra minúscula (a-z). Un número (0-9). Un símbolo (! $ # % @, etc.)">
                                         <i class="bi bi-info-circle"></i>
+                                    </span>
+                                    <span class="input-group-text" id="toggle-password">
+                                        <i class="bi bi-eye-fill" id="eye-icon"></i>
                                     </span>
                                 </div>
                             </div>

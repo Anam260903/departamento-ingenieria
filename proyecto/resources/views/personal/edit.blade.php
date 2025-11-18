@@ -55,8 +55,8 @@
                                 <label for="cedula_user" class="form-label">Cédula</label>
                                 <input type="text" class="form-control @error('cedula_user') is-invalid @enderror"
                                     id="cedula_user" name="cedula_user" placeholder="Cédula de identidad"
-                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57" minlength="7" maxlength="8"
-                                    value="{{ old('cedula_user', $personal->cedula_user) }}" required>
+                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57" minlength="7"
+                                    maxlength="8" value="{{ old('cedula_user', $personal->cedula_user) }}" required>
                                 @error('cedula_user')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -86,15 +86,16 @@
                                 @enderror
                             </div>
 
-                            
+
                             {{-- Campo de rol --}}
                             <div class="col-lg-3 col-md-6 mb-3">
                                 <label for="id_rol" class="form-label">Rol del Usuario</label>
-                                <select class="form-select @error('id_rol') is-invalid @enderror" id="id_rol" name="id_rol" required>
+                                <select class="form-select @error('id_rol') is-invalid @enderror" id="id_rol"
+                                    name="id_rol" required>
                                     <option value="">Seleccione un Rol</option>
                                     {{-- Recorremos la lista de roles que vienen del controlador --}}
                                     @foreach($roles as $rol)
-                                        <option value="{{ $rol->id_rol }}"  @selected(old('id_rol', $personal->id_rol) == $rol->id_rol)>
+                                        <option value="{{ $rol->id_rol }}" @selected(old('id_rol', $personal->id_rol) == $rol->id_rol)>
                                             {{ $rol->nombre_rol }}
                                         </option>
                                     @endforeach
@@ -103,7 +104,7 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
-                        </div> 
+                        </div>
 
                         {{-- Sección de contacto y profesión --}}
                         <h5 class="mb-3">Contacto y Profesión</h5>
@@ -113,6 +114,8 @@
                                 <label for="correo" class="form-label">Correo Electrónico</label>
                                 <input type="email" class="form-control @error('correo') is-invalid @enderror"
                                     id="correo" name="correo" placeholder="ejemplo@gmail.com" maxlength="40"
+                                    pattern="[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+"
+                                    title="Solo se permiten letras y espacios"
                                     value="{{ old('correo', $personal->correo) }}" required>
                                 @error('correo')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -131,7 +134,7 @@
                             </div>
                         </div>
 
-                        {{-- sección cambio de contraseña --}}
+                        {{-- Sección cambio de contraseña --}}
                         <h5 class="mb-3">Cambio de Contraseña (Opcional)</h5>
                         <p class="text-muted small">Solo llena estos campos si deseas cambiar la contraseña del usuario.
                         </p>
@@ -140,9 +143,20 @@
                             {{-- Nueva Contraseña --}}
                             <div class="col-md-6 mb-3">
                                 <label for="password" class="form-label">Nueva Contraseña</label>
-                                <input type="password" class="form-control @error('password') is-invalid @enderror"
-                                    id="password" name="password" minlength="8" maxlength="15" placeholder="Nueva contraseña">
-                                    
+                                <div class="input-group">
+                                    <input type="password" class="form-control @error('password') is-invalid @enderror"
+                                        id="password" name="password" minlength="8" maxlength="15"
+                                        placeholder="Nueva contraseña">
+                                    <button class="btn btn-outline-secondary toggle-password" type="button">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                    {{-- Parametros para la contraseña --}}
+                                    <span class="input-group-text" data-bs-toggle="tooltip" data-bs-placement="top"
+                                        title="8-15 caracteres. Debe incluir: Una letra mayúscula (A-Z). Una letra minúscula (a-z). Un número (0-9). Un símbolo (! $ # % @, etc.)">
+                                        <i class="bi bi-info-circle"></i>
+                                    </span>
+
+                                </div>
                                 @error('password')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -151,8 +165,13 @@
                             {{-- Confirmar Contraseña --}}
                             <div class="col-md-6 mb-3">
                                 <label for="password_confirmation" class="form-label">Confirmar Contraseña</label>
-                                <input type="password" class="form-control" id="password_confirmation"
-                                    name="password_confirmation" placeholder="Repite la nueva contraseña">
+                                <div class="input-group">
+                                    <input type="password" class="form-control" id="password_confirmation"
+                                        name="password_confirmation" minlength="8" maxlength="15" placeholder="Repite la nueva contraseña">
+                                    <button class="btn btn-outline-secondary toggle-password" type="button">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
@@ -171,6 +190,16 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ asset('js/dashboard.js') }}"></script>
+    <script>
+        // Inicializar Tooltips y Popovers
+        document.addEventListener('DOMContentLoaded', function () {
+            // Inicializa Tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            })
+        });
+    </script>
 </body>
 
 </html>

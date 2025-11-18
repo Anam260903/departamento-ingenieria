@@ -60,9 +60,10 @@ class PersonalController extends Controller
                 'string',
                 'email',
                 'max:40',
-                Rule::unique('usuarios')->ignore($personal->id_user, 'id_user')
+                Rule::unique('usuarios')->ignore($personal->id_user, 'id_user'),
+                'regex:/@gmail\.com$/i'
             ],
-            'profesion' => ['nullable', 'string', 'max:50'],
+            'profesion' => ['nullable', 'string', 'max:50', 'regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/'],
             'id_rol' => ['required', 'exists:roles,id_rol'],
             'password' => [
                 'nulable',
@@ -100,7 +101,7 @@ class PersonalController extends Controller
         $personal->update($data);
 
         // 4. Redirigir y notificar
-        return redirect()->route('personal.index')->with('success', 'Personal ' . $personal->nombre . ' ' . $personal->apellido . ' actualizado exitosamente.');
+        return redirect()->route('personal.index')->with('success', 'Datos de ' . $personal->nombre . ' ' . $personal->apellido . ' actualizados exitosamente.');
     }
 
 
@@ -120,7 +121,7 @@ class PersonalController extends Controller
 
         $personal->save();
 
-        return back()->with('success', 'Estado de ' . $personal->nombre . ' actualizado a ' . $nuevoEstadoTexto . '.');
+        return back()->with('success', 'Estado de ' . $personal->nombre . ' ' . $personal->apellido . ' actualizado a ' . $nuevoEstadoTexto . '.');
     }
 
     /**

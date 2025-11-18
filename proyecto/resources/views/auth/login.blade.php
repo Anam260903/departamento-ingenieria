@@ -52,7 +52,7 @@
                         <div class="mb-3">
                             <div class="input-group">
                                 <input type="password" class="form-control" id="password-field" name="password"
-                                    maxlength="10" placeholder="Contraseña" required>
+                                    minlength="8" maxlength="15" placeholder="Contraseña" required>
                                 <span class="input-group-text" id="toggle-password">
                                     <i class="bi bi-eye-fill" id="eye-icon"></i>
                                 </span>

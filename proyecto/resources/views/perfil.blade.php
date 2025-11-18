@@ -66,7 +66,8 @@
                             <div class="mb-3">
                                 <label for="cedula_user" class="form-label">Cédula</label>
                                 <input type="text" class="form-control" id="cedula_user" name="cedula_user"
-                                    value="{{ $usuario->cedula_user }}" disabled>
+                                    value="{{ $usuario->cedula_user }}"
+                                    title="Para cambiar este dato contacta a la administración" disabled>
                             </div>
                             <div class="mb-3">
                                 <label for="correo" class="form-label">Correo</label>
@@ -118,7 +119,7 @@
                                 <label for="password_confirmacion" class="form-label">Confirma nueva contraseña</label>
                                 <div class="input-group">
                                     <input type="password" class="form-control" id="password_nueva_confirmation"
-                                        name="password_nueva_confirmation" maxlength="10" required>
+                                        name="password_nueva_confirmation" minlength="8" maxlength="15" required>
                                     <button class="btn btn-outline-secondary toggle-password" type="button">
                                         <i class="bi bi-eye"></i>
                                     </button>
