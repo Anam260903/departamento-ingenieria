@@ -69,7 +69,7 @@ class InspeccionesController extends Controller
         $inspecciones = $query->orderBy('fecha_insp', 'desc')->get();
 
         // 6. Pasar los resultados a la vista
-        return view('gestion-inspecciones', compact('inspecciones'));
+        return view('inspecciones.index', compact('inspecciones'));
     }
 
     /**
@@ -81,7 +81,7 @@ class InspeccionesController extends Controller
         $this->authorize('create', Inspeccion::class);
 
         // Mostrar el formulario para crear una nueva inspección
-        return view('formulario-inspeccion');
+        return view('inspecciones.formulario-inspeccion');
     }
 
     /**
@@ -161,7 +161,7 @@ class InspeccionesController extends Controller
         // Autorización: Verifica si el usuario puede editar la inspección
         $this->authorize('update', $inspeccion);
 
-        return view('editar-inspeccion', compact('inspeccion'));
+        return view('inspecciones.editar-inspeccion', compact('inspeccion'));
     }
 
     /**
@@ -298,7 +298,7 @@ class InspeccionesController extends Controller
         }
 
         // 2. Cargar la vista que contiene le PDF
-        $pdf = PDF::loadView('reporte-inspecciones-pdf', compact('inspecciones'));
+        $pdf = PDF::loadView('inspecciones.pdf.reporte-inspecciones-pdf', compact('inspecciones'));
 
         // Ajuste para mejorar la paginación en tablas grandes
         $pdf->setOptions(['isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true]);
@@ -355,7 +355,7 @@ class InspeccionesController extends Controller
 
         // 4. Cargar la vista Blade y generar el PDF
         // Pasamos la fecha de reporte para actualizar el título del PDF
-        $pdf = PDF::loadView('reporte-inspecciones-pdf', compact('inspecciones', 'fechaReporte'));
+        $pdf = PDF::loadView('inspecciones.pdf.reporte-inspecciones-pdf', compact('inspecciones', 'fechaReporte'));
         $pdf->setOptions(['isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true]);
 
         // 5. Devolver el archivo PDF para descarga

@@ -16,6 +16,13 @@ Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 // Ruta para procesar la solicitud de inicio de sesión
 Route::post('/login', [AuthController::class, 'login']);
 
+// Ruta para extender la sesión vía AJAX
+Route::post('/session/extend', function (Illuminate\Http\Request $request) {
+    // Solo accedemos a una variable de sesión para actualizar el tiempo de actividad
+    $request->session()->put('active_check', time());
+    return response()->json(['status' => 'extended']);
+})->name('session.extend')->middleware('auth'); // Asegúrate que solo sea accesible si está logueado
+
 // Rutas de recuperación de contraseña
 Route::get('forgot-password', [PasswordResetController::class, 'showLinkRequestForm'])->name('password.request');
 Route::post('forgot-password', [PasswordResetController::class, 'sendResetLinkEmail'])->name('password.email');

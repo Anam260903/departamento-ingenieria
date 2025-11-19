@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Personal</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/bootstrap-icons/bootstrap-icons.min.css') }}">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
 </head>
@@ -88,12 +88,12 @@
                                         {{-- Estado (Activo/Inactivo) --}}
                                         <td class="align-middle text-center text-sm">
                                             @php
-                                                $estado_numerico = $user->estado_user;
+    $estado_numerico = $user->estado_user;
 
-                                                $estado = ($estado_numerico == 1) ? 'ACIVO' : 'INACTIVO';
+    $estado = ($estado_numerico == 1) ? 'ACIVO' : 'INACTIVO';
 
-                                                $esActivo = ($estado_numerico === '1');
-                                                $badgeClass = $esActivo ? 'bg-success' : 'bg-secondary';
+    $esActivo = ($estado_numerico === '1');
+    $badgeClass = $esActivo ? 'bg-success' : 'bg-secondary';
                                             @endphp
                                             <span class="badge {{ $badgeClass }} text-white text-uppercase">
                                                 {{ $estado }}
@@ -186,7 +186,7 @@
         </div>
     </div>
 
-    <script src=" https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('js/dashboard.js') }}"></script>
 
     @push('scripts')
@@ -276,6 +276,8 @@
             });
         });
     </script>
+
+    @include('components._session-timeout')
 </body>
 
 </html>

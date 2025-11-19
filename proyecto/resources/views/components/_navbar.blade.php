@@ -9,8 +9,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"
         rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/bootstrap-icons/bootstrap-icons.min.css') }}" rel="stylesheet" >
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <link href="{{ asset('css/dasboard.css') }}" rel="stylesheet">
 </head>
@@ -21,7 +21,7 @@
         <div class="container-fluid">
 
             <a class="navbar-brand d-flex align-items-center" href="{{ route('dashboard') }}">
-                <img src="{{ asset('images/logo_icon.png') }}" alt="Logo" width="40" height="40" class="me-2">
+                <img src="{{ asset('images/logo1.png') }}" alt="Logo" width="50" height="40" class="ms-2">
             </a>
 
             <div class="d-flex flex-grow-1 justify-content-center">
@@ -31,7 +31,7 @@
                 </div>
             </div>
 
-            <div class="ms-auto d-none d-lg-block">
+            <div class="me-2 d-none d-lg-block">
                 <span class="text-white d-inline-block">{{ Auth::user()->nombre }} {{ Auth::user()->apellido }}</span>
                 <br>
                 <small class="text-white d-inline-block">{{ Auth::user()->correo }}</small>
@@ -45,7 +45,7 @@
 
         </div>
     </nav>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="{{ asset('js/dashboard.js') }}"></script>
 </body>

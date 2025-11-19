@@ -9,8 +9,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"
         rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/bootstrap-icons/bootstrap-icons.min.css') }}" rel="stylesheet" >
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <link href="{{ asset('css/register.css') }}" rel="stylesheet">
 </head>
@@ -74,12 +74,9 @@
                             <div class="col-6">
                                 <div class="input-group">
                                     <input type="password" class="form-control" id="password-field" name="password"
+                                        data-bs-toggle="tooltip" data-bs-trigger="hover"
+                                        data-bs-title="8-15 caracteres. Debe incluir: Una letra mayúscula (A-Z). Una letra minúscula (a-z). Un número (0-9). Un símbolo (! $ # % @, etc.)"
                                         minlength="8" maxlength="15" placeholder="Contraseña" required>
-                                    {{-- Parametros para la contraseña --}}
-                                    <span class="input-group-text" data-bs-toggle="tooltip" data-bs-placement="top"
-                                        title="8-15 caracteres. Debe incluir: Una letra mayúscula (A-Z). Una letra minúscula (a-z). Un número (0-9). Un símbolo (! $ # % @, etc.)">
-                                        <i class="bi bi-info-circle"></i>
-                                    </span>
                                     <span class="input-group-text" id="toggle-password">
                                         <i class="bi bi-eye-fill" id="eye-icon"></i>
                                     </span>
@@ -111,7 +108,26 @@
         </div>
     </div>
     <script src="{{ asset('js/register.js') }}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const passwordField = document.getElementById('password-field');
+
+            if (passwordField) {
+                // 1. Creamos la instancia del tooltip
+                const passwordTooltip = new bootstrap.Tooltip(passwordField);
+
+                // 2. Definimos una función que solo oculte el tooltip.
+                const hideTooltipOnFocus = function () {
+                    // Ocultamos el tooltip
+                    passwordTooltip.hide();
+                };
+
+                // 3. Asignamos el evento 'focus'
+                passwordField.addEventListener('focus', hideTooltipOnFocus);
+            }
+        });
+    </script>
 </body>
 
 </html>

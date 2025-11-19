@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Informes Técnicos</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/bootstrap-icons/bootstrap-icons.min.css') }}">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
 </head>
@@ -180,21 +180,21 @@
                                 {{-- Llenar el Dropdown con inspecciones disponibles --}}
                                 @php
 
-                                    $informesController = new App\Http\Controllers\InformesController();
-                                    $inspeccionesDisponibles = $informesController->obtenerInspeccionesDisponibles();
-                                    $limiteTexto = 55;
+$informesController = new App\Http\Controllers\InformesController();
+$inspeccionesDisponibles = $informesController->obtenerInspeccionesDisponibles();
+$limiteTexto = 55;
                                 @endphp
 
                                 @forelse ($inspeccionesDisponibles as $insp)
                                     @php
-                                        $propietario = $insp->vivienda->propietario;
-                                        $texto = ($propietario ? $propietario->nombre_propie . ' ' . $propietario->apellido_propie : 'N/A')
-                                            . ' - ' . ($insp->vivienda->direccion ?? 'N/A');
-                                        if (strlen($texto) > $limiteTexto) {
-                                            $textoMostrar = substr($texto, 0, $limiteTexto) . '...';
-                                        } else {
-                                            $textoMostrar = $texto;
-                                        }
+    $propietario = $insp->vivienda->propietario;
+    $texto = ($propietario ? $propietario->nombre_propie . ' ' . $propietario->apellido_propie : 'N/A')
+        . ' - ' . ($insp->vivienda->direccion ?? 'N/A');
+    if (strlen($texto) > $limiteTexto) {
+        $textoMostrar = substr($texto, 0, $limiteTexto) . '...';
+    } else {
+        $textoMostrar = $texto;
+    }
                                     @endphp
                                     <option value="{{ $insp->id_insp }}">{{ $textoMostrar }}</option>
                                 @empty
@@ -215,7 +215,7 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('js/dashboard.js') }}"></script>
 
     <script>
@@ -244,6 +244,7 @@
         });
     </script>
 
+    @include('components._session-timeout')
 </body>
 
 </html>
