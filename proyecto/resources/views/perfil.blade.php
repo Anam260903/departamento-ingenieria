@@ -103,16 +103,12 @@
                                 <label for="password_nueva" class="form-label">Nueva contraseña</label>
                                 <div class="input-group">
                                     <input type="password" class="form-control" id="password_nueva"
-                                        name="password_nueva" minlength="8" maxlength="15" required>
+                                    data-bs-toggle="tooltip" data-bs-trigger="hover"
+                                    data-bs-title="8-15 caracteres. Debe incluir: Una letra mayúscula (A-Z). Una letra minúscula (a-z). Un número (0-9). Un símbolo (! $ # % @, etc.)"    
+                                    name="password_nueva" minlength="8" maxlength="15" required>
                                     <button class="btn btn-outline-secondary toggle-password" type="button">
                                         <i class="bi bi-eye"></i>
                                     </button>
-                                    {{-- Parametros para la contraseña --}}
-                                    <span class="input-group-text" data-bs-toggle="tooltip" data-bs-placement="top"
-                                        title="8-15 caracteres. Debe incluir: Una letra mayúscula (A-Z). Una letra minúscula (a-z). Un número (0-9). Un símbolo (! $ # % @, etc.)">
-                                        <i class="bi bi-info-circle"></i>
-                                    </span>
-                                </div>
                             </div>
 
                             <div class="mb-3">

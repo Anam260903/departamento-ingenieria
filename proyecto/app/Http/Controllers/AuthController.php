@@ -101,7 +101,7 @@ class AuthController extends Controller
                 'min:8',
                 'max:15',
                 'confirmed',
-                'regex:/^.*((?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!$#%@]).*$/'
+                'regex:/^.*(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!$#%@]).*$/'
             ],
         ], [
             // Mensaje personalizado para la Regex
