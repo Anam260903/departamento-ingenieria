@@ -4,8 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-
-class calculo_informe extends Model
+class asignacion_recursos extends Model
 {
-    
+    //
 }

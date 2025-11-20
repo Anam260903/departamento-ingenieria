@@ -13,13 +13,8 @@ return new class extends Migration
     {
         Schema::create('calculos', function (Blueprint $table) {
             $table->id( 'id_calculo');
-            $table->string('codigo_calculo', 10)->unique();;
+            $table->string('nombre_calculo');
             $table->text('contenido');
-            $table->date('fecha_creacion');
-            $table->unsignedBigInteger('id_cate');
-            $table->unsignedBigInteger('id_user');
-            $table->foreign('id_cate')->references('id_cate')->on('categorias')->onDelete('restrict'); // No se puede borrar una categoría si tiene cálculos asociados
-            $table->foreign('id_user')->references('id_user')->on('usuarios');
             $table->timestamps();
         });
     }

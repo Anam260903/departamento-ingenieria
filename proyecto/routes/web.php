@@ -46,6 +46,12 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
 // Ruta para mostrar el perfil (GET, protegida por middleware)
 Route::get('/perfil', [PerfilController::class, 'index'])->name('perfil')->middleware('auth');
 
+// Ruta para actualizar los datos del perfil (POST, protegida por middleware)
+Route::post('/perfil/actualizar', [PerfilController::class, 'update'])->name('perfil.update')->middleware('auth');
+
+// Ruta para actualizar la contraseña del perfil (POST, protegida por middleware)
+Route::post('/perfil/cambiar-contrasena', [PerfilController::class, 'changePassword'])->name('perfil.change-password')->middleware('auth');
+
 // Ruta para mostrar la lista del personal
 Route::get('personal', [PersonalController::class, 'index'])
     ->name('personal.index')
@@ -75,12 +81,6 @@ Route::get('personal/{personal}/get-inspecciones', [PersonalController::class, '
 // 2. Ruta POST para guardar la asignación de la inspección al usuario.
 Route::post('personal/{personal}/asignar-inspeccion', [PersonalController::class, 'assignInspection'])
     ->name('personal.assignInspection');
-
-// Ruta para actualizar los datos del perfil (POST, protegida por middleware)
-Route::post('/perfil/actualizar', [PerfilController::class, 'update'])->name('perfil.update')->middleware('auth');
-
-// Ruta para actualizar la contraseña del perfil (POST, protegida por middleware)
-Route::post('/perfil/cambiar-contrasena', [PerfilController::class, 'changePassword'])->name('perfil.change-password')->middleware('auth');
 
 // Ruta para el módulo de inspecciones (protegidas por middleware)
 Route::middleware('auth')->group(function () {

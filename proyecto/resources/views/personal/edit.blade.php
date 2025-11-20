@@ -114,8 +114,6 @@
                                 <label for="correo" class="form-label">Correo Electrónico</label>
                                 <input type="email" class="form-control @error('correo') is-invalid @enderror"
                                     id="correo" name="correo" placeholder="ejemplo@gmail.com" maxlength="40"
-                                    pattern="[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+"
-                                    title="Solo se permiten letras y espacios"
                                     value="{{ old('correo', $personal->correo) }}" required>
                                 @error('correo')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -145,16 +143,12 @@
                                 <label for="password" class="form-label">Nueva Contraseña</label>
                                 <div class="input-group">
                                     <input type="password" class="form-control @error('password') is-invalid @enderror"
-                                        id="password" name="password" minlength="8" maxlength="15"
-                                        placeholder="Nueva contraseña">
+                                        id="password" name="password" minlength="8" maxlength="15" placeholder="Nueva contraseña"
+                                        data-bs-toggle="tooltip" data-bs-trigger="hover"
+                                        data-bs-title="8-15 caracteres. Debe incluir: Una letra mayúscula (A-Z). Una letra minúscula (a-z). Un número (0-9). Un símbolo (! $ # % @, etc.)">
                                     <button class="btn btn-outline-secondary toggle-password" type="button">
                                         <i class="bi bi-eye"></i>
                                     </button>
-                                    {{-- Parametros para la contraseña --}}
-                                    <span class="input-group-text" data-bs-toggle="tooltip" data-bs-placement="top"
-                                        title="8-15 caracteres. Debe incluir: Una letra mayúscula (A-Z). Una letra minúscula (a-z). Un número (0-9). Un símbolo (! $ # % @, etc.)">
-                                        <i class="bi bi-info-circle"></i>
-                                    </span>
 
                                 </div>
                                 @error('password')

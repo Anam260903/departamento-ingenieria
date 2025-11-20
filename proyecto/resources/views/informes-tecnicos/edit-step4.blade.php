@@ -66,13 +66,13 @@
 
                                 <?php foreach ($calculos as $calculo): ?>
                                 <option value="<?php    echo $calculo->id_calculo; ?>" <?php    echo in_array($calculo->id_calculo, $selectedIds) ? 'selected' : ''; ?>>
-                                    <?php    echo $calculo->codigo_calculo; ?>
+                                    <?php    echo $calculo->nombre_calculo; ?>
                                     (<?php    echo \Illuminate\Support\Str::limit($calculo->contenido, 50); ?>)
                                 </option>
                                 <?php endforeach; ?>
                             </select>
-                            <small class="form-text text-muted">Seleccione uno o más códigos. La información se
-                                consolidará en el campo "Materiales" a continuación.</small>
+                            <small class="form-text text-muted">Seleccione la construcción a realizar. La información se
+                                mostrará en el campo "Materiales" a continuación.</small>
                             <?php if ($errors->has('calculos_codes')): ?>
                             <div class="text-danger"><?php    echo $errors->first('calculos_codes'); ?></div>
                             <?php endif; ?>

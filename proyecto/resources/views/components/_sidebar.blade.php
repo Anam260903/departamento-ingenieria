@@ -32,7 +32,7 @@
 
             @if (auth()->check() && auth()->user()->id_rol === 1)
                 <a href="{{ route('personal.index') }}"
-                    class="list-group-item list-group-item-action bg-white d-flex align-items-center">
+                    class="list-group-item list-group-item-action bg-white d-flex align-items-center @if(request()->routeIs('personal.index') || request()->routeIs('personal.edit') || request()->routeIs('inspecciones.edit')) active @endif">
                     <i class="bi bi-file-earmark-person me-2"></i> Gestión de personal
                 </a>
             @endif

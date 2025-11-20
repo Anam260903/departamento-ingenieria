@@ -17,10 +17,38 @@ class PersonalController extends Controller
     /**
      * Muestra la lista de personal técnico (usuarios)
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Obtener todo el personal ordenado por apellido
-        $personal = Usuario::with('rol')->orderBy('nombre', 'asc')->get();
+        // 1. Inicializar la consulta
+        $query = Usuario::with('rol');
+
+        // 2. Filtrar por Palabra Clave
+        // Buscar por Cédula, Nombre, Apellido, Correo, Profesión.
+        if ($request->filled('keyword')) {
+            $keyword = $request->keyword;
+            $query->where(function ($q) use ($keyword) {
+                
+                $q->where('cedula_user', 'like', '%' . $keyword . '%')
+                    ->orWhere('nombre', 'like', '%' . $keyword . '%')
+                    ->orWhere('apellido', 'like', '%' . $keyword . '%')
+                    ->orWhere('correo', 'like', '%' . $keyword . '%')
+                    ->orWhere('profesion', 'like', '%' . $keyword . '%');
+                $q->orWhereHas('rol', function ($q_rol) use ($keyword) {
+                    $q_rol->where('nombre_rol', 'like', '%' . $keyword . '%');
+                });
+            });
+        }
+
+        // 3. Filtrar por estado
+
+        if ($request->filled('estado')) {
+            $query->where('estado_user', (int) $request->estado);
+        }
+
+        // 4. Ejecutar la consulta y ordenar
+        $personal = $query->orderBy('nombre', 'asc')->get();
+
+        // 5. Pasar los resultados a la vista
         return view('personal.index', compact('personal'));
     }
 
@@ -66,7 +94,7 @@ class PersonalController extends Controller
             'profesion' => ['nullable', 'string', 'max:50', 'regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/'],
             'id_rol' => ['required', 'exists:roles,id_rol'],
             'password' => [
-                'nulable',
+                'nullable',
                 'string',
                 'min:8',
                 'max:15',
@@ -181,16 +209,16 @@ class PersonalController extends Controller
 
             // Verificación final de disponibilidad antes de guardar
             if (!is_null($inspeccion->id_user)) {
-                 return back()->with('error', 'Error: La inspección ya no está disponible.');
+                return back()->with('error', 'Error: La inspección ya no está disponible.');
             }
-            
+
             // 3. Asignar el ID del usuario al campo id_user de la inspección
             $inspeccion->id_user = $personal->id_user;
-            
+
             $inspeccion->save();
 
             // Mensaje de éxito
-            return back()->with('success', 'Inspección #'. $inspeccion->id_insp . ' asignada a ' . $personal->nombre . ' correctamente.');
+            return back()->with('success', 'Inspección #' . $inspeccion->id_insp . ' asignada a ' . $personal->nombre . ' ' . $personal->apellido . ' correctamente.');
 
         } catch (\Exception $e) {
             // En caso de error

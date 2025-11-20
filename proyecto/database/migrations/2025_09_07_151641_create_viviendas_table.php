@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('viviendas', function (Blueprint $table) {
             $table->id('id_viv');
             $table->string('direccion', 100);
-            $table->text('caracteristicas')->nullable();;
+            $table->text('caracteristicas')->nullable();
             $table->decimal('latitud', 10, 8)->nullable(); 
             $table->decimal('longitud', 11, 8)->nullable(); 
             $table->string('map_image_file', 255)->nullable();

@@ -438,7 +438,7 @@ class InformesController extends BaseController
         $this->authorize('update', $informe); // Pasa el modelo para la verificación de pertenencia
 
         // Obtener todos los cálculos disponibles para el selector
-        $calculos = Calculos::select('id_calculo', 'codigo_calculo', 'contenido')->get();
+        $calculos = Calculos::select('id_calculo', 'nombre_calculo', 'contenido')->get();
 
         // Pasamos los datos a la vista
         return view('informes-tecnicos.edit-step4', compact('informe', 'calculos'));

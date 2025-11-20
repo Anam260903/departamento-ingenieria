@@ -5,6 +5,8 @@ namespace Database\Seeders;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class DatabaseSeeder extends Seeder
 {
@@ -13,11 +15,18 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // Deshabilitar la verificación de claves foráneas
+        Schema::disableForeignKeyConstraints();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        // LLamar a los seeder
+        $this->call([
+            RolesSeeder::class,
+            AdminSeeder::class,
+            CalculosSeeder::class,
         ]);
+
+        // Habilitar nuevamente las restricciones de claves foráneas
+        Schema::enableForeignKeyConstraints();
+
     }
 }

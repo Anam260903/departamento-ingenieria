@@ -15,10 +15,9 @@ return new class extends Migration
             
             $table->unsignedBigInteger('id_calculo');
             $table->unsignedBigInteger('id_inf');
-            $table->foreign('id_calculo')->references('id_calculo')->on('calculos')->onDelete('restrict');;
-            $table->foreign('id_inf')->references('id_inf')->on('informes')->onDelete('cascade');;
+            $table->foreign('id_calculo')->references('id_calculo')->on('calculos')->onDelete('restrict');
+            $table->foreign('id_inf')->references('id_inf')->on('informes')->onDelete('cascade');
             $table->primary(['id_inf', 'id_calculo']);
-            
             $table->timestamps();
         });
     }

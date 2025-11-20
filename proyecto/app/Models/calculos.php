@@ -2,22 +2,22 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class calculos extends Model
 {
+
+    use HasFactory;
     protected $table = 'calculos';
     protected $primaryKey = 'id_calculo';
 
     protected $fillable = [
-        'codigo_calculo',
+        'nombre_calculo',
         'contenido',
-        'fecha_creacion',
-        'id_cate', // Clave foránea a categoria
-        'id_user', // Clave foránea a usuario
     ];
 
-    //Relación: Un infrome tiene muchos calculos
+    // Relación: Un informe puede tener muchos calculos
     public function informes()
     {
         return $this->belongsToMany(

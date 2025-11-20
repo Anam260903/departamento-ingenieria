@@ -39,24 +39,52 @@
                     <div class="alert alert-danger">{{ session('error') }}</div>
                 @endif
 
+                <div class="card shadow-sm p-4 mb-4">
+                    <form action="{{ route('personal.index') }}" method="GET">
+                        <div class="row g-3">
+
+                            {{-- Filtro por palabra clave --}}
+                            <div class="col-md-5">
+                                <input type="text" class="form-control" name="keyword"
+                                    placeholder="Buscar por Cédula, Nombre, Correo, Profesión o Rol"
+                                    value="{{ request('keyword') }}">
+                            </div>
+
+                            {{-- Filtro por estado --}}
+                            <div class="col-md-4">
+                                <select class="form-select" name="estado">
+                                    <option value="">Filtrar por Estado</option>
+                                    <option value="1" {{ request('estado') === '1' ? 'selected' : '' }}>ACTIVO</option>
+                                    <option value="0" {{ request('estado') === '0' ? 'selected' : '' }}>INACTIVO</option>
+                                </select>
+                            </div>
+
+                            {{-- Botones de acción --}}
+                            <div class="col-md-3 d-flex">
+                                <button type="submit" class="btn btn-secondary w-100 me-2">
+                                    <i class="bi bi-funnel"></i> Filtrar
+                                </button>
+                                {{-- Botón para limpiar filtros --}}
+                                <a href="{{ route('personal.index') }}" class="btn btn-outline-secondary">
+                                    <i class="bi bi-x-circle"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
                 <div class="card shadow-sm p-4">
 
-                    <div class="table-responsive p-0">
-                        <table class="table align-items-center mb-0">
-                            <thead>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-header-custom"> 
                                 <tr>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                        Cédula</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                        Nombre y Apellido</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                        Correo Electrónico</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                        Profesión</th>
-                                    <th
-                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
-                                        Estado</th>
-                                    <th class="text-secondary opacity-7">Acciones</th>
+                                    <th scope="col">Cédula</th>
+                                    <th scope="col">Nombre y Apellido</th>
+                                    <th scope="col">Correo Electrónico</th>
+                                    <th scope="col">Profesión</th>
+                                    <th scope="col">Estado</th>
+                                    <th scope="col">Acciones</th></tr>
                                 </tr>
                             </thead>
                             <tbody>
@@ -64,7 +92,8 @@
                                     <tr>
                                         {{-- Cédula --}}
                                         <td class="align-middle text-sm">
-                                            <p class="text-xs font-weight-bold mb-0">{{ $user->cedula_user ?? 'N/A' }}</p>
+                                            <p class="text-xs font-weight-bold mb-0">{{ $user->cedula_user ?? 'N/A' }}
+                                            </p>
                                         </td>
 
                                         {{-- Nombre y apellido --}}
@@ -81,7 +110,8 @@
 
                                         {{-- Profesión --}}
                                         <td class="align-middle text-sm">
-                                            <p class="text-xs font-weight-bold mb-0">{{ $user->profesion ?? 'No Asignada' }}
+                                            <p class="text-xs font-weight-bold mb-0">
+                                                {{ $user->profesion ?? 'No Asignada' }}
                                             </p>
                                         </td>
 
@@ -111,7 +141,7 @@
                                                     @method('PATCH')
                                                     <button type="submit"
                                                         class="btn btn-sm btn-icon-only 
-                                                                                                                                                                    {{ $esActivo ? 'btn-warning' : 'btn-success' }}"
+                                                                                                                                                                                {{ $esActivo ? 'btn-warning' : 'btn-success' }}"
                                                         data-bs-toggle="tooltip" data-bs-placement="top"
                                                         title="{{ $esActivo ? 'Desactivar Personal' : 'Activar Personal' }}">
                                                         <i class="bi {{ $esActivo ? 'bi-lock' : 'bi-unlock' }}"></i>
@@ -144,140 +174,139 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    {{-- Modal para asignación de inspecciones --}}
-    <div class="modal fade" id="assignInspectionModal" tabindex="-1" aria-labelledby="assignInspectionModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title" id="assignInspectionModalLabel">
-                        Asignar Inspección a: <span id="modal-user-name"></span>
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
+        {{-- Modal para asignación de inspecciones --}}
+        <div class="modal fade" id="assignInspectionModal" tabindex="-1" aria-labelledby="assignInspectionModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title" id="assignInspectionModalLabel">
+                            Asignar Inspección a: <span id="modal-user-name"></span>
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+                    <form id="assignInspectionForm" method="POST">
+                        @csrf
+                        <div class="modal-body">
+
+                            <div class="alert alert-info d-none" id="no-inspections-alert">
+                                No hay inspecciones disponibles para asignar en este momento.
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="id_insp" class="form-label">Inspección Disponible</label>
+                                <select class="form-select" id="id_insp" name="id_insp" required>
+                                    <option value="">Cargando inspecciones...</option>
+                                </select>
+                                {{-- Espacio para errores de validación si usaras AJAX, o si Laravel redirige --}}
+                                <div class="text-danger mt-1" id="id_insp-error"></div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary" id="assign-btn" disabled>
+                                <i class="bi bi-person-fill-add me-2"></i> Asignar
+                            </button>
+                        </div>
+                    </form>
                 </div>
-                <form id="assignInspectionForm" method="POST">
-                    @csrf
-                    <div class="modal-body">
-
-                        <div class="alert alert-info d-none" id="no-inspections-alert">
-                            No hay inspecciones disponibles para asignar en este momento.
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="id_insp" class="form-label">Inspección Disponible</label>
-                            <select class="form-select" id="id_insp" name="id_insp" required>
-                                <option value="">Cargando inspecciones...</option>
-                            </select>
-                            {{-- Espacio para errores de validación si usaras AJAX, o si Laravel redirige --}}
-                            <div class="text-danger mt-1" id="id_insp-error"></div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary" id="assign-btn" disabled>
-                            <i class="bi bi-person-fill-add me-2"></i> Asignar
-                        </button>
-                    </div>
-                </form>
             </div>
         </div>
-    </div>
 
-    <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ asset('js/dashboard.js') }}"></script>
+        <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
+        <script src="{{ asset('js/dashboard.js') }}"></script>
 
-    @push('scripts')
+        @push('scripts')
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+                    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                        return new bootstrap.Tooltip(tooltipTriggerEl)
+                    })
+                });
+            </script>
+        @endpush
+
         <script>
             document.addEventListener('DOMContentLoaded', function () {
-                var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-                var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-                    return new bootstrap.Tooltip(tooltipTriggerEl)
-                })
+                const modal = document.getElementById('assignInspectionModal');
+                const select = document.getElementById('id_insp');
+                const form = document.getElementById('assignInspectionForm');
+                const userNameSpan = document.getElementById('modal-user-name');
+                const noInspectionsAlert = document.getElementById('no-inspections-alert');
+                const assignButton = document.getElementById('assign-btn');
+
+                // Escucha el evento de Bootstrap
+                modal.addEventListener('show.bs.modal', function (event) {
+                    const button = event.relatedTarget;
+                    const userId = button.getAttribute('data-user-id');
+                    const userName = button.getAttribute('data-user-name');
+
+                    // 1. Resetear el estado
+                    select.innerHTML = '<option value="">Cargando inspecciones...</option>';
+                    noInspectionsAlert.classList.add('d-none');
+                    assignButton.setAttribute('disabled', 'true');
+
+                    // 2. Actualizar la interfaz y las URLs
+                    userNameSpan.textContent = userName;
+
+                    // Rutas dinámicas
+                    const fetchUrl = `/personal/${userId}/get-inspecciones`;
+                    const postUrl = `/personal/${userId}/asignar-inspeccion`;
+
+                    form.setAttribute('action', postUrl);
+
+                    // 3. Petición AJAX para obtener las inspecciones disponibles
+                    fetch(fetchUrl)
+                        .then(response => {
+                            if (!response.ok) {
+                                // Si el servidor devuelve un error
+                                return response.json().then(err => {
+                                    // Intenta obtener el mensaje de error del JSON
+                                    throw new Error(err.message || 'Error desconocido del servidor (Código: ' + response.status + ')');
+                                });
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            select.innerHTML = ''; // Limpiar select
+
+                            if (data.inspecciones.length === 0) {
+                                // No hay inspecciones
+                                select.innerHTML = '<option value="">No hay disponibles</option>';
+                                noInspectionsAlert.classList.remove('d-none');
+                                assignButton.setAttribute('disabled', 'true');
+                            } else {
+                                // Rellenar el select
+                                select.innerHTML += '<option value="">-- Seleccione una inspección --</option>';
+                                data.inspecciones.forEach(inspeccion => {
+                                    const optionText = inspeccion.propietario_display;
+                                    select.innerHTML += `<option value="${inspeccion.id_insp}">${optionText}</option>`;
+                                });
+
+                                // Habilitar/Deshabilitar el botón según la selección en el select
+                                select.onchange = function () {
+                                    if (this.value) {
+                                        assignButton.removeAttribute('disabled');
+                                    } else {
+                                        assignButton.setAttribute('disabled', 'true');
+                                    }
+                                };
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error al cargar inspecciones', error);
+                            // Mostrar mensaje de error claro al usuario
+                            select.innerHTML = '<option value="">ERROR: No se pudo cargar la lista.</option>';
+                            assignButton.setAttribute('disabled', 'true');
+                        });
+                });
             });
         </script>
-    @endpush
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const modal = document.getElementById('assignInspectionModal');
-            const select = document.getElementById('id_insp');
-            const form = document.getElementById('assignInspectionForm');
-            const userNameSpan = document.getElementById('modal-user-name');
-            const noInspectionsAlert = document.getElementById('no-inspections-alert');
-            const assignButton = document.getElementById('assign-btn');
-
-            // Escucha el evento de Bootstrap
-            modal.addEventListener('show.bs.modal', function (event) {
-                const button = event.relatedTarget;
-                const userId = button.getAttribute('data-user-id');
-                const userName = button.getAttribute('data-user-name');
-
-                // 1. Resetear el estado
-                select.innerHTML = '<option value="">Cargando inspecciones...</option>';
-                noInspectionsAlert.classList.add('d-none');
-                assignButton.setAttribute('disabled', 'true');
-
-                // 2. Actualizar la interfaz y las URLs
-                userNameSpan.textContent = userName;
-
-                // Rutas dinámicas
-                const fetchUrl = `/personal/${userId}/get-inspecciones`;
-                const postUrl = `/personal/${userId}/asignar-inspeccion`;
-
-                form.setAttribute('action', postUrl);
-
-                // 3. Petición AJAX para obtener las inspecciones disponibles
-                fetch(fetchUrl)
-                    .then(response => {
-                        if (!response.ok) {
-                            // Si el servidor devuelve un error
-                            return response.json().then(err => {
-                                // Intenta obtener el mensaje de error del JSON
-                                throw new Error(err.message || 'Error desconocido del servidor (Código: ' + response.status + ')');
-                            });
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        select.innerHTML = ''; // Limpiar select
-
-                        if (data.inspecciones.length === 0) {
-                            // No hay inspecciones
-                            select.innerHTML = '<option value="">No hay disponibles</option>';
-                            noInspectionsAlert.classList.remove('d-none');
-                            assignButton.setAttribute('disabled', 'true');
-                        } else {
-                            // Rellenar el select
-                            select.innerHTML += '<option value="">-- Seleccione una inspección --</option>';
-                            data.inspecciones.forEach(inspeccion => {
-                                const optionText = inspeccion.propietario_display;
-                                select.innerHTML += `<option value="${inspeccion.id_insp}">${optionText}</option>`;
-                            });
-
-                            // Habilitar/Deshabilitar el botón según la selección en el select
-                            select.onchange = function () {
-                                if (this.value) {
-                                    assignButton.removeAttribute('disabled');
-                                } else {
-                                    assignButton.setAttribute('disabled', 'true');
-                                }
-                            };
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error al cargar inspecciones', error);
-                        // Mostrar mensaje de error claro al usuario
-                        select.innerHTML = '<option value="">ERROR: No se pudo cargar la lista.</option>';
-                        assignButton.setAttribute('disabled', 'true');
-                    });
-            });
-        });
-    </script>
-
-    @include('components._session-timeout')
+        @include('components._session-timeout')
 </body>
 
 </html>
