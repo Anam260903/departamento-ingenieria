@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Usuario; //
+use App\Models\Usuario;
 use App\Models\Inspeccion;
 use App\Models\Vivienda;
 use App\Models\Propietario;

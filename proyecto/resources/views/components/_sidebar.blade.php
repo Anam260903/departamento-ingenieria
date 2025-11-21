@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"
         rel="stylesheet">
     <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('css/bootstrap-icons/bootstrap-icons.min.css') }}" rel="stylesheet" >
+    <link href="{{ asset('css/bootstrap-icons/bootstrap-icons.min.css') }}" rel="stylesheet">
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <link href="{{ asset('css/dashboard.css') }}" rel="stylesheet">
 </head>
@@ -36,10 +36,17 @@
                     <i class="bi bi-file-earmark-person me-2"></i> Gestión de personal
                 </a>
             @endif
-            <a href="#"
+
+            <a href="{{ route('recursos.index') }}"
                 class="list-group-item list-group-item-action bg-white d-flex align-items-center">
-                <i class="bi bi-journal-check me-2"></i> Toma de decisiones
+                <i class="bi bi-journal-check me-2"></i> Recursos
             </a>
+
+            @if (auth()->check() && auth()->user()->id_rol === 1)
+                <a href="#" class="list-group-item list-group-item-action bg-white d-flex align-items-center">
+                    <i class="bi bi-journal-check me-2"></i> Toma de decisiones
+                </a>
+            @endif
 
             <a href="#" class="list-group-item list-group-item-action bg-white d-flex align-items-center">
                 <i class="bi bi-calculator me-2"></i> Estimación de materiales
@@ -50,7 +57,8 @@
                 <i class="bi bi-card-checklist me-2"></i> Gestión de inspecciones
             </a>
 
-            <a href="{{ route('informes.index') }}" class="list-group-item list-group-item-action bg-white d-flex align-items-center @if(request()->routeIs('informes.index') || request()->routeIs('informes.seleccionar' || request()->routeIs('informes.create'))) active @endif">
+            <a href="{{ route('informes.index') }}"
+                class="list-group-item list-group-item-action bg-white d-flex align-items-center @if(request()->routeIs('informes.index') || request()->routeIs('informes.seleccionar' || request()->routeIs('informes.create'))) active @endif">
                 <i class="bi bi-file-earmark-text me-2"></i> Informes técnicos
             </a>
 

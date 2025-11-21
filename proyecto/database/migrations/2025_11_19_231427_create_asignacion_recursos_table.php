@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreign('id_user')->references('id_user')->on('usuarios')->onDelete('cascade');
             $table->primary(['id_user', 'id_recurso']);
             $table->date('fecha_asignacion');
-            $table->date('fecha_devolucion');
+            $table->date('fecha_devolucion')->nullable();
             $table->timestamps();
         });
     }

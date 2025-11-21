@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\PersonalController;
+use App\Http\Controllers\RecursosController;
 use App\Http\Controllers\InspeccionesController;
 use App\Http\Controllers\InformesController;
 use App\Http\Controllers\CalculosController;
@@ -81,6 +82,16 @@ Route::get('personal/{personal}/get-inspecciones', [PersonalController::class, '
 // 2. Ruta POST para guardar la asignación de la inspección al usuario.
 Route::post('personal/{personal}/asignar-inspeccion', [PersonalController::class, 'assignInspection'])
     ->name('personal.assignInspection');
+
+// Rutas del módulo de recursos protegidas por middleware
+Route::group(['middleware' => ['auth']], function () {
+
+    // Rutas Resource (cubre index, create, store, edit, update, destroy)
+    Route::resource('recursos', RecursosController::class)->names('recursos');
+
+    // Ruta específica para el historial de asignaciones
+    Route::get('recursos/asignaciones/historial', [RecursosController::class, 'assignmentsHistory'])->name('recursos.asignaciones.historial');
+});
 
 // Ruta para el módulo de inspecciones (protegidas por middleware)
 Route::middleware('auth')->group(function () {
