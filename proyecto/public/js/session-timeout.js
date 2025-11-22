@@ -29,22 +29,23 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function logoutUser() {
-        // 1. Crear dinámicamente un formulario POST
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = '/login';
-
-        // 2. Añadir el token CSRF
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-        const tokenField = document.createElement('input');
-        tokenField.type = 'hidden';
-        tokenField.name = '_token';
-        tokenField.value = csrfToken;
 
-        // 3. Adjuntar y enviar el formulario
-        form.appendChild(tokenField);
-        document.body.appendChild(form);
-        form.submit();
+        fetch('/logout', { // Ruta de Laravel para cerrar sesión
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRF-TOKEN': csrfToken
+            },
+            body: '_token=' + csrfToken
+        })
+            .then(response => {
+                window.location.href = '/login';
+            })
+            .catch(error => {
+                console.error('Error durante el cierre de sesión:', error);
+                window.location.href = '/login';
+            });
     }
 
     function extendSession() {

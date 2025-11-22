@@ -15,7 +15,7 @@
         ¿Deseas permanecer conectado?
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary w-auto" onclick="window.location.href='/login'">Cerrar Sesión</button>
+        <button type="button" class="btn btn-secondary w-auto" onclick="window.location.href='/login'"> Cerrar Sesión </button>
         <button type="button" class="btn btn-primary w-auto" id="extendSessionButton">Permanecer conectado</button>
       </div>
     </div>

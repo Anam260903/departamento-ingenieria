@@ -90,7 +90,10 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource('recursos', RecursosController::class)->names('recursos');
 
     // Ruta específica para el historial de asignaciones
-    Route::get('recursos/asignaciones/historial', [RecursosController::class, 'assignmentsHistory'])->name('recursos.asignaciones.historial');
+    Route::get('recursos/asignaciones/historial', [RecursosController::class, 'assignmentsHistory'])->name('recursos.assignments.history');
+
+    // Ruta para marcar como devuelto (Usa PUT o POST con método PUT)
+    Route::put('asignaciones/{id_asignacion}/return', [RecursosController::class, 'markAsReturned'])->name('recursos.assignments.mark-returned');
 });
 
 // Ruta para el módulo de inspecciones (protegidas por middleware)

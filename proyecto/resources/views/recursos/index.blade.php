@@ -14,7 +14,7 @@
         .badge-asignado {
             background-color: #ffc107;
         }
-    
+
         .badge-disponible {
             background-color: #28a745;
         }
@@ -32,7 +32,7 @@
             @include('components._navbar')
 
             <div class="container-fluid py-4">
-                <h1 class="mb-4 h3">RECURSOS</h1>
+                <h1 class="mb-4 h3">LISTADO DE RECURSOS</h1>
 
                 @if (session('warning'))
                     <div class="alert alert-warning alert-dismissible fade show mt-3" role="alert">
@@ -64,13 +64,14 @@
                 <div class="card shadow-sm p-4 mb-4">
                     <form action="{{ route('recursos.index') }}" method="GET">
                         <div class="row g-3">
-                
+
                             {{-- Filtro por palabra clave --}}
                             <div class="col-md-5">
                                 <input type="text" class="form-control" name="keyword"
-                                    placeholder="Buscar por Código o Nombre del Recurso" value="{{ request('keyword') }}">
+                                    placeholder="Buscar por Código o Nombre del Recurso"
+                                    value="{{ request('keyword') }}">
                             </div>
-                
+
                             {{-- Filtro por estado (ASIGNADO / NO ASIGNADO) --}}
                             <div class="col-md-4">
                                 <select class="form-select" name="estado">
@@ -78,10 +79,11 @@
                                     {{-- '1' representa ASIGNADO (fecha_devolucion es NULL) --}}
                                     <option value="1" {{ request('estado') === '1' ? 'selected' : '' }}>ASIGNADO</option>
                                     {{-- '0' representa NO ASIGNADO (no tiene asignación activa) --}}
-                                    <option value="0" {{ request('estado') === '0' ? 'selected' : '' }}>DISPONIBLE</option>
+                                    <option value="0" {{ request('estado') === '0' ? 'selected' : '' }}>DISPONIBLE
+                                    </option>
                                 </select>
                             </div>
-                
+
                             {{-- Botones de acción --}}
                             <div class="col-md-3 d-flex">
                                 <button type="submit" class="btn btn-secondary w-100 me-2">
@@ -92,7 +94,7 @@
                                     <i class="bi bi-x-circle"></i>
                                 </a>
                             </div>
-                            
+
                         </div>
                     </form>
                 </div>
@@ -113,53 +115,53 @@
                             </thead>
                             <tbody>
                                 @forelse ($recursos as $recurso)
-                                    <tr>
-                                        <td>{{ $recurso->codigo }}</td>
-                                        <td>{{ $recurso->nombre_rec }}</td>
-                                        <td>{{ $recurso->descripcion }}</td>
-                                        <td>
-                                            @php
-    // Busca la última asignación que no tiene fecha de devolución
-    $estaAsignado = $recurso->estaAsignado(); 
-                                            @endphp
+                                                                    <tr>
+                                                                        <td>{{ $recurso->codigo }}</td>
+                                                                        <td>{{ $recurso->nombre_rec }}</td>
+                                                                        <td>{{ $recurso->descripcion }}</td>
+                                                                        <td>
+                                                                            @php
+                                    // Busca la última asignación que no tiene fecha de devolución
+                                    $estaAsignado = $recurso->estaAsignado(); 
+                                                                            @endphp
 
-                                            @if ($estaAsignado)
-                                                <span class="badge badge-asignado">Asignado</span>
-                                            @else
-                                                <span class="badge badge-disponible">Disponible</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <div class="d-flex gap-2">
+                                                                            @if ($estaAsignado)
+                                                                                <span class="badge badge-asignado">Asignado</span>
+                                                                            @else
+                                                                                <span class="badge badge-disponible">Disponible</span>
+                                                                            @endif
+                                                                        </td>
+                                                                        <td>
+                                                                            <div class="d-flex gap-2">
 
-                                                {{-- 1. Botón de ver detalles --}}
-                                                <a href="#" class="btn btn-info btn-sm btn-ver-observacion"
-                                                    title="Ver detalles" data-bs-toggle="modal"
-                                                    data-bs-target="#observacionModal"
-                                                    data-observacion="{{ json_encode($recurso->observacion) }}">
-                                                    <i class="bi bi-eye"></i>
-                                                </a>
+                                                                                {{-- 1. Botón de ver detalles --}}
+                                                                                <a href="#" class="btn btn-info btn-sm btn-ver-observacion"
+                                                                                    title="Ver detalles" data-bs-toggle="modal"
+                                                                                    data-bs-target="#observacionModal"
+                                                                                    data-observacion="{{ json_encode($recurso->observacion) }}">
+                                                                                    <i class="bi bi-eye"></i>
+                                                                                </a>
 
-                                                {{-- 2. Botón de editar --}}
-                                                <a href="#"
-                                                    class="btn btn-warning btn-sm" title="Editar recurso">
-                                                    <i class="bi bi-pencil"></i>
-                                                </a>
+                                                                                {{-- 2. Botón de editar --}}
+                                                                                <a href="{{ route('recursos.edit', $recurso->id_recurso) }}"
+                                                                                    class="btn btn-warning btn-sm" title="Editar recurso">
+                                                                                    <i class="bi bi-pencil"></i>
+                                                                                </a>
 
-                                                {{-- 2. Botón de eliminar --}}
-                                                <form action="#"
-                                                    method="POST" class="d-inline">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm"
-                                                        title="Eliminar recurso"
-                                                        onclick="return confirm('¿Estás seguro de que quieres eliminar este recurso?')">
-                                                        <i class="bi bi-trash"></i>
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </td>
-                                    </tr>
+                                                                                {{-- 2. Botón de eliminar --}}
+                                                                                <form action="{{ route('recursos.destroy', $recurso->id_recurso) }}" method="POST" class="d-inline">
+                                                                                    @csrf
+                                                                                    @method('DELETE')
+                                                                                    <button type="submit" class="btn btn-danger btn-sm"
+                                                                                        title="Eliminar recurso"
+                                                                                        onclick="return confirm('¿Estás seguro de que quieres eliminar este recurso?')">
+                                                                                        <i class="bi bi-trash"></i>
+                                                                                    </button>
+                                                                                </form>
+
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
                                 @empty
                                     <tr>
                                         <td colspan="5" class="text-center py-4">No hay recursos registrados.</td>
@@ -169,13 +171,30 @@
                         </table>
                     </div>
                 </div>
+            </div>
+        </div>
 
-
+        {{-- Modal de observación --}}
+        <div class="modal fade" id="observacionModal" tabindex="-1" aria-labelledby="observacionModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="observacionModalLabel">Observaciones del Recurso</h5>
+                    </div>
+                    <div class="modal-body">
+                        <p id="modalObservacionContent"></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
             </div>
         </div>
 
         <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
         <script src="{{ asset('js/dashboard.js') }}"></script>
+        <script src="{{ asset('js/recursos.js') }}"></script>
 
 
         @include('components._session-timeout')

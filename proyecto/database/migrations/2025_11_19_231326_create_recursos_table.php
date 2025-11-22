@@ -13,10 +13,11 @@ return new class extends Migration
     {
         Schema::create ('recursos', function (Blueprint $table) {
             $table->id('id_recurso');
-            $table->string('codigo');
-            $table->string('nombre_rec');
-            $table->string('descripcion');
+            $table->string('codigo', 20);
+            $table->string('nombre_rec', 30);
+            $table->string('descripcion',);
             $table->text('observacion')->nullable();
+            $table->timestamp('deleted_at')->nullable()->default(null);
             $table->timestamps();
         });
     }
