@@ -77,14 +77,15 @@
 
                     <div class="table-responsive">
                         <table class="table table-striped table-hover">
-                            <thead class="table-header-custom"> 
+                            <thead class="table-header-custom">
                                 <tr>
                                     <th scope="col">Cédula</th>
                                     <th scope="col">Nombre y Apellido</th>
                                     <th scope="col">Correo Electrónico</th>
                                     <th scope="col">Profesión</th>
                                     <th scope="col">Estado</th>
-                                    <th scope="col">Acciones</th></tr>
+                                    <th scope="col">Acciones</th>
+                                </tr>
                                 </tr>
                             </thead>
                             <tbody>
@@ -118,12 +119,12 @@
                                         {{-- Estado (Activo/Inactivo) --}}
                                         <td class="align-middle text-center text-sm">
                                             @php
-    $estado_numerico = $user->estado_user;
+                                                $estado_numerico = $user->estado_user;
 
-    $estado = ($estado_numerico == 1) ? 'ACIVO' : 'INACTIVO';
+                                                $estado = ($estado_numerico == 1) ? 'ACIVO' : 'INACTIVO';
 
-    $esActivo = ($estado_numerico === '1');
-    $badgeClass = $esActivo ? 'bg-success' : 'bg-secondary';
+                                                $esActivo = ($estado_numerico === '1');
+                                                $badgeClass = $esActivo ? 'bg-success' : 'bg-secondary';
                                             @endphp
                                             <span class="badge {{ $badgeClass }} text-white text-uppercase">
                                                 {{ $estado }}
@@ -141,7 +142,7 @@
                                                     @method('PATCH')
                                                     <button type="submit"
                                                         class="btn btn-sm btn-icon-only 
-                                                                                                                                                                                {{ $esActivo ? 'btn-warning' : 'btn-success' }}"
+                                                                                                                                                                                                    {{ $esActivo ? 'btn-warning' : 'btn-success' }}"
                                                         data-bs-toggle="tooltip" data-bs-placement="top"
                                                         title="{{ $esActivo ? 'Desactivar Personal' : 'Activar Personal' }}">
                                                         <i class="bi {{ $esActivo ? 'bi-lock' : 'bi-unlock' }}"></i>
@@ -163,6 +164,16 @@
                                                     data-bs-toggle="modal" data-bs-target="#assignInspectionModal"
                                                     data-bs-placement="top" title="Asignar Inspecciones">
                                                     <i class="bi bi-tools"></i>
+                                                </button>
+
+                                                {{-- 4. Botón de asignar recurso --}}
+                                                <button type="button"
+                                                    class="btn btn-sm btn-danger btn-icon-only assign-resource-btn"
+                                                    data-user-id="{{ $user->id_user }}"
+                                                    data-user-name="{{ $user->nombre }} {{ $user->apellido }}"
+                                                    data-bs-toggle="modal" data-bs-target="#assignResourceModal"
+                                                    data-bs-placement="top" title="Asignar Recurso">
+                                                    <i class="bi bi-boxes"></i>
                                                 </button>
                                             </div>
                                         </td>
@@ -215,8 +226,56 @@
             </div>
         </div>
 
+        {{-- Modal para asignación de recursos --}}
+        <div class="modal fade" id="assignResourceModal" tabindex="-1" aria-labelledby="assignResourceModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title" id="assignResourceModalLabel">
+                            Asignar Recurso a: <span id="modal-resource-user-name"></span>
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+                    <form id="assignResourceForm" method="POST">
+                        @csrf
+                        <div class="modal-body">
+
+                            <div class="alert alert-warning d-none" id="no-resources-alert">
+                                No hay recursos disponibles para asignar en este momento.
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="id_recurso" class="form-label">Recursos Disponibles</label>
+                                <select class="form-select" id="id_recurso" name="id_recurso" required>
+                                    <option value="">Cargando recursos...</option>
+                                </select>
+                                <div class="text-danger mt-1" id="id_recurso-error"></div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-danger" id="assign-resource-btn-submit" disabled>
+                                Asignar Recurso
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
         <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
         <script src="{{ asset('js/dashboard.js') }}"></script>
+        <script>
+            const API_ROUTES = {
+                fetchInspections: '/personal/:userId/get-inspecciones', // Usar placeholder
+                postInspection: '/personal/:userId/asignar-inspeccion',
+                fetchResources: '{{ route('personal.getRecursosDisponibles') }}', // Ruta sin parámetros
+                postResource: '/personal/:userId/asignar-recurso',
+            };
+        </script>
+        <script src="{{ asset('js/personal.js') }}"></script>
 
         @push('scripts')
             <script>
@@ -229,86 +288,7 @@
             </script>
         @endpush
 
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const modal = document.getElementById('assignInspectionModal');
-                const select = document.getElementById('id_insp');
-                const form = document.getElementById('assignInspectionForm');
-                const userNameSpan = document.getElementById('modal-user-name');
-                const noInspectionsAlert = document.getElementById('no-inspections-alert');
-                const assignButton = document.getElementById('assign-btn');
-
-                // Escucha el evento de Bootstrap
-                modal.addEventListener('show.bs.modal', function (event) {
-                    const button = event.relatedTarget;
-                    const userId = button.getAttribute('data-user-id');
-                    const userName = button.getAttribute('data-user-name');
-
-                    // 1. Resetear el estado
-                    select.innerHTML = '<option value="">Cargando inspecciones...</option>';
-                    noInspectionsAlert.classList.add('d-none');
-                    assignButton.setAttribute('disabled', 'true');
-
-                    // 2. Actualizar la interfaz y las URLs
-                    userNameSpan.textContent = userName;
-
-                    // Rutas dinámicas
-                    const fetchUrl = `/personal/${userId}/get-inspecciones`;
-                    const postUrl = `/personal/${userId}/asignar-inspeccion`;
-
-                    form.setAttribute('action', postUrl);
-
-                    // 3. Petición AJAX para obtener las inspecciones disponibles
-                    fetch(fetchUrl)
-                        .then(response => {
-                            if (!response.ok) {
-                                // Si el servidor devuelve un error
-                                return response.json().then(err => {
-                                    // Intenta obtener el mensaje de error del JSON
-                                    throw new Error(err.message || 'Error desconocido del servidor (Código: ' + response.status + ')');
-                                });
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            select.innerHTML = ''; // Limpiar select
-
-                            if (data.inspecciones.length === 0) {
-                                // No hay inspecciones
-                                select.innerHTML = '<option value="">No hay disponibles</option>';
-                                noInspectionsAlert.classList.remove('d-none');
-                                assignButton.setAttribute('disabled', 'true');
-                            } else {
-                                // Rellenar el select
-                                select.innerHTML += '<option value="">-- Seleccione una inspección --</option>';
-                                data.inspecciones.forEach(inspeccion => {
-                                    const optionText = inspeccion.propietario_display;
-                                    select.innerHTML += `<option value="${inspeccion.id_insp}">${optionText}</option>`;
-                                });
-
-                                // Habilitar/Deshabilitar el botón según la selección en el select
-                                select.onchange = function () {
-                                    if (this.value) {
-                                        assignButton.removeAttribute('disabled');
-                                    } else {
-                                        assignButton.setAttribute('disabled', 'true');
-                                    }
-                                };
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error al cargar inspecciones', error);
-                            // Mostrar mensaje de error claro al usuario
-                            select.innerHTML = '<option value="">ERROR: No se pudo cargar la lista.</option>';
-                            assignButton.setAttribute('disabled', 'true');
-                        });
-                });
-            });
-        </script>
-
         @include('components._session-timeout')
 </body>
-
-</html>
 
 </html>

@@ -59,6 +59,15 @@
                             </a>
                         @endif
                     </div>
+                    {{-- Botón asignaciones --}}
+                    <div class="col-auto">
+                        {{-- Verifica si el usuario autenticado tiene id_rol igual a 1 (Administrador) --}}
+                        @if (auth()->check() && auth()->user()->id_rol === 1)
+                            <a href="{{ route('recursos.assignments.history') }}" class="btn btn-primary text-nowrap">
+                                <i class="bi bi-bookmark-check me-2"></i>Asignaciones
+                            </a>
+                        @endif
+                    </div>
                 </div>
 
                 <div class="card shadow-sm p-4 mb-4">

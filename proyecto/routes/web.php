@@ -83,6 +83,14 @@ Route::get('personal/{personal}/get-inspecciones', [PersonalController::class, '
 Route::post('personal/{personal}/asignar-inspeccion', [PersonalController::class, 'assignInspection'])
     ->name('personal.assignInspection');
 
+// Ruta para mostrar la interfaz de asignación de recursos al personal
+Route::get('/personal/get-recursos-disponibles', [PersonalController::class, 'getRecursosDisponibles'])
+    ->name('personal.getRecursosDisponibles');
+
+// Ruta para guardar la asignación del recurso al usuario
+Route::post('/personal/{id_user}/asignar-recurso', [PersonalController::class, 'assignRecurso'])
+    ->name('personal.assignRecurso');
+
 // Rutas del módulo de recursos protegidas por middleware
 Route::group(['middleware' => ['auth']], function () {
 

@@ -37,37 +37,17 @@
                 </a>
             @endif
 
-            {{-- Contenedor principal del Dropdown --}}
-            <a href="#recursosSubmenu" class="list-group-item list-group-item-action bg-white d-flex align-items-center"
-                data-bs-toggle="collapse" aria-expanded="false" aria-controls="recursosSubmenu">
-                <i class="bi bi-gear me-2"></i> Recursos
-            </a>
-
-            {{-- Contenedor del Submenú --}}
-            <div class="collapse" id="recursosSubmenu">
-                <div class="list-group border-0">
-
-                    {{-- Subopción A: "Listado" (Solo para id_rol === 1) --}}
-                    @if (auth()->check() && auth()->user()->id_rol === 1)
-                        <a href="{{ route(name: 'recursos.index') }}"
-                            class="list-group-item list-group-item-action bg-light ps-5 py-1">
-                            <i class="bi bi-list-ul me-2"></i>Listado
-                        </a>
-                    @endif
-
-                    {{-- Subopción B: "Asignaciones" (Para id_rol === 1 O id_rol === 2) --}}
-                    @if (auth()->check() && (auth()->user()->id_rol === 1 || auth()->user()->id_rol === 2))
-                        <a href="{{ route(name: 'recursos.assignments.history') }}"
-                            class="list-group-item list-group-item-action bg-light ps-5 py-1">
-                            <i class="bi bi-bookmark-check me-2"></i>Asignaciones
-                        </a>
-                    @endif
-                </div>
-            </div>
-
             @if (auth()->check() && auth()->user()->id_rol === 1)
-                <a href="#" class="list-group-item list-group-item-action bg-white d-flex align-items-center">
-                    <i class="bi bi-journal-check me-2"></i> Toma de decisiones
+                <a href="{{ route('recursos.index') }}"
+                    class="list-group-item list-group-item-action bg-white d-flex align-items-center @if(request()->routeIs('recursos.index') || request()->routeIs('recursos.create') || request()->routeIs('recursos.') || request()->routeIs('recursos.assignments.history')) active @endif">
+                    <i class="bi bi-gear me-2"></i> Recursos
+                </a>
+            @endif
+
+            @if (auth()->check() && auth()->user()->id_rol === 2)
+                <a href="{{ route('recursos.assignments.history') }}"
+                    class="list-group-item list-group-item-action bg-white d-flex align-items-center @if(request()->routeIs('recursos.assignments.history')) active @endif">
+                    <i class="bi bi-gear me-2"></i> Recursos
                 </a>
             @endif
 

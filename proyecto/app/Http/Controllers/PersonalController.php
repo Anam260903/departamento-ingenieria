@@ -7,18 +7,27 @@ use App\Models\Inspeccion;
 use App\Models\Vivienda;
 use App\Models\Propietario;
 use App\Models\roles;
+use App\Models\asignacion_recursos;
+use App\Models\Recursos;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class PersonalController extends Controller
 {
+    use AuthorizesRequests;
+    
     /**
      * Muestra la lista de personal técnico (usuarios)
      */
     public function index(Request $request)
     {
+        // AUTORIZACIÓN: Verifica si puede ver la lista general
+        $this->authorize('viewAny', Usuario::class);
+        
         // 1. Inicializar la consulta
         $query = Usuario::with('rol');
 
@@ -57,6 +66,9 @@ class PersonalController extends Controller
      */
     public function edit(Usuario $personal)
     {
+        // AUTORIZACIÓN: Verifica si puede manipular al usuario
+        $this->authorize('update', $personal);
+        
         // Cargar todos los roles disponibles para el selector
         $roles = roles::all();
 
@@ -69,6 +81,9 @@ class PersonalController extends Controller
      */
     public function update(Request $request, Usuario $personal)
     {
+        // AUTORIZACIÓN: Verifica si puede manipular al usuario
+        $this->authorize('update', $personal);
+        
         // 1. Validar los datos de entrada
         $request->validate([
             // La cédula debe ser única, excepto para el usuario actual
@@ -138,6 +153,9 @@ class PersonalController extends Controller
      */
     public function toggleStatus(Usuario $personal)
     {
+        // AUTORIZACIÓN: Verifica si puede manipular al usuario
+        $this->authorize('update', $personal);
+        
         // Determina el nuevo estado y su valor en la base de datos
         if ($personal->estado_user === '1') {
             $personal->estado_user = '0'; // Cambia a inactivo
@@ -157,6 +175,10 @@ class PersonalController extends Controller
      */
     public function getAvailableInspections(Usuario $personal)
     {
+        
+        // AUTORIZACIÓN: Verifica si puede manipular al usuario
+        $this->authorize('update', $personal);
+        
         // Carga las inspecciones disponibles junto a sus relaciones anidadas
         $inspecciones = Inspeccion::whereNull('id_user')
             ->with(['vivienda.propietario'])
@@ -194,6 +216,9 @@ class PersonalController extends Controller
      */
     public function assignInspection(Request $request, Usuario $personal)
     {
+        // AUTORIZACIÓN: Verifica si puede manipular al usuario
+        $this->authorize('update', $personal);
+        
         // 1. Validar la entrada
         $request->validate([
             // Valida que el ID de inspección sea requerido y exista
@@ -223,6 +248,72 @@ class PersonalController extends Controller
         } catch (\Exception $e) {
             // En caso de error
             return back()->with('error', 'Hubo un error al asignar la inspección: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Devuelve una lista de recursos disponibles (no tienen asignación abierta).
+     */
+    public function getRecursosDisponibles()
+    {
+        
+        // 1. Obtener los IDs de recursos que tienen una asignación PENDIENTE (fecha_devolucion = null)
+        $recursosAsignadosIds = asignacion_recursos::whereNull('fecha_devolucion')
+            ->pluck('id_recurso')
+            ->toArray();
+
+        // 2. Obtener los recursos que NO están en esa lista
+        $recursosDisponibles = Recursos::whereNotIn('id_recurso', $recursosAsignadosIds)
+            ->select('id_recurso', 'codigo', 'nombre_rec')
+            ->get();
+
+        // 3. Devolver como JSON (para el AJAX)
+        return response()->json([
+            'recursos' => $recursosDisponibles
+        ]);
+    }
+
+    /**
+     * Procesa la asignación de un recurso a un usuario.
+     */
+    public function assignRecurso(Request $request, $id_user)
+    {
+        // 1. Validación
+        $request->validate([
+            'id_recurso' => 'required|exists:recursos,id_recurso',
+        ]);
+        
+        $id_recurso = $request->input('id_recurso');
+
+        // 2. Verificar que el recurso no esté ya asignado (Doble check de seguridad)
+        $asignacionExistente = asignacion_recursos::where('id_recurso', $id_recurso)
+            ->whereNull('fecha_devolucion')
+            ->first();
+
+        if ($asignacionExistente) {
+            return back()->with('error', 'El recurso seleccionado ya se encuentra asignado a otra persona.');
+        }
+
+        try {
+            // 3. Crear la nueva asignación
+            asignacion_recursos::create([
+                'id_user' => $id_user,
+                'id_recurso' => $id_recurso,
+                'fecha_asignacion' => Carbon::now(),
+            ]);
+
+            // Obtener nombre del recurso para el mensaje
+            $recurso = Recursos::find($id_recurso);
+            $nombreRecurso = $recurso ? $recurso->nombre_rec : 'Recurso Desconocido';
+            $usuario = Usuario::find($id_user);
+            $nombreUsuario = $usuario ? $usuario->nombre : 'Usuario Desconocido';
+            
+            return redirect()->route('personal.index')->with('success', 
+                "Recurso '{$nombreRecurso}' asignado exitosamente a {$nombreUsuario}."
+            );
+        } catch (\Exception $e) {
+            \Log::error("Error al asignar recurso: " . $e->getMessage());
+            return back()->with('error', 'Ocurrió un error al intentar asignar el recurso. Intente nuevamente.');
         }
     }
 }

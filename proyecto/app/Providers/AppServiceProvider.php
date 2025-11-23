@@ -6,9 +6,13 @@ namespace App\Providers;
 use App\Models\Informe;
 use App\Models\Inspeccion;
 use App\Models\Dashboard;
+use App\Models\Recursos;
+use App\Models\Usuario;
 use App\Policies\InspeccionPolicy;
 use App\Policies\InformePolicy;
 use App\Policies\DashboardPolicy;
+use App\Policies\RecursosPolicy;
+use App\Policies\PersonalPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -21,6 +25,8 @@ class AppServiceProvider extends ServiceProvider
         Inspeccion::class => InspeccionPolicy::class,
         Informe::class => InformePolicy::class,
         Dashboard::class => DashboardPolicy::class,
+        Recursos::class => RecursosPolicy::class,
+        Usuario::class => PersonalPolicy::class,
     ];
 
     /**

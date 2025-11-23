@@ -19,8 +19,6 @@ class RecursosController extends Controller
         // AUTORIZACIÓN: Solo el Administrador (id_rol=1) tiene acceso al index.
         $this->authorize('viewAny', Recursos::class); 
 
-
-
         // Obtener el usuario autenticado
         $user = Auth::user();
 
@@ -256,39 +254,49 @@ class RecursosController extends Controller
 
     /**
      * Marca un recurso como devuelto (establece la fecha de devolución actual).
+     * El estado del recurso se determina automáticamente por la existencia de fecha_devolucion.
      */
     public function markAsReturned(Request $request, $id_asignacion)
     {
         // AUTORIZACIÓN 1: Verifica que el rol sea el correcto.
         $this->authorize('canReturn', Recursos::class);
-        
+
         try {
-            $asignacion = asignacion_recursos::findOrFail($id_asignacion);
+            // 1. Encuentra la asignación. Usamos with('recurso') para asegurar el nombre después.
+            $asignacion = asignacion_recursos::with('recurso')->findOrFail($id_asignacion);
             $user = Auth::user();
 
-            // AUTORIZACIÓN 2 (Verificación de propiedad para Rol 2):
-            // Si el usuario es Rol 2, debe ser el dueño de la asignación.
+            // 2. AUTORIZACIÓN 2 (Verificación de propiedad para Rol 2):
             if ($user->id_rol === 2 && $asignacion->id_user !== $user->id_user) {
-                // Deniega si el Rol 2 intenta devolver el recurso de otra persona.
                 abort(403, 'No está autorizado para devolver un recurso que no le ha sido asignado.');
             }
 
-            // Verificar si ya está devuelto
+            // 3. Verificar si ya está devuelto
             if ($asignacion->fecha_devolucion !== null) {
                 return back()->with('warning', 'Esta asignación ya fue marcada como devuelta anteriormente.');
             }
 
-            // Establecer la fecha de devolución
-            $asignacion->fecha_devolucion = now(); // O Carbon::now()
+            // 4. Establecer la fecha de devolución y guardar (ESTE ES EL ÚNICO CAMBIO REQUERIDO)
+            $asignacion->fecha_devolucion = \Carbon\Carbon::now();
             $asignacion->save();
 
+            // 5. Obtener el nombre del recurso para el mensaje de éxito
             $recursoNombre = $asignacion->recurso->nombre_rec ?? 'Recurso Desconocido';
 
-            return back()->with('success', '¡Recurso "' . $recursoNombre . '" marcado como devuelto con éxito!');
+            // 6. Redirección exitosa
+            return redirect()->route('recursos.assignments.history')->with('success', '¡Recurso "' . $recursoNombre . '" marcado como devuelto con éxito!');
 
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            // Manejar específicamente la excepción de autorización de la Política
+            return back()->with('error', 'No tiene permiso para realizar esta acción.');
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            // Manejar caso donde no se encuentra la asignación (ID incorrecto)
+            return back()->with('error', 'El registro de asignación no fue encontrado. Intente nuevamente.');
         } catch (\Exception $e) {
-            \Log::error("Error al marcar como devuelto: " . $e->getMessage());
-            return back()->with('error', 'Ocurrió un error al procesar la devolución. Intente nuevamente.');
+            // Manejar cualquier otro error de servidor o base de datos
+            // Registrar el error para su diagnóstico
+            \Log::error("Error al marcar como devuelto (ID: {$id_asignacion}): " . $e->getMessage());
+            return back()->with('error', 'Ocurrió un error inesperado al procesar la devolución. Intente nuevamente.');
         }
     }
     

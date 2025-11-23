@@ -51,14 +51,14 @@
 
                             {{-- Filtro por fecha de asignación (Inicio) --}}
                             <div class="col-md-6 col-lg-2">
-                                <input type="date" class="form-control" name="fecha_asignacion_start" title="Fecha de Asignación (Desde)"
-                                    value="{{ request('fecha_asignacion_start') }}">
+                                <input type="date" class="form-control" name="fecha_asignacion_start"
+                                    title="Fecha de Asignación (Desde)" value="{{ request('fecha_asignacion_start') }}">
                             </div>
-                            
+
                             {{-- Filtro por fecha de devolución (Fin) --}}
                             <div class="col-md-6 col-lg-2">
-                                <input type="date" class="form-control" name="fecha_devolucion_end" title="Fecha de Devolución (Hasta)"
-                                    value="{{ request('fecha_devolucion_end') }}">
+                                <input type="date" class="form-control" name="fecha_devolucion_end"
+                                    title="Fecha de Devolución (Hasta)" value="{{ request('fecha_devolucion_end') }}">
                             </div>
 
                             {{-- Filtro por estado (Pendiente/Devuelto) --}}
@@ -81,100 +81,97 @@
                                     <i class="bi bi-x-circle"></i>
                                 </a>
                             </div>
-
-                            {{-- Tabla con datos del historial --}}
-                            <div class="card shadow-sm p-4">
-
-                                <div class="table-responsive">
-                                    <table class="table table-striped table-hover">
-                                        <thead class="table-header-custom">
-                                            <tr>
-                                                <th scope="col">Nº</th>
-                                                <th scope="col">Recurso</th>
-                                                <th scope="col">Asignado a</th>
-                                                <th scope="col">Fecha de Asignación</th>
-                                                <th scope="col">Fecha de Devolución</th>
-                                                <th scope="col">Estado</th>
-                                                <th scope="col">Acciones</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @forelse ($asignaciones as $asignacion)
-                                                <tr>
-                                                    <td>{{ $loop->iteration }}</td>
-                                                    <td>{{ $asignacion->recurso->nombre_rec ?? 'Recurso No Encontrado' }}
-                                                    </td>
-                                                    <td>{{ $asignacion->usuario->nombre ?? 'Usuario' }}
-                                                        {{ $asignacion->usuario->apellido ?? 'Desconocido' }}
-                                                    </td>
-                                                
-                                                    <td>{{ \Carbon\Carbon::parse($asignacion->fecha_asignacion)->format('d-m-Y') }}</td>
-                                                    <td>
-                                                        @if ($asignacion->fecha_devolucion)
-                                                            <span
-                                                                class="text-success">{{ $asignacion->fecha_devolucion->format('Y-m-d') }}</span>
-                                                        @else
-                                                            <span class="text-warning">Sin fecha</span>
-                                                        @endif
-                                                    </td>
-                                                    <td>
-                                                        @if ($asignacion->fecha_devolucion)
-                                                            <span class="badge bg-success">Devuelto</span>
-                                                        @else
-                                                            <span class="badge bg-danger">Pendiente</span>
-                                                        @endif
-                                                    </td>
-                                                    <td>
-                                                        @if (!$asignacion->fecha_devolucion)
-                                                            <form
-                                                                action="{{ route('recursos.assignments.mark-returned', $asignacion->id_recurso) }}"
-                                                                method="POST" class="d-inline">
-                                                                @csrf
-                                                                @method('PUT')
-                                                                <button type="submit" class="btn btn-success btn-sm"
-                                                                    title="Marcar como Devuelto"
-                                                                    onclick="return confirm('¿Estás seguro de que deseas marcar este recurso como devuelto? Esto establecerá la fecha de devolución en la hora actual.')">
-                                                                    <i class="bi bi-arrow-return-left"></i> Devolver
-                                                                </button>
-                                                            </form>
-                                                        @else
-                                                            <button class="btn btn-outline-secondary btn-sm"
-                                                                disabled>Completo</button>
-                                                        @endif
-                                                    </td>
-                                                </tr>
-                                            @empty
-                                                <tr>
-                                                    <td colspan="7" class="text-center py-4">No hay asignaciones registradas.</td>
-                                                </tr>
-                                            @endforelse
-                                        </tbody>
-                                    </table>
-                                </div>
-                                
-                                <div class="mt-4">
-                                    {{ $asignaciones->links() }}
-                                </div>
-
-                            </div>
-
                         </div>
                     </form>
                 </div>
+                {{-- Tabla con datos del historial --}}
+                <div class="card shadow-sm p-4">
 
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-header-custom">
+                                <tr>
+                                    <th scope="col">Nº</th>
+                                    <th scope="col">Recurso</th>
+                                    <th scope="col">Asignado a</th>
+                                    <th scope="col">Fecha de Asignación</th>
+                                    <th scope="col">Fecha de Devolución</th>
+                                    <th scope="col">Estado</th>
+                                    <th scope="col">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse ($asignaciones as $asignacion)
+                                    <tr>
+                                        <td>{{ $loop->iteration }}</td>
+                                        <td>{{ $asignacion->recurso->nombre_rec ?? 'Recurso No Encontrado' }}
+                                        </td>
+                                        <td>{{ $asignacion->usuario->nombre ?? 'Usuario' }}
+                                            {{ $asignacion->usuario->apellido ?? 'Desconocido' }}
+                                        </td>
 
+                                        <td>{{ \Carbon\Carbon::parse($asignacion->fecha_asignacion)->format('d-m-Y') }}
+                                        </td>
+                                        <td>
+                                            @if ($asignacion->fecha_devolucion)
+                                                <span
+                                                    class="text">{{ \Carbon\Carbon::parse($asignacion->fecha_devolucion)->format('d-m-Y') }}</span>
+                                            @else
+                                                <span class="text-warning">Sin fecha</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if ($asignacion->fecha_devolucion)
+                                                <span class="badge bg-success">Devuelto</span>
+                                            @else
+                                                <span class="badge bg-danger">Pendiente</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if (!$asignacion->fecha_devolucion)
+                                                <form
+                                                    action="{{ route('recursos.assignments.mark-returned', $asignacion->id_asignacion) }}"
+                                                    method="POST" class="d-inline">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <button type="submit" class="btn btn-success btn-sm"
+                                                        title="Marcar como Devuelto"
+                                                        onclick="return confirm('¿Estás seguro de que deseas marcar este recurso como devuelto? Esto establecerá la fecha de devolución en la hora actual.')">
+                                                        <i class="bi bi-arrow-return-left"></i> Devolver
+                                                    </button>
+                                                </form>
+                                            @else
+                                                <button class="btn btn-outline-secondary btn-sm" disabled>Completo</button>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="7" class="text-center py-4">No hay asignaciones
+                                            registradas.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="mt-4">
+                        {{ $asignaciones->links() }}
+                    </div>
+
+                </div>
             </div>
         </div>
+    </div>
 
 
-        <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
-        <script src="{{ asset('js/dashboard.js') }}"></script>
-        <script src="{{ asset('js/recursos.js') }}"></script>
+
+    <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('js/dashboard.js') }}"></script>
+    <script src="{{ asset('js/recursos.js') }}"></script>
 
 
-        @include('components._session-timeout')
+    @include('components._session-timeout')
 </body>
-
-</html>
 
 </html>
