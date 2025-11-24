@@ -11,12 +11,17 @@ document.addEventListener('DOMContentLoaded', function () {
     let warningTimer;
     let timeoutTimer;
     let countdownTimer;
+    // 🎯 NUEVA VARIABLE para la instancia de Bootstrap Modal
+    let sessionModalInstance = null;
 
     // --- Funciones de Control ---
 
     function resetTimers() {
 
-        if (document.getElementById('sessionWarningModal').classList.contains('show')) {
+        // Si el modal está visible, no reiniciamos el warningTimer ni el timeoutTimer.
+        // Solo verificamos si la clase 'show' está presente en el elemento.
+        if (document.getElementById('sessionWarningModal') && 
+            document.getElementById('sessionWarningModal').classList.contains('show')) {
             return;
         }
 
@@ -29,6 +34,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function logoutUser() {
+        // ... (Tu función de logout)
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
         fetch('/logout', { // Ruta de Laravel para cerrar sesión
@@ -49,39 +55,51 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function extendSession() {
-        // Llama a la ruta POST para extender la sesión
+        // ... (Tu función extendSession)
         fetch('/session/extend', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                // Usa el token CSRF para seguridad
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
             }
         })
             .then(response => {
-                // Si la extensión es exitosa
                 if (response.ok) {
                     hideWarningModal();
                     resetTimers(); // Reiniciar todo
                 } else {
-                    // Si falla, cerrar sesión
                     logoutUser();
                 }
             })
             .catch(() => {
-                // Error de red
                 logoutUser();
             });
     }
 
-    // --- Funciones del Modal ---
+    // --- Funciones del Modal REFORZADAS ---
 
     function getModalInstance() {
         const modalElement = document.getElementById('sessionWarningModal');
-        if (typeof bootstrap !== 'undefined' && modalElement) {
-            return bootstrap.Modal.getOrCreateInstance(modalElement);
+        
+        if (!modalElement || typeof bootstrap === 'undefined') {
+            return null;
         }
-        return null;
+
+        if (sessionModalInstance) {
+            return sessionModalInstance;
+        }
+
+        // Creamos la instancia si no existe
+        try {
+            sessionModalInstance = new bootstrap.Modal(modalElement, {
+                backdrop: 'static',
+                keyboard: false
+            });
+            return sessionModalInstance;
+        } catch (e) {
+            console.error("Error al crear la instancia del Modal de Bootstrap:", e);
+            return null;
+        }
     }
 
     function showWarningModal() {
@@ -97,7 +115,12 @@ document.addEventListener('DOMContentLoaded', function () {
     function hideWarningModal() {
         const modal = getModalInstance();
         if (modal) {
-            modal.hide();
+            // Usamos try...catch para mitigar el TypeError de Bootstrap
+            try {
+                modal.hide();
+            } catch (e) {
+                console.warn("Error seguro: El modal fue removido o destruido previamente. Ignorando error de Bootstrap.", e);
+            }
         }
     }
 

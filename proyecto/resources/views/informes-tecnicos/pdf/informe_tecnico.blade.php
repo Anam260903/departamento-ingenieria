@@ -117,7 +117,7 @@
         {{ $informe->materials_info ?? 'No se proporcionaron materiales.' }}
     </div>
 
-    {{-- PIE DE PÁGINA Y NÚMERO DE PÁGINA --}}
+    {{-- NÚMERO DE PÁGINA --}}
 
 
     {{-- MEMORIA FOTOGRÁFICA --}}
@@ -162,11 +162,11 @@
             @foreach ($informe->imagenes as $imagen)
                 @php
 
-        $storagePath = storage_path('app/public/' . $imagen->ruta_archivo);
-        $imageData = '';
-        if (file_exists($storagePath)) {
-            $imageData = 'data:image/' . pathinfo($storagePath, PATHINFO_EXTENSION) . ';base64,' . base64_encode(file_get_contents($storagePath));
-        }
+                    $storagePath = storage_path('app/public/' . $imagen->ruta_archivo);
+                    $imageData = '';
+                    if (file_exists($storagePath)) {
+                        $imageData = 'data:image/' . pathinfo($storagePath, PATHINFO_EXTENSION) . ';base64,' . base64_encode(file_get_contents($storagePath));
+                    }
                 @endphp
 
                 <div class="photo-item">
@@ -184,7 +184,7 @@
         <p>No se adjuntaron imágenes a este informe.</p>
     @endif
 
-    {{-- PIE DE PÁGINA Y NÚMERO DE PÁGINA --}}
+    {{-- NÚMERO DE PÁGINA --}}
 
 
     {{-- MAPA --}}
@@ -223,17 +223,17 @@
     <div class="report-title">CROQUIS DE UBICACIÓN DEL TERRENO</div>
 
     @php
-// Accedemos a los datos de vivienda a través de la relación de inspección
-$vivienda = $informe->inspeccion->vivienda;
-$lat = $vivienda->latitud ?? 'N/A';
-$long = $vivienda->longitud ?? 'N/A';
+        // Accedemos a los datos de vivienda a través de la relación de inspección
+        $vivienda = $informe->inspeccion->vivienda;
+        $lat = $vivienda->latitud ?? 'N/A';
+        $long = $vivienda->longitud ?? 'N/A';
 
-// Obtenemos la imagen del mapa
-$mapStoragePath = storage_path('app/public/' . $vivienda->map_image_file);
-$mapImageData = '';
-if (file_exists($mapStoragePath)) {
-    $mapImageData = 'data:image/' . pathinfo($mapStoragePath, PATHINFO_EXTENSION) . ';base64,' . base64_encode(file_get_contents($mapStoragePath));
-}
+        // Obtenemos la imagen del mapa
+        $mapStoragePath = storage_path('app/public/' . $vivienda->map_image_file);
+        $mapImageData = '';
+        if (file_exists($mapStoragePath)) {
+            $mapImageData = 'data:image/' . pathinfo($mapStoragePath, PATHINFO_EXTENSION) . ';base64,' . base64_encode(file_get_contents($mapStoragePath));
+        }
 
 
     @endphp
@@ -259,18 +259,13 @@ if (file_exists($mapStoragePath)) {
         @endif
     </div>
 
-    {{-- PIE DE PÁGINA Y NÚMERO DE PÁGINA --}}
-    <div class="footer">
-        <p style="margin: 0; padding: 0;">
-            CORVISUCRE | Página
-            <script type="text/php">
-                    if (isset($pdf)) {
-                        $font = $pdf->getFontMetrics()->get_font("Arial");
-                        $pdf->page_text(500, 800, "Página {PAGE_NUM} de {PAGE_COUNT}", $font, 9, array(0,0,0));
-                    }
-            </script>
-        </p>
-    </div>
+    {{-- NÚMERO DE PÁGINA --}}
+    <script type="text/php">
+        if (isset($pdf)) {
+            $font = $fontMetrics->get_font("Arial");                        
+            $pdf->page_text(500, 800, "Página {PAGE_NUM} de {PAGE_COUNT}", $font, 9, array(0,0,0));
+        }
+    </script>
 
 </body>
 

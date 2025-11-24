@@ -5,7 +5,7 @@ use App\Models\Informe;
 use App\Models\Inspeccion;
 use App\Models\Propietario;
 use App\Models\Vivienda;
-use App\Models\Calculos;
+use App\Models\calculos;
 use App\Models\evidencia_fotografica;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Collection;
 use Illuminate\Routing\Controller as BaseController;
 
 class InformesController extends BaseController
@@ -25,7 +26,7 @@ class InformesController extends BaseController
         // Esto asegura que todos los métodos del controlador requieran autenticación
         $this->middleware('auth');
     }
-    
+
     /**
      * Mostrar el listado de informes técnicos.
      */
@@ -53,7 +54,7 @@ class InformesController extends BaseController
         $informes = $query
             ->orderBy('fecha_inf', 'desc')
             ->paginate(10); // Paginación
-        
+
         // 4. Pasar los datos a la vista
         return view('informes-tecnicos.index', compact('informes'));
     }
@@ -67,15 +68,24 @@ class InformesController extends BaseController
         // 1. Obtener los IDs de las inspecciones que ya tienen un informe
         $inspeccionesConInforme = Informe::pluck('id_insp');
 
-        // 2. Obtener las inspecciones que están 'Completadas' y no tienen un informe
+        // 2. Obtener el usuario autenticado
+        $user = Auth::user();
+
+        // 3. Inicializar la consulta base:
+        //    Inspecciones 'Completadas' (estado_insp = 1) y sin informe.
         $query = Inspeccion::where('estado_insp', 1)
             ->whereNotIn('id_insp', $inspeccionesConInforme)
             ->with('vivienda.propietario');
 
-        // 3. Filtrar inspecciones para usuarios normales
-        $user = Auth::user();
+        // 4. Aplicar la lógica de filtrado basada en el rol
         if ($user->id_rol === 2) {
+            // Lógica para usuarios normales (Rol 2)
+            // Solo ven las inspecciones que les están asignadas.
             $query->where('id_user', $user->id_user);
+        } elseif ($user->id_rol === 1) {
+            // Lógica para administradores (Rol 1)
+            // Solo ven las inspecciones que tienen un usuario asignado
+            $query->whereNotNull('id_user');
         }
 
         $inspecciones = $query->get();
@@ -151,25 +161,27 @@ class InformesController extends BaseController
                 $vivienda = $inspeccion->vivienda;
                 $propietario = $vivienda->propietario;
 
-                // 3. Actualizar datos del Propietario
-                $propietario->update([
+                // 3. Buscar o crear/actualizar el propietario
+                $propietario = Propietario::updateOrCreate([
                     'cedula_propie' => $validatedData['propietario_cedula'],
                     'nombre_propie' => $validatedData['propietario_nombre'],
                     'apellido_propie' => $validatedData['propietario_apellido'],
                     'telefono' => $validatedData['propietario_telefono'],
                 ]);
 
-                // 4. Actualizar datos de la Vivienda
-                $vivienda->update([
+                // 4. Buscar o crear la vivienda
+                $vivienda = Vivienda::firstOrCreate([
                     'direccion' => $validatedData['direccion'],
+                    'id_propie' => $propietario->id_propie,
                 ]);
+
+                $inspeccion->update(['id_viv' => $vivienda->id_viv]);
 
                 // 5. Crear el registro inicial del informe
                 return Informe::create([
                     'id_insp' => $validatedData['id_insp'],
                     'fecha_inf' => $validatedData['fecha_inf'],
                     'comunidad' => $validatedData['comunidad'],
-                    // Los demás campos (antecedentes, planteamiento, etc.) se quedan en NULL
                 ]);
             });
 
@@ -177,12 +189,12 @@ class InformesController extends BaseController
             if ($informe) {
 
                 $redirectUrl = route('informes.edit.step2', ['id_inf' => $informe->id_inf]);
-            
+
                 return redirect($redirectUrl)
                     ->with('success', 'Paso 1: Datos generales guardados. Continúe con el paso 2.');
             }
 
-        // En caso de error en la transacción
+            // En caso de error en la transacción
         } catch (\Exception $e) {
 
             return back()->withInput()->with('error', 'Error de Transacción. Detalles: ' . $e->getMessage());
@@ -251,18 +263,20 @@ class InformesController extends BaseController
                 $vivienda = $informe->inspeccion->vivienda;
                 $propietario = $vivienda->propietario;
 
-                // B. Actualizar datos del Propietario
-                $propietario->update([
+                // B. Buscar o crear/actualizar el propietario
+                $propietario = Propietario::updateOrCreate([
                     'cedula_propie' => $validatedData['propietario_cedula'],
                     'nombre_propie' => $validatedData['propietario_nombre'],
                     'apellido_propie' => $validatedData['propietario_apellido'],
                     'telefono' => $validatedData['propietario_telefono'],
                 ]);
 
-                // C. Actualizar datos de la Vivienda
-                $vivienda->update([
+                // C. Buscar o crear/actualizar la Vivienda
+                $vivienda = Vivienda::firstOrCreate([
                     'direccion' => $validatedData['direccion'],
                 ]);
+
+                $informe->inspeccion->update(['id_viv' => $vivienda->id_viv]);
 
                 // D. Actualizar el registro del Informe
                 $informe->update([
@@ -275,8 +289,8 @@ class InformesController extends BaseController
             // 3. Redirigir al siguiente paso (Paso 2)
             return redirect()->route('informes.edit.step2', $id_inf)
                 ->with('success', 'Paso 1: Datos generales actualizados. Continúe con el paso 2.');
-        
-        // En caso de error
+
+            // En caso de error
         } catch (\Exception $e) {
             return back()->withInput()->with('error', 'Error al actualizar los datos generales: ' . $e->getMessage());
         }
@@ -337,7 +351,7 @@ class InformesController extends BaseController
             return redirect()->route('informes.edit.step3', ['id_inf' => $informe->id_inf])
                 ->with('success', 'Paso 2: Diagnóstico y observaciones guardados correctamente. Continúe con el paso 3.');
 
-        // En caso de error
+            // En caso de error
         } catch (\Exception $e) {
             return back()->withInput()->with('error', 'Error al guardar los datos del Paso 2: ' . $e->getMessage());
         }
@@ -420,7 +434,7 @@ class InformesController extends BaseController
             return redirect()->route('informes.edit.step4', $id_inf)
                 ->with('success', 'Paso 3: Recomendaciones y ubicación guardados. Continúe con el paso 4.');
 
-        // En caso de error
+            // En caso de error
         } catch (\Exception $e) {
             return back()->withInput()->with('error', 'Error al guardar el Paso 3: ' . $e->getMessage());
         }
@@ -431,17 +445,22 @@ class InformesController extends BaseController
      */
     public function editStep4($id_inf)
     {
-        // Cargamos la relación 'calculos' para saber qué códigos están asociados.
-        $informe = Informe::with('calculos')->findOrFail($id_inf);
+        $informe = Informe::findOrFail($id_inf);
 
         // Autorización: Verifica si el usuario puede acceder a la vista
         $this->authorize('update', $informe); // Pasa el modelo para la verificación de pertenencia
 
-        // Obtener todos los cálculos disponibles para el selector
-        $calculos = Calculos::select('id_calculo', 'nombre_calculo', 'contenido')->get();
+        // Obtener todos los cálculos necesarios.
+        $calculos = calculos::select('id_calculo', 'nombre_calculo', 'contenido')->get();
 
-        // Pasamos los datos a la vista
-        return view('informes-tecnicos.edit-step4', compact('informe', 'calculos'));
+        // Preparar la variable del ID seleccionado
+        $selectedId = old('calculos_codes', $informe->id_calculo);
+
+        // Transformar los datos de cálculos a un formato JSON listo para JavaScript
+        $calculosJson = $calculos->keyBy('id_calculo')->toJson();
+
+        // 5. Devolver la vista con los datos
+        return view('informes-tecnicos.edit-step4', compact('informe', 'calculos', 'selectedId', 'calculosJson'));
     }
 
     /**
@@ -451,8 +470,7 @@ class InformesController extends BaseController
     {
         $request->validate([
             'id_inf' => 'required|exists:informes,id_inf',
-            'calculos_codes' => 'nullable|array',
-            'calculos_codes.*' => 'exists:calculos,id_calculo', // Validar que los IDs existan
+            'calculos_codes' => 'nullable|exists:calculos,id_calculo',
             'materials_info' => 'nullable|string',
         ]);
 
@@ -461,8 +479,8 @@ class InformesController extends BaseController
             // Autorización: Verifica si el usuario pude actualizar los datos
             $this->authorize('update', $informe); // Pasa el modelo para la verificación de pertenencia
 
-            // 1. Manejar la relación Muchos a Muchos: Sincronizar los IDs de cálculos seleccionados
-            $informe->calculos()->sync($request->calculos_codes ?? []);
+            // 1. Manejar la relación Uno a Muchos
+            $informe->id_calculo = $request->calculos_codes;
 
             // 2. Guardar el texto editable de materiales
             $informe->materials_info = $request->materials_info;
@@ -473,13 +491,12 @@ class InformesController extends BaseController
             return redirect()->route('informes.edit.step5', $informe->id_inf)
                 ->with('success', 'Paso 4: Materiales guardados. Continúe con el paso 5.');
 
-        // En caso de error
+            // En caso de error
         } catch (\Exception $e) {
             return back()->withInput()->with('error', 'Error al guardar el Paso 4: ' . $e->getMessage());
         }
 
     }
-
 
     /**
      * Muestra el formulario del Paso 5 del informe técnico (Evidencia Fotográfica)
@@ -499,12 +516,27 @@ class InformesController extends BaseController
      */
     public function updateStep5(Request $request)
     {
-        $request->validate([
+        // 1. Encontrar el informe y verificar si ya tiene imágenes
+        $informe = Informe::findOrFail($request->id_inf);
+        $tieneImagenesExistentes = $informe->imagenes()->exists();
+
+        // 2. Definir las reglas de validación
+        $rules = [
             'id_inf' => 'required|exists:informes,id_inf',
-            // Validación para múltiples archivos de imagen
             'photos' => 'nullable|array',
-            'photos.*' => 'image|mimes:jpeg,png,jpg|max:5120', // Máx 5MB por archivo
-        ]);
+            'photos.*' => 'image|mimes:jpeg,png,jpg|max:5120',
+        ];
+
+        // Lógica condicional: Si el informe NO tiene imágenes existentes Y el usuario no ha subido archivos en este envío,
+        // entonces hacemos que el campo 'photos' sea obligatorio.
+
+        if (!$tieneImagenesExistentes && !$request->hasFile('photos')) {
+            // En este caso, el usuario intentó finalizar sin subir la primera imagen.
+            $rules['photos'] = 'required';
+        }
+
+        // 3. Ejecutar la validación
+        $request->validate($rules);
 
         $informe = Informe::findOrFail($request->id_inf);
         // Autorización: Verifica si el usuario puede actualizar los datos
@@ -513,29 +545,47 @@ class InformesController extends BaseController
         // Si hay archivos para subir
         if ($request->hasFile('photos')) {
 
-            $imagenesData = [];
+            $imagenesModelos = [];
 
             foreach ($request->file('photos') as $photo) {
                 // 1. Guardar el archivo en el disco
                 $ruta = $photo->store('informes/' . $informe->id_inf, 'public');
 
-                // 2. Preparar los datos para insertar en la BD
-                $imagenesData[] = [
-                    'id_inf' => $informe->id_inf,
+                // 2. Crear una instancia del modelo 
+                $imagenesModelos[] = new evidencia_fotografica([
                     'ruta_archivo' => $ruta,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
+                ]);
             }
 
-            // 3. Insertar todos los registros en la tabla evidencia_fotografica
-            evidencia_fotografica::insert($imagenesData);
+            // 3. Insertar todos los registros usando la relación
+            $informe->imagenes()->saveMany($imagenesModelos);
         }
 
         // Fin del informe: Redirigir a la página del listado de informes con un mensaje
 
         return redirect()->route('informes.index')->with('success', 'Informe Técnico finalizado y guardado exitosamente.');
+    }
 
+    /**
+     * Elimina una evidencia fotográfica por su ID.
+     */
+    public function destroyImage($id_evid)
+    {
+        $imagen = evidencia_fotografica::findOrFail($id_evid);
+
+        // 1. Autorización: Verifica que el usuario pueda modificar el informe al que pertenece esta imagen
+        $this->authorize('update', $imagen->informe);
+
+        // 2. Eliminar el archivo físico
+        if (Storage::disk('public')->exists($imagen->ruta_archivo)) {
+            Storage::disk('public')->delete($imagen->ruta_archivo);
+        }
+
+        // 3. Eliminar el registro de la base de datos
+        $imagen->delete();
+
+        // 4. Redirigir de vuelta al formulario del paso 5
+        return redirect()->back()->with('success', 'La imagen ha sido eliminada exitosamente.');
     }
 
     /**
@@ -549,10 +599,10 @@ class InformesController extends BaseController
         // Autorización: Verifica si el usuario puede eliminar el registro
         // La Policy denegará el acceso a los usuarios con id_rol === 2.
         $this->authorize('delete', $informe);
-        
+
         // 2. Eliminar el informe
         // ... Lógica para eliminar ...
-        
+
         // 3. Redirigir
         return redirect()->route('informes.index')->with('success', 'El Informe Técnico ha sido eliminado correctamente.');
     }
@@ -575,6 +625,6 @@ class InformesController extends BaseController
         $pdf = Pdf::loadView('informes-tecnicos.pdf.informe_tecnico', compact('informe'));
 
         // 3. Configurar y retornar el PDF para la descarga
-        return $pdf->setPaper('a4', 'portrait')->stream('Informe-Tecnico-' . $informe->id_inf . '.pdf');
+        return $pdf->setPaper('a4', 'portrait')->download('Informe-Tecnico-' . $informe->id_inf . '.pdf');
     }
 }

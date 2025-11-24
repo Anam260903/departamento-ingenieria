@@ -22,6 +22,9 @@ return new class extends Migration
             $table->text('materials_info')->nullable();
             $table->unsignedBigInteger('id_insp');
             $table->foreign('id_insp')->references('id_insp')->on('inspecciones');
+            $table->unsignedBigInteger('id_calculo')->nullable()->default(null);
+            $table->foreign('id_calculo')->references('id_calculo')->on('calculos');
+            $table->timestamp('deleted_at')->nullable()->default(null);
             $table->timestamps();
         });
     }

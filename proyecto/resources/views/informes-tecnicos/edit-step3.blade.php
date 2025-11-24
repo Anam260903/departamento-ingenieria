@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="{{ asset('css/informes.css') }}">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+
     <style>
         #map {
             height: 300px;
@@ -106,7 +107,7 @@
                                 <label for="map_screenshot" class="form-label h5">Captura de Pantalla del Mapa</label>
                                 <input type="file" class="form-control @error('map_screenshot') is-invalid @enderror"
                                     id="map_screenshot" name="map_screenshot" accept="image">
-                                    @if (!($informe->inspeccion->vivienda->map_image_file ?? false)) required @endif>
+                                    @if (!($informe->inspeccion->vivienda->map_image_file ?? false)) @endif
                                 <p class= "text-muted small">Por favor, suba una captura de pantalla del mapa para el
                                     informe PDF. (Archivo actual:
                                     {{ $informe->inspeccion->vivienda->map_image_file ?? 'Ninguno' }})
@@ -146,138 +147,8 @@
     <script src="{{ asset('js/dashboard.js') }}"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
-
-    <script>
-        // Variables globales (accesibles por todas las funciones)
-        let map;
-        let marker;
-
-        // Referencias a los campos HTML
-        const latInput = document.getElementById('latitud_input');
-        const lonInput = document.getElementById('longitud_input');
-        const latManual = document.getElementById('latitud_manual');
-        const lonManual = document.getElementById('longitud_manual');
-
-        // Coordenadas iniciales (usando las guardadas o por defecto a Carúpano)
-        const defaultLat = parseFloat(latInput.value) || 10.6698;
-        const defaultLon = parseFloat(lonInput.value) || -63.2573;
-        const initialLocation = [defaultLat, defaultLon];
-
-        // =======================================================
-        // FUNCIÓN DE UTILIDAD: Sincroniza el mapa con los inputs HTML
-        // =======================================================
-        const updateCoordinates = (lat, lng) => {
-            // 1. Actualiza los campos visibles (manuales)
-            latManual.value = lat.toFixed(8);
-            lonManual.value = lng.toFixed(8);
-
-            // 2. Actualiza los campos ocultos (los que se envían al servidor)
-            latInput.value = lat.toFixed(8);
-            lonInput.value = lng.toFixed(8);
-        };
-
-        // =======================================================
-        // FUNCIÓN: Mueve el mapa al ingresar coordenadas manualmente
-        // =======================================================
-        const updateMapFromManualInput = () => {
-            const lat = parseFloat(latManual.value);
-            const lng = parseFloat(lonManual.value);
-
-            // Validación básica
-            if (isNaN(lat) || isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
-                console.error("Coordenadas ingresadas no válidas.");
-                return;
-            }
-
-            const newLocation = [lat, lng];
-
-            // 1. Mover el marcador y centrar el mapa
-            marker.setLatLng(newLocation);
-
-            // 2. Centrar el mapa (Mantiene el zoom si es alto, sino usa 18)
-            map.setView(newLocation, map.getZoom() > 10 ? map.getZoom() : 18);
-
-            // 3. Actualizar los campos ocultos
-            updateCoordinates(lat, lng);
-        };
-
-        // =======================================================
-        // FUNCIÓN PRINCIPAL: Inicializa el mapa y todos sus controles
-        // =======================================================
-        function initMap() {
-            // Inicializa el mapa y lo centra en la ubicación inicial con un buen zoom (18)
-            map = L.map('map').setView(initialLocation, 18);
-
-            // DEFINICIÓN DE CAPAS BASE (Calles y Satelital)
-            const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 22,
-                attribution: '© OpenStreetMap contributors'
-            });
-
-            const esriLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-                maxZoom: 22,
-                attribution: 'Tiles © Esri &mdash; Source: Esri...'
-            });
-
-            // Añadir la capa de Calles (OSM) por defecto
-            osmLayer.addTo(map);
-
-            // OBJETO DE MAPAS BASE PARA EL CONTROL
-            const baseMaps = {
-                "Calles (OSM)": osmLayer,
-                "Satélite (Esri)": esriLayer
-            };
-
-            // MARCACIÓN Y EVENTOS
-            marker = L.marker(initialLocation, { draggable: true }).addTo(map);
-
-            // Evento al arrastrar el marcador
-            marker.on('dragend', function (e) {
-                const coords = marker.getLatLng();
-                updateCoordinates(coords.lat, coords.lng);
-            });
-
-            // Evento al hacer clic en el mapa
-            map.on('click', function (e) {
-                marker.setLatLng(e.latlng);
-                updateCoordinates(e.latlng.lat, e.latlng.lng);
-            });
-
-            // Inicializar los displays con las coordenadas por defecto/guardadas
-            updateCoordinates(defaultLat, defaultLon);
-
-            // CONTROL DE GEOCODER (Buscador)
-            L.Control.geocoder({
-                defaultMarkGeocode: false,
-                geocoder: L.Control.Geocoder.nominatim(),
-                position: 'topleft',
-            })
-                .on('markgeocode', function (e) {
-                    const center = e.geocode.center;
-                    map.fitBounds(e.geocode.bbox);
-                    marker.setLatLng(center);
-                    updateCoordinates(center.lat, center.lng);
-                })
-                .addTo(map);
-
-            // CONTROL DE CAPAS (Selector Satélite/Calles)
-            L.control.layers(baseMaps).addTo(map);
-
-            // Asegura que el mapa se renderice correctamente al cargar la página
-            setTimeout(function () {
-                map.invalidateSize();
-            }, 300);
-        }
-
-        // LISTENER PRINCIPAL: Inicializa el mapa y agrega listeners a los inputs cuando el DOM esté listo
-        document.addEventListener('DOMContentLoaded', function () {
-            initMap(); // Inicializa el mapa
-
-            // Agregar listeners para la entrada manual
-            latManual.addEventListener('change', updateMapFromManualInput);
-            lonManual.addEventListener('change', updateMapFromManualInput);
-        });
-    </script>
+    <script src="{{ asset('js/informes.js') }}"></script>
+    
 
     @include('components._session-timeout')
 </body>

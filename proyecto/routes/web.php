@@ -161,8 +161,11 @@ Route::post('informes/actualizar/paso-4/{id_inf}', [InformesController::class, '
 // Ruta para mostrar la vista del quinto paso del informe (Evidencia fotográfica)
 Route::get('informes/editar/{id_inf}/paso-5', [InformesController::class, 'editStep5'])->name('informes.edit.step5');
 
-//Ruta para guardar/actualizar el quinto paso del informe (Evidencia fotográfica) y finalizar el informe
+// Ruta para guardar/actualizar el quinto paso del informe (Evidencia fotográfica) y finalizar el informe
 Route::post('informes/actualizar/paso-5/{id_inf}', [InformesController::class, 'updateStep5'])->name('informes.update.step5');
+
+// Ruta para eliminar una imagen del informe técnico
+Route::delete('/informes/imagen/{id_evid}', [InformesController::class, 'destroyImage'])->name('informes.delete.image');
 
 // Ruta para generar y descargar el PDF de un informe técnico
 Route::get('informes/exportar/{id_inf}/pdf', [InformesController::class, 'downloadPdf'])->name('informes.generatePdf')->middleware('auth');

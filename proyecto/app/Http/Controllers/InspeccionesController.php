@@ -99,14 +99,15 @@ class InspeccionesController extends Controller
                 'string',
                 'min:7',
                 'max:8',
-                'unique:propietarios,cedula_propie',
-                'regex:/^(?!0+$)(?!12345678$)(?!1234567$)(?!1{6,8}$)(?!2{6,8}$)(?!3{6,8}$)(?!4{6,8}$)(?!5{6,8}$)(?!6{6,8}$)(?!7{6,8}$)(?!8{6,8}$)(?!9{6,8}$)(\d{6,8})$/',
                 'regex:/^(?!0+$)(?!1{6,8}$)(?!2{6,8}$)(?!3{6,8}$)(?!4{6,8}$)(?!5{6,8}$)(?!6{6,8}$)(?!7{6,8}$)(?!8{6,8}$)(?!9{6,8}$)(?!123456$)(?!1234567$)(?!12345678$)(?!87654321$)(?!7654321$)(?!654321$)(?!(\d)\1+$)(\d{6,8})$/'
             ],
-            'propietario_telefono' => 'required|string|max:11',
+            'propietario_telefono' => 'required|string|min:11|max:11',
             'direccion' => 'required|string|max:100',
             'estado' => 'required|numeric|in:0,1',
             'observacion' => 'nullable|string|max:250',
+        ], [
+            // Mensaje personalizado para la Regex
+            'propietario_cedula.regex' => 'La cédula ingresada no cumple con el formato válido. Por favor, ingrese un número de cédula real.',
         ]);
 
         if (!Auth::check()) {
@@ -115,7 +116,7 @@ class InspeccionesController extends Controller
 
         try {
             // 2. Buscar o crear el propietario
-            $propietario = Propietario::firstOrCreate(
+            $propietario = Propietario::updateOrCreate(
                 ['cedula_propie' => $request->propietario_cedula],
                 [
                     'nombre_propie' => $request->propietario_nombre,
@@ -125,7 +126,7 @@ class InspeccionesController extends Controller
             );
 
             // 3. Crear la vivienda
-            $vivienda = Vivienda::create([
+            $vivienda = Vivienda::firstOrCreate([
                 'direccion' => $request->direccion,
                 'id_propie' => $propietario->id_propie, // FK a Propietario
             ]);
@@ -189,29 +190,31 @@ class InspeccionesController extends Controller
                     'string',
                     'min:7',
                     'max:8',
-                    'unique:propietarios,cedula_propie,' . $propietario->id_propie . ',id_propie',
                     'regex:/^(?!0+$)(?!1{6,8}$)(?!2{6,8}$)(?!3{6,8}$)(?!4{6,8}$)(?!5{6,8}$)(?!6{6,8}$)(?!7{6,8}$)(?!8{6,8}$)(?!9{6,8}$)(?!123456$)(?!1234567$)(?!12345678$)(?!87654321$)(?!7654321$)(?!654321$)(?!(\d)\1+$)(\d{6,8})$/'
                 ],
-            'propietario_telefono' => 'required|string|max:11',
+            'propietario_telefono' => 'required|string|min:11|max:11',
             'direccion' => 'required|string|max:100',
             'estado' => 'required|numeric|in:0,1',
             'observacion' => 'nullable|string|max:250',
+        ], [
+            // Mensaje personalizado para la Regex
+            'propietario_cedula.regex' => 'La cédula ingresada no cumple con el formato válido. Por favor, ingrese un número de cédula real.',
         ]);
 
 
         try {
-            // 2. Actualizar el propietario
-            $propietario->update([
+            // 2. Buscar o crear/actualizar el propietario
+            $propietario = Propietario::updateOrCreate([
                 'nombre_propie' => $request->propietario_nombre,
                 'apellido_propie' => $request->propietario_apellido,
                 'cedula_propie' => $request->propietario_cedula,
                 'telefono' => $request->propietario_telefono,
             ]);
 
-            // 3. Actualizar la vivienda
-            $vivienda->update([
+            // 3. Buscar o crear la vivienda
+            $vivienda = Vivienda::firstOrCreate([
                 'direccion' => $request->direccion,
-                // id_propie no cambia, ya que solo estamos modificando los datos del propietario
+                'id_propie' => $propietario->id_propie,
             ]);
 
             // 4. Actualizar la Inspección
@@ -219,7 +222,7 @@ class InspeccionesController extends Controller
                 'fecha_insp' => $request->fecha,
                 'estado_insp' => $request->estado,
                 'observacion' => $request->observacion,
-                // id_user y id_viv no cambian
+                'id_viv' => $vivienda->id_viv,
             ]);
 
             // 5. Redirigir al usuario
@@ -301,7 +304,7 @@ class InspeccionesController extends Controller
         $pdf = PDF::loadView('inspecciones.pdf.reporte-inspecciones-pdf', compact('inspecciones'));
 
         // Ajuste para mejorar la paginación en tablas grandes
-        $pdf->setOptions(['isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true]);
+        $pdf->setOptions(['isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true, 'isPhpEnabled' => true]);
 
         // 3. Devolver el archivo PDF para descargar
         $fecha = \Carbon\Carbon::now()->format('Ymd');
@@ -356,11 +359,11 @@ class InspeccionesController extends Controller
         // 4. Cargar la vista Blade y generar el PDF
         // Pasamos la fecha de reporte para actualizar el título del PDF
         $pdf = PDF::loadView('inspecciones.pdf.reporte-inspecciones-pdf', compact('inspecciones', 'fechaReporte'));
-        $pdf->setOptions(['isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true]);
+        $pdf->setOptions(['isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true, 'isPhpEnabled' => true]);
 
         // 5. Devolver el archivo PDF para descarga
         $nombreArchivo = "Reporte_Inspecciones_{$ano}_{$mes}.pdf";
 
-        return $pdf->download($nombreArchivo);
+        return $pdf->setPaper('a4', 'portrait')->download($nombreArchivo);
     }
 }

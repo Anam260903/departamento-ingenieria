@@ -27,7 +27,7 @@ class PersonalPolicy
     public function viewAny(Usuario $user)
     {
         // El Rol 2 es denegado
-        return false; 
+        return false;
     }
 
     /**
@@ -36,6 +36,24 @@ class PersonalPolicy
     public function update(Usuario $user, Usuario $targetUser)
     {
         // El Rol 2 es denegado
+        return false;
+    }
+
+    /**
+     * Determina si el usuario puede ver la lista de recursos disponibles.
+     */
+    public function viewAvailableRecursos(Usuario $user)
+    {
+        // Denegado para id_rol=2
+        return false;
+    }
+
+    /**
+     * Determina si el usuario puede asignar un recurso a otro usuario.
+     */
+    public function assignRecurso(Usuario $user, Usuario $targetUser)
+    {
+        // Denegado para id_rol=2
         return false;
     }
 }

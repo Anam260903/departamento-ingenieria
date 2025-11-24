@@ -256,7 +256,9 @@ class PersonalController extends Controller
      */
     public function getRecursosDisponibles()
     {
-        
+        // AUTORIZACIÓN: Solo el administrador puede ver los recursos disponibles.
+        $this->authorize('viewAvailableRecursos', Usuario::class);
+
         // 1. Obtener los IDs de recursos que tienen una asignación PENDIENTE (fecha_devolucion = null)
         $recursosAsignadosIds = asignacion_recursos::whereNull('fecha_devolucion')
             ->pluck('id_recurso')
@@ -278,14 +280,20 @@ class PersonalController extends Controller
      */
     public function assignRecurso(Request $request, $id_user)
     {
-        // 1. Validación
+        // 1. Obtener el usuario al que se le va a asignar el recurso
+        $personal = Usuario::findOrFail($id_user);
+
+        // AUTORIZACIÓN: Solo el administrador puede asignar un recurso a un usuario.
+        $this->authorize('assignRecurso', $personal);
+
+        // 2. Validación
         $request->validate([
             'id_recurso' => 'required|exists:recursos,id_recurso',
         ]);
         
         $id_recurso = $request->input('id_recurso');
 
-        // 2. Verificar que el recurso no esté ya asignado (Doble check de seguridad)
+        // 3. Verificar que el recurso no esté ya asignado (Doble check de seguridad)
         $asignacionExistente = asignacion_recursos::where('id_recurso', $id_recurso)
             ->whereNull('fecha_devolucion')
             ->first();
@@ -295,14 +303,14 @@ class PersonalController extends Controller
         }
 
         try {
-            // 3. Crear la nueva asignación
+            // 4. Crear la nueva asignación
             asignacion_recursos::create([
                 'id_user' => $id_user,
                 'id_recurso' => $id_recurso,
                 'fecha_asignacion' => Carbon::now(),
             ]);
 
-            // Obtener nombre del recurso para el mensaje
+            // 5. Obtener nombre del recurso para el mensaje
             $recurso = Recursos::find($id_recurso);
             $nombreRecurso = $recurso ? $recurso->nombre_rec : 'Recurso Desconocido';
             $usuario = Usuario::find($id_user);

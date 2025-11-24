@@ -113,7 +113,7 @@
                                     class="form-control @error('propietario_telefono') is-invalid @enderror"
                                     id="propietario_telefono" name="propietario_telefono"
                                     placeholder="Teléfono del propietario"
-                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57" maxlength="11"
+                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57" minlength="11" maxlength="11"
                                     value="{{ old('propietario_telefono') }}" required>
                                 @error('propietario_telefono')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -143,9 +143,12 @@
                             @enderror
                         </div>
 
-                        {{-- Botón registrar inspección--}}
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">Registrar Inspección</button>
+                        <div class="d-flex justify-content-end gap-2">
+                            {{-- Botón Cancelar: Vuelve al listado de inspecciones --}}
+                            <a href="{{ route('inspecciones.index') }}" class="btn btn-secondary">Cancelar</a>
+                        
+                            {{-- Botón Guardar --}}
+                            <button type="submit" class="btn btn-primary w-auto">Registrar Inspección</button>
                         </div>
                     </form>
                 </div>

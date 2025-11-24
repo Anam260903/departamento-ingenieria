@@ -195,16 +195,22 @@
                                                 @endif
 
                                                 {{-- 5. Botón de eliminar --}}
-                                                <form action="{{ route('inspecciones.destroy', $inspeccion->id_insp) }}"
-                                                    method="POST" class="d-inline">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm"
-                                                        title="Eliminar inspección"
-                                                        onclick="return confirm('¿Estás seguro de que quieres eliminar esta inspección?')">
-                                                        <i class="bi bi-trash"></i>
-                                                    </button>
-                                                </form>
+                                                {{-- Verifica si el usuario autenticado tiene id_rol igual a 1
+                                                (Administrador) --}}
+                                                @if (auth()->check() && auth()->user()->id_rol === 1)
+
+
+                                                    <form action="{{ route('inspecciones.destroy', $inspeccion->id_insp) }}"
+                                                        method="POST" class="d-inline">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-danger btn-sm"
+                                                            title="Eliminar inspección"
+                                                            onclick="return confirm('¿Estás seguro de que quieres eliminar esta inspección?')">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                @endif
                                             </div>
                                         </td>
                                     </tr>

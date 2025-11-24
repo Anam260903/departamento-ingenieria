@@ -80,13 +80,3 @@ body {
     page-break-inside: avoid;
     page-break-after: auto;
 }
-
-/* Estilos del Pie de Página y Paginas */
-.footer {
-    position: fixed;
-    bottom: -30px;
-    width: 100%;
-    text-align: right;
-    font-size: 8px;
-    padding-top: 5px;
-}

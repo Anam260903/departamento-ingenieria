@@ -115,7 +115,7 @@
                                     class="form-control @error('propietario_telefono') is-invalid @enderror"
                                     id="propietario_telefono" name="propietario_telefono"
                                     placeholder="Teléfono del propietario"
-                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57" maxlength="11"
+                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57" minlength="11" maxlength="11"
                                     value="{{ old('propietario_telefono', $inspeccion->vivienda->propietario->telefono ?? '') }}"
                                     required>
                                 @error('propietario_telefono')

@@ -17,14 +17,9 @@ class calculos extends Model
         'contenido',
     ];
 
-    // Relación: Un informe puede tener muchos calculos
+    // Relación: Un informe tiene un calculo
     public function informes()
     {
-        return $this->belongsToMany(
-            Informe::class,
-            'calculo_informes',
-            'id_calculo',
-            'id_inf'
-        );
+        return $this->hasOne(Informe::class, 'id_calculo');
     }
 }

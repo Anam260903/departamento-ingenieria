@@ -63,6 +63,249 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
+
+// Función auxiliar para obtener el token CSRF de un input oculto
+function getCsrfToken() {
+    // Busca el token CSRF en la página (usando la convención de Laravel)
+    const tokenElement = document.querySelector('input[name="_token"]');
+    return tokenElement ? tokenElement.value : null;
+}
+
+/**
+ * Encapsulación de la lógica del mapa
+ */
+(function() {
+
+    // 1. Variables y referencias globales del módulo
+    let map;
+    let marker;
+
+    // Referencias a los campos HTML
+    const latInput = document.getElementById('latitud_input');
+    const lonInput = document.getElementById('longitud_input');
+    const latManual = document.getElementById('latitud_manual');
+    const lonManual = document.getElementById('longitud_manual');
+
+    // Manejo de valores iniciales
+    const defaultLat = parseFloat(latInput?.value) || 10.6698;
+    const defaultLon = parseFloat(lonInput?.value) || -63.2573;
+    const initialLocation = [defaultLat, defaultLon];
+
+
+    // 2. Funciones de utilidad
+
+    /**
+     * Sincroniza las coordenadas entre el marcador/mapa y los campos de entrada HTML.
+     */
+    const updateCoordinates = (lat, lng) => {
+        // Validación para asegurar que los elementos existen antes de intentar actualizarlos
+        if (latManual && lonManual && latInput && lonInput) {
+            // 1. Actualiza los campos visibles (manuales)
+            latManual.value = lat.toFixed(8);
+            lonManual.value = lng.toFixed(8);
+
+            // 2. Actualiza los campos ocultos (los que se envían al servidor)
+            latInput.value = lat.toFixed(8);
+            lonInput.value = lng.toFixed(8);
+        }
+    };
+
+    /**
+     * Mueve el marcador y el mapa basándose en las coordenadas ingresadas manualmente.
+     */
+    const updateMapFromManualInput = () => {
+        if (!map || !marker || !latManual || !lonManual) return; // Salir si el mapa no está inicializado
+
+        const lat = parseFloat(latManual.value);
+        const lng = parseFloat(lonManual.value);
+
+        // Validación
+        if (isNaN(lat) || isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+            console.error("Coordenadas ingresadas no válidas.");
+            return;
+        }
+
+        const newLocation = [lat, lng];
+
+        // Mover el marcador
+        marker.setLatLng(newLocation);
+
+        // Centrar el mapa
+        map.setView(newLocation, map.getZoom() > 10 ? map.getZoom() : 18);
+
+        // Actualizar los campos ocultos
+        updateCoordinates(lat, lng);
+    };
+
+    // 3. Función de inicialización principal
+
+    /**
+     * Inicializa el mapa y todos sus controles.
+     */
+    function initMap() {
+        if (!document.getElementById('map') || !latInput || !lonInput) {
+            console.error("El contenedor 'map' o los campos de coordenadas no existen. El mapa no puede inicializarse.");
+            return;
+        }
+
+        // Inicializa el mapa
+        map = L.map('map').setView(initialLocation, 18);
+
+        // Definición de capas base
+        const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 22,
+            attribution: '© OpenStreetMap contributors'
+        });
+
+        const esriLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            maxZoom: 22,
+            attribution: 'Tiles © Esri &mdash; Source: Esri...'
+        });
+
+        // Añadir la capa de calles (OSM) por defecto
+        osmLayer.addTo(map);
+
+        const baseMaps = {
+            "Calles (OSM)": osmLayer,
+            "Satélite (Esri)": esriLayer
+        };
+
+        // Marcación y eventos
+        marker = L.marker(initialLocation, { draggable: true }).addTo(map);
+
+        // Evento al arrastrar el marcador
+        marker.on('dragend', function (e) {
+            const coords = marker.getLatLng();
+            updateCoordinates(coords.lat, coords.lng);
+        });
+
+        // Evento al hacer clic en el mapa
+        map.on('click', function (e) {
+            marker.setLatLng(e.latlng);
+            updateCoordinates(e.latlng.lat, e.latlng.lng);
+        });
+
+        // Inicializar los displays con las coordenadas por defecto/guardadas
+        updateCoordinates(defaultLat, defaultLon);
+
+        // Control de Geocoder (Buscador)
+        L.Control.geocoder({
+            defaultMarkGeocode: false,
+            geocoder: L.Control.Geocoder.nominatim(),
+            position: 'topleft',
+        })
+        .on('markgeocode', function (e) {
+            const center = e.geocode.center;
+            map.fitBounds(e.geocode.bbox);
+            marker.setLatLng(center);
+            updateCoordinates(center.lat, center.lng);
+        })
+        .addTo(map);
+
+        // Control de capas (Selector Satélite/Calles)
+        L.control.layers(baseMaps).addTo(map);
+
+        // Agregar listeners para la entrada manual
+        if (latManual && lonManual) {
+            latManual.addEventListener('change', updateMapFromManualInput);
+            lonManual.addEventListener('change', updateMapFromManualInput);
+        }
+
+        // Asegurar que el mapa se renderice correctamente
+        setTimeout(() => map.invalidateSize(), 300);
+    }
+
+
+    // 4. Ejecución / Punto de Entrada (Asegura la inicialización)
+
+    // Inicializa el mapa cuando el DOM esté listo
+    document.addEventListener('DOMContentLoaded', initMap);
+
+})();
+
+/**
+ * Lógica de eventos para el paso 4 de informes técnicos
+ */
+
+
+// Función Única para la Carga del Contenido 
+function loadCalculoContent(id, materialsTextarea) {
+    
+    // Obtenemos los datos inyectados por Blade.
+    const calculosData = window.CALCULOS_DATA || {}; 
+
+    // Si el ID es nulo, vacío o no hay textarea, limpiar y salir.
+    if (!id || id === "" || !materialsTextarea) {
+        if (materialsTextarea) materialsTextarea.value = '';
+        return;
+    }
+
+    // 1. Buscamos el objeto de cálculo por su ID
+    const calculo = calculosData[id];
+
+    if (calculo && calculo.contenido) {
+        // 2. Si se encuentra el cálculo y tiene contenido, lo insertamos directamente.
+        const contenido = calculo.contenido;
+        materialsTextarea.value = contenido;
+        console.log(`[INFO] Contenido del cálculo ID ${id} cargado exitosamente desde el caché de la página.`);
+    } else {
+        // 3. Si no se encuentra (o no tiene contenido), limpiamos.
+        materialsTextarea.value = '';
+        console.warn(`[INFO] Cálculo ID ${id} no encontrado en los datos locales o el contenido está vacío.`);
+    }
+}
+
+
+// Lógica de Eventos DOM
+
+document.addEventListener('DOMContentLoaded', function () {
+    console.log("Script informes.js cargado. Configurando manejo de datos locales.");
+    
+    const calculosSelect = document.getElementById('calculos_codes');
+    const materialsTextarea = document.getElementById('materials_info');
+    const initialContent = window.INITIAL_CONTENT || '';
+    
+    if (calculosSelect && materialsTextarea) {
+        
+        // 1. Carga inicial
+        materialsTextarea.value = initialContent; 
+        const initialId = calculosSelect.value;
+        
+        // Solo cargamos el contenido del cálculo por defecto si el campo de texto está completamente vacío.
+        // Si el usuario ya había agregado o editado información, la mantenemos.
+        if (initialContent === '' && initialId) {
+            console.log("[INFO] Contenido inicial vacío. Cargando cálculo por defecto.");
+            loadCalculoContent(initialId, materialsTextarea);
+        } else if (initialContent !== '') {
+            console.log("[INFO] Contenido editado del informe cargado. Se mantiene la edición.");
+        }
+
+
+        // 2. Escuchar el evento de cambio
+        calculosSelect.addEventListener('change', function () {
+            const selectedCalculoId = this.value;
+            
+            // Verificamos si el usuario ha editado algo antes de sobrescribir.
+            if (materialsTextarea.value.trim() !== '') {
+                
+                // Preguntar antes de borrar lo editado
+                const confirmReplace = confirm("ADVERTENCIA: El campo de materiales contiene información editada. ¿Desea reemplazar el contenido actual con el nuevo cálculo? (Presione Cancelar para mantener su edición)");
+
+                if (!confirmReplace) {
+                    console.log("[INFO] Sobrescritura cancelada por el usuario. Manteniendo el contenido editado.");
+                    return; // Mantiene el contenido editado y detiene la función.
+                }
+            }
+            
+            // Si el campo estaba vacío O el usuario confirmó la sobrescritura:
+            loadCalculoContent(selectedCalculoId, materialsTextarea);
+        });
+
+    } else {
+        console.error("ERROR: No se pudo iniciar el script. 'calculos_codes' o 'materials_info' no encontrados en el DOM.");
+    }
+});
+
 /**
  * Inicializa la funcionalidad de arrastrar y soltar
  * y la previsualización de imágenes, incluyendo la eliminación.

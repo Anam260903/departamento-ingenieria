@@ -51,6 +51,13 @@
                 </a>
             @endif
 
+            @if (auth()->check() && auth()->user()->id_rol === 1)
+                <a href="#"
+                    class="list-group-item list-group-item-action bg-white d-flex align-items-center">
+                    <i class="bi bi-journal-check me-2"></i> Toma de decisiones
+                </a>
+            @endif
+
             <a href="#" class="list-group-item list-group-item-action bg-white d-flex align-items-center">
                 <i class="bi bi-calculator me-2"></i> Estimación de materiales
             </a>

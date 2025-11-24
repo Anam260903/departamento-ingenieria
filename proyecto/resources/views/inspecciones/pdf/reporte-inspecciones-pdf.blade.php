@@ -20,7 +20,7 @@
         <div class="text-col">
             <p>REPÚBLICA BOLIVARIANA DE VENEZUELA</p>
             <p>GOBIERNO BOLIVARIANO DEL ESTADO SUCRE</p>
-            <p>CORPORACION DE VIVIENDA DEL ESTADO SUCRE</p>
+            <p>CORPORACIÓN DE VIVIENDA DEL ESTADO SUCRE</p>
             <p>(CORVISUCRE)</p>
             <p>RIF: G-200164492</p>
             <p>CARÚPANO - ESTADO SUCRE</p>
@@ -86,12 +86,13 @@
         </tbody>
     </table>
 
-    {{-- Pie de página y número de páginas --}}
-    <div class="footer">
-        CORVISUCRE
-        | Página
-        <script type="text/php">echo $pdf->page_script('return $PAGE_NUM . " de " . $PAGE_COUNT;');</script>
-    </div>
+    {{-- NÚMERO DE PÁGINA --}}
+    <script type="text/php">
+        if (isset($pdf)) {
+            $font = $fontMetrics->get_font("Arial");                        
+            $pdf->page_text(500, 800, "Página {PAGE_NUM} de {PAGE_COUNT}", $font, 9, array(0,0,0));
+        }
+    </script>
 
 </body>
 
