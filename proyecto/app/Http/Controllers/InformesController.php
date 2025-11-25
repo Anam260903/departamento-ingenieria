@@ -589,22 +589,25 @@ class InformesController extends BaseController
     }
 
     /**
-     * Elimina el informe y sus relaciones.
+     * Elimina el informe (Soft Delete)
      */
+
     public function destroy($id_inf)
     {
-        // 1. Buscar el informe y cargar la relación 'inspeccion'
-        $informe = Informe::with('inspeccion')->findOrFail($id_inf);
+        try {
+            $informe = Informe::findOrFail($id_inf);
 
-        // Autorización: Verifica si el usuario puede eliminar el registro
-        // La Policy denegará el acceso a los usuarios con id_rol === 2.
-        $this->authorize('delete', $informe);
+            // AUTORIZACIÓN: Solo el administrador puede eliminar.
+            $this->authorize('delete', $informe);
 
-        // 2. Eliminar el informe
-        // ... Lógica para eliminar ...
+            $informe->delete();
 
-        // 3. Redirigir
-        return redirect()->route('informes.index')->with('success', 'El Informe Técnico ha sido eliminado correctamente.');
+            return redirect()->route('informes.index')->with('success', '¡Informe #' . $id_inf . ' eliminado correctamente!');
+
+        } catch (\Exception $e) {
+            \Log::error("Error al eliminar informe: " . $e->getMessage());
+            return back()->with('error', 'Ocurrió un error al eliminar el informe. Intente nuevamente.');
+        }
     }
 
 

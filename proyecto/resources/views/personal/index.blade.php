@@ -22,7 +22,7 @@
             @include('components._navbar')
 
             <div class="container-fluid py-4">
-                <h1 class="mb-4 h3">GESTIÓN DE PERSONAL</h1>
+                <h1 class="mb-4 h3">🧑‍💼 GESTIÓN DE PERSONAL</h1>
 
                 @if (session('warning'))
                     <div class="alert alert-warning alert-dismissible fade show mt-3" role="alert">

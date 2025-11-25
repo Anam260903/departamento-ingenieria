@@ -58,7 +58,7 @@
                 </a>
             @endif
 
-            <a href="#" class="list-group-item list-group-item-action bg-white d-flex align-items-center">
+            <a href="{{ route('estimacion-materiales') }}" class="list-group-item list-group-item-action bg-white d-flex align-items-center">
                 <i class="bi bi-calculator me-2"></i> Estimación de materiales
             </a>
 

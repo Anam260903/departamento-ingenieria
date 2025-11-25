@@ -7,46 +7,15 @@ use App\Models\Calculos;
 
 class CalculosController extends Controller
 {
-    /**
-     * Recupera el contenido de uno o más cálculos por sus IDs.
-     */
-    public function getContenido(Request $request)
+    public function index()
     {
-        // El frontend envía los IDs en el cuerpo de la petición POST
-        $calculoIds = $request->input('calculos_ids', []);
+        // Obtener todos los cálculos con el ID, nombre y contenido.
+        $calculos = Calculos::select('id_calculo', 'nombre_calculo', 'contenido')->get();
 
-        // 1. Validar que los IDs sean un array y contengan valores
-        if (!is_array($calculoIds) || empty($calculoIds)) {
-            // Devolvemos una respuesta de error 400
-            return response()->json([
-                'error' => 'Se requieren IDs de cálculos válidos.'
-            ], 400);
-        }
+        // Transformar los datos de cálculos a un formato JSON
+        $calculosJson = $calculos->keyBy('id_calculo')->toJson();
 
-        try {
-            // 2. Consultar la base de datos
-            // Buscamos solo los campos 'id_calculo' y el 'contenido'
-            // donde el 'id_calculo' esté dentro del array de IDs recibidos.
-            $calculos = calculos::whereIn('id_calculo', $calculoIds)
-                                 ->select('id_calculo', 'contenido')
-                                 ->get();
-            
-            // 3. Extraer solo el contenido y convertir la colección en un array simple
-            // El método 'pluck' extrae los valores de un campo específico.
-            $contenidosArray = $calculos->pluck('contenido')->toArray();
-            
-            // 4. Devolver la respuesta en el formato JSON esperado por el frontend
-            return response()->json([
-                'contenido' => $contenidosArray
-            ]);
-
-        } catch (\Exception $e) {
-            
-            // Devolvemos una respuesta de error 500
-            return response()->json([
-                'error' => 'Error interno del servidor al procesar la solicitud.',
-                'message' => $e->getMessage() // Nota: Esto es útil para depuración, pero se debe evitar en producción.
-            ], 500);
-        }
+        // Devolver la vista con los datos
+        return view('estimacion-materiales', compact('calculos', 'calculosJson'));
     }
 }

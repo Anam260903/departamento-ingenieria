@@ -135,6 +135,24 @@
                                                     class="btn btn-danger btn-sm" title="Descargar PDF">
                                                     <i class="bi bi-file-pdf-fill"></i>
                                                 </a>
+
+                                                {{-- 3. Botón de eliminar --}}
+                                                {{-- Verifica si el usuario autenticado tiene id_rol igual a 1
+                                                (Administrador) --}}
+                                                @if (auth()->check() && auth()->user()->id_rol === 1)
+
+
+                                                    <form action="{{ route('informes.destroy', $informe->id_inf) }}"
+                                                        method="POST" class="d-inline">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-danger btn-sm"
+                                                            title="Eliminar informe"
+                                                            onclick="return confirm('¿Estás seguro de que quieres eliminar este informe?')">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                @endif
                                             </div>
                                         </td>
                                     </tr>
@@ -180,21 +198,21 @@
                                 {{-- Llenar el Dropdown con inspecciones disponibles --}}
                                 @php
 
-$informesController = new App\Http\Controllers\InformesController();
-$inspeccionesDisponibles = $informesController->obtenerInspeccionesDisponibles();
-$limiteTexto = 55;
+                                    $informesController = new App\Http\Controllers\InformesController();
+                                    $inspeccionesDisponibles = $informesController->obtenerInspeccionesDisponibles();
+                                    $limiteTexto = 55;
                                 @endphp
 
                                 @forelse ($inspeccionesDisponibles as $insp)
                                     @php
-    $propietario = $insp->vivienda->propietario;
-    $texto = ($propietario ? $propietario->nombre_propie . ' ' . $propietario->apellido_propie : 'N/A')
-        . ' - ' . ($insp->vivienda->direccion ?? 'N/A');
-    if (strlen($texto) > $limiteTexto) {
-        $textoMostrar = substr($texto, 0, $limiteTexto) . '...';
-    } else {
-        $textoMostrar = $texto;
-    }
+                                        $propietario = $insp->vivienda->propietario;
+                                        $texto = ($propietario ? $propietario->nombre_propie . ' ' . $propietario->apellido_propie : 'N/A')
+                                            . ' - ' . ($insp->vivienda->direccion ?? 'N/A');
+                                        if (strlen($texto) > $limiteTexto) {
+                                            $textoMostrar = substr($texto, 0, $limiteTexto) . '...';
+                                        } else {
+                                            $textoMostrar = $texto;
+                                        }
                                     @endphp
                                     <option value="{{ $insp->id_insp }}">{{ $textoMostrar }}</option>
                                 @empty

@@ -21,7 +21,11 @@
         <div class="container-fluid">
 
             <a class="navbar-brand d-flex align-items-center" href="{{ route('dashboard') }}">
-                <img src="{{ asset('images/logo1.png') }}" alt="Logo" width="50" height="40" class="ms-2">
+                <img src="{{ asset('images/logo4.png') }}" alt="Logo" width="150" height="40">
+            </a>
+            
+            <a class="navbar-brand d-flex align-items-center" href="{{ route('dashboard') }}">
+                <img src="{{ asset('images/logo1.png') }}" alt="Logo" width="50" height="40">
             </a>
 
             <div class="d-flex flex-grow-1 justify-content-center">

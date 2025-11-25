@@ -155,41 +155,59 @@ body {
     page-break-before: always;
 }
 
-/* --- Memoria fotográfica (2X2) --- */
+/* --- Memoria fotográfica --- */
+
+/* Estilos para el contenedor principal de la cuadrícula */
 .photo-grid {
-    width: 100%;
-    margin-top: 15px;
-    overflow: hidden; /* Limpia los floats */
+    /* Define la cuadrícula */
+    display: grid;
+    /* Crea 2 columnas con el mismo ancho (1fr) */
+    grid-template-columns: 1fr 1fr;
+    /* Define un espacio (margen) entre las imágenes */
+    gap: 20px; /* Ajusta este valor según tu preferencia */
+    /* Asegura que no haya desbordamiento si las imágenes son muy grandes */
+    overflow: hidden;
+    /* Opcional: Centrar la cuadrícula si es más pequeña que el contenedor */
+    /* justify-content: center; */
 }
 
+/* Estilos para cada elemento dentro de la cuadrícula */
 .photo-item {
-    width: 48%; /* Esto fuerza dos elementos por fila (48% + 48% + margen) */
-    float: left;
-    margin-right: 4%; /* Espacio entre las columnas */
-    margin-bottom: 20px;
-    text-align: center;
-    /* clear: both; se necesitaría si hubieran descripciones largas */
+    /* Asegura que el contenido (la imagen) no desborde el elemento */
+    overflow: hidden;
+    /* Opcional: Añadir un borde o sombra para visualización */
+    /* border: 1px solid #ccc; */
 }
 
-.photo-item:nth-child(2n) {
-    margin-right: 0; /* Elimina el margen en la segunda columna */
-    float: right;
-}
-
-.photo-item:nth-child(2n+1) {
-    /* CLAVE: Aseguramos que la primera columna siempre flote a la izquierda */
-    clear: left;
-}
-
+/* Estilos para la imagen en sí */
 .photo-item img {
+    /* Hace que la imagen ocupe todo el ancho de su contenedor (.photo-item) */
     width: 100%;
-    max-height: 250px;
-    object-fit: contain;
-    border: 1px solid #ccc;
+    /* Mantiene la proporción de la imagen mientras la cubre */
+    height: auto;
+    display: block; /* Elimina espacio extra debajo de la imagen */
 }
 
-.photo-item p {
-    font-size: 9pt;
-    margin-top: 5px;
-    text-align: center;
+
+@media print {
+    /* Aplicar los estilos de cuadrícula solo al imprimir */
+    .photo-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px; /* Menos espacio para ahorrar papel */
+    }
+
+    /* Ajustar el tamaño de la imagen para la impresión */
+    .photo-item img {
+        /* Puedes establecer una altura máxima en 'vh' (viewport height) o 'cm' */
+        /* Para 3 filas por página, cada imagen debe ocupar ~30% de la altura de la página. */
+        max-height: 25vh; 
+        object-fit: contain; /* Asegura que la imagen completa sea visible */
+    }
+
+    /* Aplica el corte de página antes de este elemento, SOLO en la impresión */
+    .page-break {
+        display: block;
+        page-break-before: always;
+    }
 }

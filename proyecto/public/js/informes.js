@@ -1,5 +1,3 @@
-// Archivo: public/js/informes.js 
-
 document.addEventListener('DOMContentLoaded', function () {
 
     console.log('Script informes.js cargado. Configurando delegación de eventos...');

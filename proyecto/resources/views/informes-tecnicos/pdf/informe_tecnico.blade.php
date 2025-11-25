@@ -159,24 +159,28 @@
     {{-- Imagénes --}}
     @if ($informe->imagenes->count() > 0)
         <div class="photo-grid">
-            @foreach ($informe->imagenes as $imagen)
-                @php
+            @foreach ( $informe->imagenes as $index => $imagen)
+                        @php
 
-                    $storagePath = storage_path('app/public/' . $imagen->ruta_archivo);
-                    $imageData = '';
-                    if (file_exists($storagePath)) {
-                        $imageData = 'data:image/' . pathinfo($storagePath, PATHINFO_EXTENSION) . ';base64,' . base64_encode(file_get_contents($storagePath));
-                    }
-                @endphp
+                $storagePath = storage_path('app/public/' . $imagen->ruta_archivo);
+                $imageData = '';
+                if (file_exists($storagePath)) {
+                    $imageData = 'data:image/' . pathinfo($storagePath, PATHINFO_EXTENSION) . ';base64,' . base64_encode(file_get_contents($storagePath));
+                }
+                        @endphp
 
-                <div class="photo-item">
-                    @if ($imageData)
-                        <img src="{{ $imageData }}" alt="Foto de Evidencia">
-                    @else
-                        <p>[Imagen no encontrada]</p>
-                    @endif
-                    <p>{{ $imagen->descripcion ?? 'Foto sin descripción' }}</p>
-                </div>
+                        <div class="photo-item">
+                            @if ($imageData)
+                                <img src="{{ $imageData }}" alt="Foto de Evidencia">
+                            @else
+                                <p>[Imagen no encontrada]</p>
+                            @endif
+                        </div>
+
+                        {{-- ⚠️ Lógica para forzar el corte de página después de la imagen #6, #12, #18, etc. --}}
+                        @if (($index + 1) % 6 === 0)
+                            <div class="page-break"></div>
+                        @endif
             @endforeach
             <div style="clear: both;"></div>
         </div>
@@ -223,17 +227,17 @@
     <div class="report-title">CROQUIS DE UBICACIÓN DEL TERRENO</div>
 
     @php
-        // Accedemos a los datos de vivienda a través de la relación de inspección
-        $vivienda = $informe->inspeccion->vivienda;
-        $lat = $vivienda->latitud ?? 'N/A';
-        $long = $vivienda->longitud ?? 'N/A';
+// Accedemos a los datos de vivienda a través de la relación de inspección
+$vivienda = $informe->inspeccion->vivienda;
+$lat = $vivienda->latitud ?? 'N/A';
+$long = $vivienda->longitud ?? 'N/A';
 
-        // Obtenemos la imagen del mapa
-        $mapStoragePath = storage_path('app/public/' . $vivienda->map_image_file);
-        $mapImageData = '';
-        if (file_exists($mapStoragePath)) {
-            $mapImageData = 'data:image/' . pathinfo($mapStoragePath, PATHINFO_EXTENSION) . ';base64,' . base64_encode(file_get_contents($mapStoragePath));
-        }
+// Obtenemos la imagen del mapa
+$mapStoragePath = storage_path('app/public/' . $vivienda->map_image_file);
+$mapImageData = '';
+if (file_exists($mapStoragePath)) {
+    $mapImageData = 'data:image/' . pathinfo($mapStoragePath, PATHINFO_EXTENSION) . ';base64,' . base64_encode(file_get_contents($mapStoragePath));
+}
 
 
     @endphp

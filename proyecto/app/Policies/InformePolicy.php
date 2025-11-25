@@ -76,7 +76,7 @@ class InformePolicy
     }
 
     /**
-     * Método adicional para la descarga del PDF
+     * Método para la descarga del PDF
     
     *public function download(Usuario $user, Informe $informe)
     *{
