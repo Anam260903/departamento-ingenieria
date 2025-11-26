@@ -11,6 +11,7 @@ use App\Models\asignacion_recursos;
 use App\Models\Recursos;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
@@ -19,15 +20,15 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 class PersonalController extends Controller
 {
     use AuthorizesRequests;
-    
+
     /**
-     * Muestra la lista de personal técnico (usuarios)
+     * Muestra la lista de personal técnico (usuarios) y las profesiones únicas para filtros
      */
     public function index(Request $request)
     {
         // AUTORIZACIÓN: Verifica si puede ver la lista general
         $this->authorize('viewAny', Usuario::class);
-        
+
         // 1. Inicializar la consulta
         $query = Usuario::with('rol');
 
@@ -36,7 +37,7 @@ class PersonalController extends Controller
         if ($request->filled('keyword')) {
             $keyword = $request->keyword;
             $query->where(function ($q) use ($keyword) {
-                
+
                 $q->where('cedula_user', 'like', '%' . $keyword . '%')
                     ->orWhere('nombre', 'like', '%' . $keyword . '%')
                     ->orWhere('apellido', 'like', '%' . $keyword . '%')
@@ -57,8 +58,15 @@ class PersonalController extends Controller
         // 4. Ejecutar la consulta y ordenar
         $personal = $query->orderBy('nombre', 'asc')->get();
 
-        // 5. Pasar los resultados a la vista
-        return view('personal.index', compact('personal'));
+        // 5. Obtener las profesiones únicas para el filtro PDF
+        $profesionesUnicas = Usuario::select('profesion')
+            ->whereNotNull('profesion')
+            ->distinct()
+            ->orderBy('profesion', 'asc')
+            ->pluck('profesion'); // Obtiene solo los valores del campo 'profesion'
+
+        // 6. Pasar los resultados a la vista
+        return view('personal.index', compact('personal', 'profesionesUnicas'));
     }
 
     /**
@@ -68,7 +76,7 @@ class PersonalController extends Controller
     {
         // AUTORIZACIÓN: Verifica si puede manipular al usuario
         $this->authorize('update', $personal);
-        
+
         // Cargar todos los roles disponibles para el selector
         $roles = roles::all();
 
@@ -83,7 +91,7 @@ class PersonalController extends Controller
     {
         // AUTORIZACIÓN: Verifica si puede manipular al usuario
         $this->authorize('update', $personal);
-        
+
         // 1. Validar los datos de entrada
         $request->validate([
             // La cédula debe ser única, excepto para el usuario actual
@@ -155,7 +163,7 @@ class PersonalController extends Controller
     {
         // AUTORIZACIÓN: Verifica si puede manipular al usuario
         $this->authorize('update', $personal);
-        
+
         // Determina el nuevo estado y su valor en la base de datos
         if ($personal->estado_user === '1') {
             $personal->estado_user = '0'; // Cambia a inactivo
@@ -175,10 +183,10 @@ class PersonalController extends Controller
      */
     public function getAvailableInspections(Usuario $personal)
     {
-        
+
         // AUTORIZACIÓN: Verifica si puede manipular al usuario
         $this->authorize('update', $personal);
-        
+
         // Carga las inspecciones disponibles junto a sus relaciones anidadas
         $inspecciones = Inspeccion::whereNull('id_user')
             ->with(['vivienda.propietario'])
@@ -218,7 +226,7 @@ class PersonalController extends Controller
     {
         // AUTORIZACIÓN: Verifica si puede manipular al usuario
         $this->authorize('update', $personal);
-        
+
         // 1. Validar la entrada
         $request->validate([
             // Valida que el ID de inspección sea requerido y exista
@@ -290,7 +298,7 @@ class PersonalController extends Controller
         $request->validate([
             'id_recurso' => 'required|exists:recursos,id_recurso',
         ]);
-        
+
         $id_recurso = $request->input('id_recurso');
 
         // 3. Verificar que el recurso no esté ya asignado (Doble check de seguridad)
@@ -315,8 +323,9 @@ class PersonalController extends Controller
             $nombreRecurso = $recurso ? $recurso->nombre_rec : 'Recurso Desconocido';
             $usuario = Usuario::find($id_user);
             $nombreUsuario = $usuario ? $usuario->nombre : 'Usuario Desconocido';
-            
-            return redirect()->route('personal.index')->with('success', 
+
+            return redirect()->route('personal.index')->with(
+                'success',
                 "Recurso '{$nombreRecurso}' asignado exitosamente a {$nombreUsuario}."
             );
         } catch (\Exception $e) {
@@ -324,4 +333,50 @@ class PersonalController extends Controller
             return back()->with('error', 'Ocurrió un error al intentar asignar el recurso. Intente nuevamente.');
         }
     }
+
+    /**
+     * Exporta el listado de personal a un archivo PDF descargable.
+     */
+    public function exportarPersonalPDF()
+    {
+        // 1. Obtener todos los usuarios del modelo Usuarios
+        $usuarios = Usuario::all();
+
+        // 2. Cargar la vista que contiene el PDF
+        // Asegúrate que la ruta de la vista sea correcta (e.g., 'usuarios.pdf.reporte-personal-pdf')
+        $pdf = PDF::loadView('personal.pdf.listado-personal-pdf', compact('usuarios'));
+
+        // Ajuste para mejorar la paginación en tablas grandes
+        $pdf->setOptions(['isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true, 'isPhpEnabled' => true]);
+
+        // 3. Devolver el archivo PDF para descargar
+        $fecha = Carbon::now()->format('Ymd');
+        $nombreArchivo = "Reporte_Personal_{$fecha}.pdf";
+
+        return $pdf->download($nombreArchivo);
+    }
+
+    /**
+     * Exporta el listado de personal a un archivo PDF, filtrado por profesión.
+     */
+    public function exportarPersonalPorProfesionPDF(Request $request, $profesion)
+    {
+        // 1. Obtener los usuarios filtrados por la profesión
+        $usuarios = Usuario::where('profesion', $profesion)->get();
+
+        // 2. Variables para la vista
+        $tituloReporte = "REPORTE LISTADO DE PERSONAL - PROFESIÓN: " . strtoupper($profesion);
+
+        // 3. Cargar la vista
+        $pdf = PDF::loadView('personal.pdf.listado-personal-pdf', compact('usuarios', 'tituloReporte'));
+
+        // 4. Ajustes y descarga
+        $pdf->setOptions(['isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true, 'isPhpEnabled' => true]);
+
+        $fecha = Carbon::now()->format('Ymd');
+        $nombreArchivo = "Reporte_Personal_{$profesion}_{$fecha}.pdf";
+
+        return $pdf->download($nombreArchivo);
+    }
+
 }

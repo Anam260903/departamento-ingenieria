@@ -3,7 +3,7 @@
 
 <head>
     <title>Reporte de Inspecciones</title>
-    <link href="{{ asset('css/pdf-inspecciones.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/reportes-pdf.css') }}" rel="stylesheet">
 </head>
 
 <body>

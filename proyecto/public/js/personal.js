@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // ----------------------------------------------------------------------
+
     // Lógica para Asignar Inspecciones (assignInspectionModal)
-    // ----------------------------------------------------------------------
+
     const modal = document.getElementById('assignInspectionModal');
     const select = document.getElementById('id_insp');
     const form = document.getElementById('assignInspectionForm');
@@ -76,9 +76,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 
-    // ----------------------------------------------------------------------
+
     // Lógica para Asignar Recursos (assignResourceModal)
-    // ----------------------------------------------------------------------
+
     const resourceModal = document.getElementById('assignResourceModal');
     const resourceSelect = document.getElementById('id_recurso');
     const resourceForm = document.getElementById('assignResourceForm');
@@ -145,5 +145,35 @@ document.addEventListener('DOMContentLoaded', function () {
                     assignResourceButton.setAttribute('disabled', 'true');
                 });
         });
+    }
+
+    // Lógica para filtrar por profesión y descargar PDF
+
+    // Obtenemos las referencias a los elementos del DOM
+    const selectElement = document.getElementById('profesion-select');
+    const formElement = document.getElementById('form-pdf-filtro');
+    const downloadButton = document.getElementById('btn-descargar-filtro');
+
+    // Verificamos que todos los elementos existan antes de agregar el listener
+    if (selectElement && formElement && downloadButton) {
+
+        // Función que se ejecuta al cambiar la selección en el dropdown
+        selectElement.addEventListener('change', function () {
+            const selectedProfesion = this.value;
+
+            if (selectedProfesion) {
+                const urlBase = '/personal/exportar/pdf/__PROFESION__';
+
+                // Construimos la URL final reemplazando el placeholder
+                formElement.action = urlBase.replace('__PROFESION__', selectedProfesion);
+
+                downloadButton.disabled = false; // Habilita el botón de descarga
+            } else {
+                downloadButton.disabled = true; // Deshabilita si no hay selección
+            }
+        });
+
+        // Inicialmente, el botón está deshabilitado
+        downloadButton.disabled = true;
     }
 });

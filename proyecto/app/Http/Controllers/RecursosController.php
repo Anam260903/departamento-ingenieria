@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Recursos;
 use App\Models\Usuario;
 use App\Models\asignacion_recursos;
+use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -17,14 +19,14 @@ class RecursosController extends Controller
     {
 
         // AUTORIZACIÓN: Solo el Administrador (id_rol=1) tiene acceso al index.
-        $this->authorize('viewAny', Recursos::class); 
+        $this->authorize('viewAny', Recursos::class);
 
         // Obtener el usuario autenticado
         $user = Auth::user();
 
         // 1. Inicializar la consulta con las relaciones necesarias
         $query = Recursos::with('asignaciones.usuario');
-       
+
         // 2. Filtrar por Palabra Clave
         // Buscar por codigo, nombre
         if ($request->filled('keyword')) {
@@ -67,7 +69,7 @@ class RecursosController extends Controller
         $this->authorize('viewHistory', Recursos::class);
 
         $user = Auth::user();
-        
+
         // 1. Inicializar la consulta con las relaciones necesarias
         $query = asignacion_recursos::with(['recurso', 'usuario'])->orderBy('fecha_asignacion', 'desc');
 
@@ -124,7 +126,7 @@ class RecursosController extends Controller
     {
         // AUTORIZACIÓN: Solo el administrador puede crear.
         $this->authorize('manage', Recursos::class);
-        return view ('recursos.formulario-recurso');
+        return view('recursos.formulario-recurso');
     }
 
     /**
@@ -134,7 +136,7 @@ class RecursosController extends Controller
     {
         // AUTORIZACIÓN: Solo el administrador puede almacenar.
         $this->authorize('manage', Recursos::class);
-        
+
         // 1. Validar los datos
         $request->validate([
             'codigo' => ['required', 'string', 'max:20', Rule::unique('recursos', 'codigo')],
@@ -172,7 +174,7 @@ class RecursosController extends Controller
      */
     public function edit(Recursos $recurso)
     {
-        
+
         // AUTORIZACIÓN: Solo el administrador puede acceder a la edición.
         $this->authorize('manage', $recurso);
         return view('recursos.editar-recurso', compact('recurso'));
@@ -185,21 +187,21 @@ class RecursosController extends Controller
     {
         // AUTORIZACIÓN: Solo el administrador puede actualizar.
         $this->authorize('manage', $recurso);
-        
+
         // 1. Validar los datos
         $request->validate([
             // Valida el código: obligatorio, único en la tabla 'recursos', ignorando el ID actual
-            'codigo'      => [
-                'required', 
-                'string', 
-                'max:20', 
+            'codigo' => [
+                'required',
+                'string',
+                'max:20',
                 Rule::unique('recursos', 'codigo')->ignore($recurso->id_recurso, 'id_recurso')
             ],
             // Valida el nombre: obligatorio, único, ignorando el ID actual
-            'nombre_rec'  => [
-                'required', 
-                'string', 
-                'max:30', 
+            'nombre_rec' => [
+                'required',
+                'string',
+                'max:30',
                 Rule::unique('recursos', 'nombre_rec')->ignore($recurso->id_recurso, 'id_recurso')
             ],
             'descripcion' => ['required', 'string', 'max:255'],
@@ -207,17 +209,17 @@ class RecursosController extends Controller
         ], [
             // Mensajes de error personalizados
             'codigo.required' => 'El código del recurso es obligatorio.',
-            'codigo.unique'   => 'Ya existe un recurso con este código.',
+            'codigo.unique' => 'Ya existe un recurso con este código.',
             'nombre_rec.required' => 'El nombre del recurso es obligatorio.',
-            'nombre_rec.unique'   => 'Ya existe un recurso con este nombre.',
+            'nombre_rec.unique' => 'Ya existe un recurso con este nombre.',
             'descripcion.required' => 'La descripción del recurso es obligatorio.',
         ]);
 
         try {
             // 2. Actualizar el recurso
             $recurso->update([
-                'codigo'      => $request->codigo,
-                'nombre_rec'  => $request->nombre_rec,
+                'codigo' => $request->codigo,
+                'nombre_rec' => $request->nombre_rec,
                 'descripcion' => $request->descripcion,
                 'observacion' => $request->observacion,
             ]);
@@ -299,5 +301,25 @@ class RecursosController extends Controller
             return back()->with('error', 'Ocurrió un error inesperado al procesar la devolución. Intente nuevamente.');
         }
     }
-    
+
+    /**
+     * Exporta todos los recursos a un archivo PDF descargable (Listado General).
+     */
+    public function exportarRecursosGeneralPDF()
+    {
+        // 1. Obtener todos los recursos
+        $recursos = Recursos::all();
+
+        // 2. Cargar la vista que contiene el PDF
+        $pdf = PDF::loadView('recursos.pdf.listado-recursos-pdf', compact('recursos'));
+
+        // 3. Ajustes de DomPDF
+        $pdf->setOptions(['isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true, 'isPhpEnabled' => true]);
+
+        // 4. Devolver el archivo PDF para descargar
+        $fecha = Carbon::now()->format('Ymd');
+        $nombreArchivo = "Reporte_Recursos_General_{$fecha}.pdf";
+
+        return $pdf->download($nombreArchivo);
+    }
 }

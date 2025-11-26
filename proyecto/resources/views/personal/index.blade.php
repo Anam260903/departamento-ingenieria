@@ -22,7 +22,7 @@
             @include('components._navbar')
 
             <div class="container-fluid py-4">
-                <h1 class="mb-4 h3">🧑‍💼 GESTIÓN DE PERSONAL</h1>
+                <h1 class="mb-4 h3">GESTIÓN DE PERSONAL</h1>
 
                 @if (session('warning'))
                     <div class="alert alert-warning alert-dismissible fade show mt-3" role="alert">
@@ -38,6 +38,39 @@
                 @if (session('error'))
                     <div class="alert alert-danger">{{ session('error') }}</div>
                 @endif
+
+                <div class="card p-3 mb-4">
+
+                    <div class="row align-items-center">
+
+                        {{-- Botón de descarga listado PDF (General) --}}
+                        <div class="col-lg-4 col-md-6 mb-3 mb-lg-0">
+                            <a href="{{ route('personal.exportar.pdf') }}" class="btn btn-danger text-nowrap w-auto"
+                                title="Descargar PDF General del Personal">
+                            <i class="bi bi-file-earmark-pdf me-2"></i>Descargar 
+                            </a>
+                        </div>
+
+                        {{-- Formulario de descarga listado PDF (Filtrado) --}}
+                        <div class="col-lg-8 col-md-6">
+                            <form id="form-pdf-filtro" action="" method="GET" target="_blank">
+                                <div class="input-group">
+                                    <select class="form-select" id="profesion-select" name="profesion" required>
+                                        <option value="" disabled selected>Seleccione una profesión</option>
+                                        {{-- Iteramos sobre las profesiones obtenidas del controlador --}}
+                                        @foreach ($profesionesUnicas as $profesion)
+                                            <option value="{{ $profesion }}">{{ $profesion }}</option>
+                                        @endforeach
+                                    </select>
+                                    <button class="btn btn-secondary" type="submit" id="btn-descargar-filtro" disabled>
+                                        Descargar PDF Filtrado
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
 
                 <div class="card shadow-sm p-4 mb-4">
                     <form action="{{ route('personal.index') }}" method="GET">
@@ -142,7 +175,7 @@
                                                     @method('PATCH')
                                                     <button type="submit"
                                                         class="btn btn-sm btn-icon-only 
-                                                                                                                                                                                                    {{ $esActivo ? 'btn-warning' : 'btn-success' }}"
+                                                                                                                                                                                                                {{ $esActivo ? 'btn-warning' : 'btn-success' }}"
                                                         data-bs-toggle="tooltip" data-bs-placement="top"
                                                         title="{{ $esActivo ? 'Desactivar Personal' : 'Activar Personal' }}">
                                                         <i class="bi {{ $esActivo ? 'bi-lock' : 'bi-unlock' }}"></i>
@@ -287,6 +320,35 @@
                 });
             </script>
         @endpush
+
+
+
+        {{-- Script para manejar la URL dinámica --}}
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const selectElement = document.getElementById('profesion-select');
+                const formElement = document.getElementById('form-pdf-filtro');
+                const downloadButton = document.getElementById('btn-descargar-filtro');
+
+                // Función que se ejecuta al cambiar la selección
+                selectElement.addEventListener('change', function () {
+                    const selectedProfesion = this.value;
+
+                    if (selectedProfesion) {
+                        // Genera la URL de la ruta nombrada, reemplazando el parámetro
+                        // 'personal.exportar.pdf.filtro' es la ruta que creamos antes: personal/exportar/pdf/{profesion}
+                        const url = '{{ route('personal.exportar.pdf.filtro', ['profesion' => '__PROFESION__']) }}';
+
+                        // Reemplaza el placeholder por la profesión seleccionada en la acción del formulario
+                        formElement.action = url.replace('__PROFESION__', selectedProfesion);
+                        downloadButton.disabled = false; // Habilita el botón de descarga
+
+                    } else {
+                        downloadButton.disabled = true; // Deshabilita si no hay selección
+                    }
+                });
+            });
+        </script>
 
         @include('components._session-timeout')
 </body>

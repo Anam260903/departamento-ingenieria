@@ -22,7 +22,7 @@
             @include('components._navbar')
 
             <div class="container-fluid py-4">
-                <h1 class="mb-4 h3">🧑‍💼 GESTIÓN DE PERSONAL</h1>
+                <h1 class="mb-4 h3">GESTIÓN DE PERSONAL</h1>
                 <h2 class="h4 mb-4">Editar Usuario: {{ $personal->nombre }} {{ $personal->apellido }}</h2>
 
                 @if (session('error'))

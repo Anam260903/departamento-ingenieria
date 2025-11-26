@@ -76,6 +76,12 @@ Route::get('/personal/get-recursos-disponibles', [PersonalController::class, 'ge
 // Ruta para guardar la asignación del recurso al usuario
 Route::post('/personal/{id_user}/asignar-recurso', [PersonalController::class, 'assignRecurso'])->name('personal.assignRecurso')->middleware('auth');
 
+// Ruta para exportar listado de personal a PDF
+Route::get('personal/exportar/pdf', [PersonalController::class, 'exportarPersonalPDF'])->name('personal.exportar.pdf')->middleware('auth');
+
+// Ruta para exportar listado de personal a PDF filtrado por profesión
+Route::get('personal/exportar/pdf/{profesion}', [PersonalController::class, 'exportarPersonalPorProfesionPDF'])->name('personal.exportar.pdf.filtro')->middleware('auth');
+
 // Rutas del módulo de recursos protegidas por middleware
 Route::group(['middleware' => ['auth']], function () {
 
@@ -87,6 +93,9 @@ Route::group(['middleware' => ['auth']], function () {
 
     // Ruta para marcar como devuelto
     Route::put('asignaciones/{id_asignacion}/return', [RecursosController::class, 'markAsReturned'])->name('recursos.assignments.mark-returned');
+
+    // Ruta para exportar listado general de recursos a PDF
+    Route::get('recursos/exportar/pdf', [RecursosController::class, 'exportarRecursosGeneralPDF'])->name('recursos.exportar.pdf.general');
 });
 
 // Ruta para el módulo de inspecciones (protegidas por middleware)
