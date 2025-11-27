@@ -39,7 +39,7 @@
 
             @if (auth()->check() && auth()->user()->id_rol === 1)
                 <a href="{{ route('recursos.index') }}"
-                    class="list-group-item list-group-item-action bg-white d-flex align-items-center @if(request()->routeIs('recursos.index') || request()->routeIs('recursos.create') || request()->routeIs('recursos.') || request()->routeIs('recursos.assignments.history')) active @endif">
+                    class="list-group-item list-group-item-action bg-white d-flex align-items-center @if(request()->routeIs('recursos.index') || request()->routeIs('recursos.create') || request()->routeIs('recursos.edit') || request()->routeIs('recursos.assignments.history')) active @endif">
                     <i class="bi bi-gear me-2"></i> Recursos
                 </a>
             @endif

@@ -264,7 +264,7 @@ class RecursosController extends Controller
         $this->authorize('canReturn', Recursos::class);
 
         try {
-            // 1. Encuentra la asignación. Usamos with('recurso') para asegurar el nombre después.
+            // 1. Encuentra la asignación
             $asignacion = asignacion_recursos::with('recurso')->findOrFail($id_asignacion);
             $user = Auth::user();
 
@@ -278,8 +278,8 @@ class RecursosController extends Controller
                 return back()->with('warning', 'Esta asignación ya fue marcada como devuelta anteriormente.');
             }
 
-            // 4. Establecer la fecha de devolución y guardar (ESTE ES EL ÚNICO CAMBIO REQUERIDO)
-            $asignacion->fecha_devolucion = \Carbon\Carbon::now();
+            // 4. Establecer la fecha de devolución y guardar
+            $asignacion->fecha_devolucion = Carbon::now();
             $asignacion->save();
 
             // 5. Obtener el nombre del recurso para el mensaje de éxito
@@ -289,14 +289,13 @@ class RecursosController extends Controller
             return redirect()->route('recursos.assignments.history')->with('success', '¡Recurso "' . $recursoNombre . '" marcado como devuelto con éxito!');
 
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
-            // Manejar específicamente la excepción de autorización de la Política
+            // Manejar específicamente la excepción de autorización de la política
             return back()->with('error', 'No tiene permiso para realizar esta acción.');
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             // Manejar caso donde no se encuentra la asignación (ID incorrecto)
             return back()->with('error', 'El registro de asignación no fue encontrado. Intente nuevamente.');
         } catch (\Exception $e) {
             // Manejar cualquier otro error de servidor o base de datos
-            // Registrar el error para su diagnóstico
             \Log::error("Error al marcar como devuelto (ID: {$id_asignacion}): " . $e->getMessage());
             return back()->with('error', 'Ocurrió un error inesperado al procesar la devolución. Intente nuevamente.');
         }
@@ -307,6 +306,9 @@ class RecursosController extends Controller
      */
     public function exportarRecursosGeneralPDF()
     {
+        // AUTORIZACIÓN: Solo Rol 1 puede exportar el listado general.
+        $this->authorize('exportGeneralPDF', Recursos::class);
+
         // 1. Obtener todos los recursos
         $recursos = Recursos::all();
 
@@ -318,8 +320,91 @@ class RecursosController extends Controller
 
         // 4. Devolver el archivo PDF para descargar
         $fecha = Carbon::now()->format('Ymd');
-        $nombreArchivo = "Reporte_Recursos_General_{$fecha}.pdf";
+        $nombreArchivo = "Reporte_Recursos_{$fecha}.pdf";
 
         return $pdf->download($nombreArchivo);
     }
+
+    /**
+     * Exporta el historial completo de asignaciones de recursos a un archivo PDF.
+     */
+    public function exportarHistorialAsignacionesPDF()
+    {
+        // AUTORIZACIÓN: Ambos roles pueden descargar el historial.
+        $this->authorize('exportHistoryPDF', Recursos::class);
+
+        $user = Auth::user();
+
+        // 1. Obtener todas las asignaciones
+        $query = asignacion_recursos::with(['usuario', 'recurso'])
+            ->orderBy('fecha_asignacion', 'desc');
+
+        // FILTRO CRÍTICO: Si el usuario es Rol 2, filtrar por su ID
+        if ($user->id_rol === 2) {
+            $query->where('id_user', $user->id_user);
+        }
+
+        $asignaciones = $query->get($user->id_user);
+
+        // 2. Cargar la vista que contiene el PDF
+        $pdf = PDF::loadView('recursos.pdf.historial-asignaciones-pdf', compact('asignaciones'));
+
+        // 3. Ajustes de DomPDF
+        $pdf->setOptions(['isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true, 'isPhpEnabled' => true]);
+
+        // 4. Devolver el archivo PDF para descargar
+        $fecha = Carbon::now()->format('Ymd');
+        $nombreArchivo = "Historial_Asignaciones_{$fecha}.pdf";
+
+        return $pdf->download($nombreArchivo);
+    }
+
+    /**
+     * Exporta el historial de asignaciones filtrado por un rango de fechas.
+     */
+    public function exportarHistorialAsignacionesPorFechaPDF(Request $request)
+    {
+        // AUTORIZACIÓN: Ambos roles pueden descargar el historial.
+        $this->authorize('exportHistoryPDF', Recursos::class);
+
+        $user = Auth::user();
+
+        // 1. Validar las fechas de entrada
+        $request->validate([
+            'fecha_desde' => 'required|date',
+            'fecha_hasta' => 'required|date|after_or_equal:fecha_desde',
+        ]);
+
+        $fechaDesde = $request->input('fecha_desde');
+        $fechaHasta = $request->input('fecha_hasta');
+
+        // 2. Obtener las asignaciones filtradas con filtro condicional
+        $query = asignacion_recursos::with(['usuario', 'recurso'])
+            ->whereDate('fecha_asignacion', '>=', $fechaDesde)
+            ->whereDate('fecha_asignacion', '<=', $fechaHasta)
+            ->orderBy('fecha_asignacion', 'desc');
+
+        // Si el usuario es Rol 2, filtrar por su ID
+        if ($user->id_rol === 2) {
+            $query->where('id_user', $user->id_user);
+        }
+
+        $asignaciones = $query->get();
+
+        // 3. Preparar datos adicionales para la vista
+        $rangoFechas = [
+            'desde' => Carbon::parse($fechaDesde)->format('d-m-Y'),
+            'hasta' => Carbon::parse($fechaHasta)->format('d-m-Y'),
+        ];
+
+        // 4. Generar PDF
+        $pdf = PDF::loadView('recursos.pdf.historial-asignaciones-pdf', compact('asignaciones', 'rangoFechas'));
+
+        // 5. Ajustes y Descarga
+        $pdf->setOptions(['isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true, 'isPhpEnabled' => true]);
+        $nombreArchivo = "Historial_Asignaciones_Filtrado_{$rangoFechas['desde']}_a_{$rangoFechas['hasta']}.pdf";
+
+        return $pdf->download($nombreArchivo);
+    }
+
 }

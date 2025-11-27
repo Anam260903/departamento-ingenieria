@@ -39,11 +39,29 @@
                     <div class="alert alert-danger">{{ session('error') }}</div>
                 @endif
 
-                <div class="card shadow-sm p-4 mb-4">
+                <div class="d-flex justify-content-end mb-3 gap-2">
+                    <div class="col-auto">
+                        <a href="{{ route('recursos.asignaciones.exportar.pdf') }}" class="btn btn-secondary text-nowrap"
+                            title="Descargar Historial de Asignaciones">
+                            <i class="bi bi-file-earmark-pdf me-2"></i>Descargar historial
+                        </a>
+                    </div>
+
+                    <div class="col-auto">
+                        <button type="button" class="btn btn-danger text-nowrap" data-bs-toggle="modal"
+                            data-bs-target="#modalFiltroAsignaciones"
+                            title="Descargar Historial de Asignaciones en un rango de fechas">
+                            <i class="bi bi-calendar-date me-2"></i>Descargar historial por Fecha
+                        </button>
+                    </div>
+                </div>
+
+                {{-- Filtros --}}
+                <div class=" card shadow-sm p-4 mb-4">
                     <form action="{{ route('recursos.assignments.history') }}" method="GET">
                         <div class="row g-3">
 
-                            {{-- Filtro por palabra clave) --}}
+                            {{-- Filtro por palabra clave --}}
                             <div class="col-md-6 col-lg-3">
                                 <input type="text" class="form-control" name="keyword"
                                     placeholder="Nombre Recurso o Usuario" value="{{ request('keyword') }}">
@@ -63,17 +81,18 @@
 
                             {{-- Filtro por estado (Pendiente/Devuelto) --}}
                             <div class="col-md-6 col-lg-3">
-                                <select class="form-select" name="estado">
+                                <select class=" form-select" name="estado">
                                     <option value="">Filtrar por Estado</option>
                                     <option value="1" {{ request('estado') === '1' ? 'selected' : '' }}>PENDIENTE (Sin
                                         Devolver)</option>
-                                    <option value="0" {{ request('estado') === '0' ? 'selected' : '' }}>DEVUELTO</option>
+                                    <option value="0" {{ request('estado') === '0' ? 'selected' : '' }}>DEVUELTO
+                                    </option>
                                 </select>
                             </div>
 
                             {{-- Botones de acción --}}
                             <div class="col-md-12 col-lg-2 d-flex">
-                                <button type="submit" class="btn btn-secondary w-100 me-2">
+                                <button type=" submit" class="btn btn-secondary w-100 me-2">
                                     <i class="bi bi-funnel"></i> Filtrar
                                 </button>
                                 {{-- Botón para limpiar filtros --}}
@@ -109,7 +128,6 @@
                                         <td>{{ $asignacion->usuario->nombre ?? 'Usuario' }}
                                             {{ $asignacion->usuario->apellido ?? 'Desconocido' }}
                                         </td>
-
                                         <td>{{ \Carbon\Carbon::parse($asignacion->fecha_asignacion)->format('d-m-Y') }}
                                         </td>
                                         <td>
@@ -117,12 +135,12 @@
                                                 <span
                                                     class="text">{{ \Carbon\Carbon::parse($asignacion->fecha_devolucion)->format('d-m-Y') }}</span>
                                             @else
-                                                <span class="text-warning">Sin fecha</span>
+                                                <span class="text-danger">Sin fecha</span>
                                             @endif
                                         </td>
                                         <td>
                                             @if ($asignacion->fecha_devolucion)
-                                                <span class="badge bg-success">Devuelto</span>
+                                                <span class="badge bg-primary">Devuelto</span>
                                             @else
                                                 <span class="badge bg-danger">Pendiente</span>
                                             @endif
@@ -164,7 +182,35 @@
         </div>
     </div>
 
+    {{-- Modal para filtrar por rango de fechas --}}
+    <div class="modal fade" id="modalFiltroAsignaciones" tabindex="-1" aria-labelledby="modalFiltroAsignacionesLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalFiltroAsignacionesLabel">Filtrar Historial de Asignaciones</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
 
+                <form action="{{ route('recursos.asignaciones.exportar.pdf.fecha') }}" method="GET">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="fecha_desde" class="form-label">Fecha Desde:</label>
+                            <input type="date" class="form-control" id="fecha_desde" name="fecha_desde" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="fecha_hasta" class="form-label">Fecha Hasta:</label>
+                            <input type="date" class="form-control" id="fecha_hasta" name="fecha_hasta" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="submit" class="btn btn-primary">Descargar PDF Filtrado</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('js/dashboard.js') }}"></script>

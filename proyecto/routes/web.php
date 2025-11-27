@@ -96,6 +96,12 @@ Route::group(['middleware' => ['auth']], function () {
 
     // Ruta para exportar listado general de recursos a PDF
     Route::get('recursos/exportar/pdf', [RecursosController::class, 'exportarRecursosGeneralPDF'])->name('recursos.exportar.pdf.general');
+
+    // Ruta para exportar historial de asignaciones a PDF
+    Route::get('recursos/asignaciones/exportar/pdf', [RecursosController::class, 'exportarHistorialAsignacionesPDF'])->name('recursos.asignaciones.exportar.pdf');
+
+    // Ruta para exportar historial de asignaciones filtrado por rango de fechas a PDF
+    Route::get('recursos/asignaciones/exportar/pdf/fecha', [RecursosController::class, 'exportarHistorialAsignacionesPorFechaPDF'])->name('recursos.asignaciones.exportar.pdf.fecha');
 });
 
 // Ruta para el módulo de inspecciones (protegidas por middleware)
