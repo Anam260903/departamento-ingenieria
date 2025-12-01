@@ -411,7 +411,6 @@ function initStep5PhotoUpload() {
     photosInput.addEventListener('change', (e) => {
         // Llama a la función principal de manejo de archivos
         handleFiles(e.target.files);
-        e.target.value = '';
     });
 
 

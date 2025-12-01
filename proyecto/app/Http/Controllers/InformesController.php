@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Collection;
 use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Support\Str; 
 
 class InformesController extends BaseController
 {
@@ -557,8 +558,10 @@ class InformesController extends BaseController
                 ]);
             }
 
+
             // 3. Insertar todos los registros usando la relación
             $informe->imagenes()->saveMany($imagenesModelos);
+
         }
 
         // Fin del informe: Redirigir a la página del listado de informes con un mensaje
@@ -624,10 +627,23 @@ class InformesController extends BaseController
             'inspeccion',
         ])->findOrFail($id_inf);
 
-        // 2. Cargar la vista que contiene la estructura del PDF
+        // 2. Extraer el nombre y apellido del propietario
+
+        $propietario = $informe->inspeccion->vivienda->propietario;
+
+        // Construimos el nombre del archivo
+        if ($propietario) {
+            $nombre_completo = Str::slug($propietario->nombre_propie . ' ' . $propietario->apellido_propie, '-');
+            $nombre_archivo = 'Informe-de-Inspeccion-' . $nombre_completo . '.pdf';
+        } else {
+            // Fallback en caso de que no se encuentre el propietario
+            $nombre_archivo = 'Informe-de-Inspeccion-' . $informe->id_inf . '.pdf';
+        }
+
+        // 3. Cargar la vista que contiene la estructura del PDF
         $pdf = Pdf::loadView('informes-tecnicos.pdf.informe_tecnico', compact('informe'));
 
-        // 3. Configurar y retornar el PDF para la descarga
-        return $pdf->setPaper('a4', 'portrait')->download('Informe-Tecnico-' . $informe->id_inf . '.pdf');
+        // 4. Configurar y retornar el PDF para la descarga con el nuevo nombre
+        return $pdf->setPaper('a4', 'portrait')->download($nombre_archivo);
     }
 }

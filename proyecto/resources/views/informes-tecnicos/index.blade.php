@@ -146,7 +146,7 @@
                                                         method="POST" class="d-inline">
                                                         @csrf
                                                         @method('DELETE')
-                                                        <button type="submit" class="btn btn-danger btn-sm"
+                                                        <button type="submit" class="btn btn-info btn-sm"
                                                             title="Eliminar informe"
                                                             onclick="return confirm('¿Estás seguro de que quieres eliminar este informe?')">
                                                             <i class="bi bi-trash"></i>

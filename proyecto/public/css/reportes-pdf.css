@@ -80,3 +80,147 @@ body {
     page-break-inside: avoid;
     page-break-after: auto;
 }
+
+/* Estilos para el informe PDF */
+
+ /** Define márgenes y contador de páginas **/
+@page {
+            margin: 1cm 1.5cm;
+        }
+
+        body {
+            font-family: "Times New Roman", Times, serif;
+            font-size: 11pt;
+            line-height: 1.3;
+        }
+
+        /* Estilos del Encabezado */
+        .header-container {
+            width: 100%;
+            display: table;
+            border-collapse: collapse;
+            margin-bottom: 5px;
+        }
+
+        .logo-col,
+        .text-col {
+            display: table-cell;
+            vertical-align: top;
+            padding: 0;
+        }
+
+        .logo-col {
+            width: 15%;
+        }
+
+        .text-col {
+            width: 70%;
+            text-align: center;
+
+        }
+
+        .header-container p {
+            margin: 8px 0;
+            font-size: 12px;
+        }
+
+        .logo-img {
+            max-width: 150px;
+            height: auto;
+        }
+
+        .separator-line {
+            border-bottom: 3px solid #dc3545;
+            margin: 10px 0 15px 0;
+        }
+
+        /* Títulos del Informe */
+        .report-title {
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+            margin: 5px 0 2px 0;
+        }
+
+        .report-subtitle {
+            text-align: center;
+            font-size: 12px;
+            margin-bottom: 25px;
+        }
+
+        /* Tabla de datos de identificación (Sección 1) */
+        table {
+            border-collapse: collapse;
+            margin: 0;
+        }
+
+        table td {
+            padding: 0;
+            margin: 0;
+            border: none;
+            vertical-align: top;
+            font-size: 10pt;
+        }
+
+        span[style*="width: 10px;"] {
+            display: inline-block;
+            width: 10px !important;
+            height: 1px;
+            padding: 0;
+            margin: 0;
+        }
+
+        /* Secciones de texto */
+        .section-title {
+            font-size: 11pt;
+            font-weight: bold;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            border-bottom: 1px solid #000;
+            padding-bottom: 3px;
+        }
+
+        .content-box {
+            padding: 5px;
+            min-height: 40px;
+            margin-bottom: 10px;
+            text-align: justify;
+            font-size: 10pt;
+        }
+
+        /* Salto de página */
+        .page-break {
+            page-break-before: always;
+            display: block;
+        }
+
+        /* --- Memoria fotográfica --- */
+
+        .photo-table {
+            width: 100%;
+            border-collapse: collapse;
+            page-break-inside: avoid;
+        }
+
+        .photo-cell {
+            width: 50%;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .photo-cell img {
+            width: 100%;
+            height: auto;
+            max-height: 300px;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .image-caption {
+            margin-top: 5px;
+            font-size: 9pt;
+            font-style: italic;
+    padding-bottom: 10px;
+}
+

@@ -11,7 +11,6 @@ document.addEventListener('DOMContentLoaded', function () {
     let warningTimer;
     let timeoutTimer;
     let countdownTimer;
-    // 🎯 NUEVA VARIABLE para la instancia de Bootstrap Modal
     let sessionModalInstance = null;
 
     // --- Funciones de Control ---
@@ -19,8 +18,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function resetTimers() {
 
         // Si el modal está visible, no reiniciamos el warningTimer ni el timeoutTimer.
-        // Solo verificamos si la clase 'show' está presente en el elemento.
-        if (document.getElementById('sessionWarningModal') && 
+        if (document.getElementById('sessionWarningModal') &&
             document.getElementById('sessionWarningModal').classList.contains('show')) {
             return;
         }
@@ -34,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function logoutUser() {
-        // ... (Tu función de logout)
+
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
         fetch('/logout', { // Ruta de Laravel para cerrar sesión
@@ -55,7 +53,12 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function extendSession() {
-        // ... (Tu función extendSession)
+
+        clearTimeout(timeoutTimer);
+        clearInterval(countdownTimer);
+
+        hideWarningModal();
+
         fetch('/session/extend', {
             method: 'POST',
             headers: {
@@ -65,7 +68,6 @@ document.addEventListener('DOMContentLoaded', function () {
         })
             .then(response => {
                 if (response.ok) {
-                    hideWarningModal();
                     resetTimers(); // Reiniciar todo
                 } else {
                     logoutUser();
@@ -76,11 +78,11 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     }
 
-    // --- Funciones del Modal REFORZADAS ---
+    // --- Funciones del Modal ---
 
     function getModalInstance() {
         const modalElement = document.getElementById('sessionWarningModal');
-        
+
         if (!modalElement || typeof bootstrap === 'undefined') {
             return null;
         }
@@ -115,7 +117,6 @@ document.addEventListener('DOMContentLoaded', function () {
     function hideWarningModal() {
         const modal = getModalInstance();
         if (modal) {
-            // Usamos try...catch para mitigar el TypeError de Bootstrap
             try {
                 modal.hide();
             } catch (e) {

@@ -186,8 +186,8 @@
                                                         <button type="submit" class="btn btn-success btn-sm"
                                                             title="Marcar como Completada"
                                                             onclick="return confirm('¿Está seguro de que desea marcar esta inspección como COMPLETADA?')"
-                                                            {{-- Se deshabilita el botón si ya está completada (estado 1) para
-                                                            evitar clics innecesarios --}} @if ($inspeccion->estado_insp == 1)
+                                                            {{-- Se deshabilita el botón si ya está completada --}}
+                                                            @if ($inspeccion->estado_insp == 1)
                                                             disabled @endif>
                                                             <i class="bi bi-check-circle"></i>
                                                         </button>

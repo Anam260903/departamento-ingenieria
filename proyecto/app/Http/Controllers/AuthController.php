@@ -9,68 +9,13 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
-    // Muestra el formulario de inicio de sesión
-    public function showLoginForm()
-    {
-        return view('auth.login');
-    }
-
-    // Procesa el inicio de sesión
-    public function login(Request $request)
-    {
-        $credentials = $request->validate([
-            'correo' => 'required|email',
-            'password' => 'required',
-        ]);
-
-        // Estandarizar el correo a minúsculas antes de la autenticación
-        $credentials['correo'] = strtolower($credentials['correo']);
-
-        // 1. Intentar autenticar al usuario por credenciales
-        if (Auth::attempt(['correo' => $credentials['correo'], 'password' => $credentials['password']])) {
-
-            $user = Auth::user(); // Obtener el usuario autenticado
-
-            // 2. Verificar el estado del usuario ('0' = inactivo, '1' = activo)
-            if ($user->estado_user === '0') {
-                // Si está inactivo, cerrar la sesión y bloquear el acceso
-                Auth::logout();
-                $request->session()->invalidate();
-                $request->session()->regenerateToken();
-
-                return back()->withErrors([
-                    // Mostrar mensaje de bloqueo
-                    'correo' => 'Tu usuario está inactivo. Contacta a la administración.',
-                ])->onlyInput('correo');
-            }
-
-            // Si está activo ('1'), continuar con el inicio de sesión normal
-            $request->session()->regenerate();
-            return redirect()->route('dashboard');
-        }
-
-        // Si las credenciales son incorrectas
-        return back()->withErrors([
-            'correo' => 'Las credenciales proporcionadas no coinciden con nuestros registros.',
-        ])->onlyInput('correo');
-    }
-
-    // Cierra la sesión del usuario
-    public function logout(Request $request)
-    {
-        Auth::logout(); // Elimina la información de autenticación de la sesión
-        $request->session()->invalidate(); // Invalida la sesión actual
-        $request->session()->regenerateToken(); // Genera un nuevo token CSRF
-
-        return redirect('/login'); // Redirige a la página del login
-    }
-
+    
     // Muestra el formulario de registro
     public function showRegisterForm()
     {
         return view('auth.register');
     }
-
+    
     // Procesa el registro de un nuevo usuario
     public function register(Request $request)
     {
@@ -127,4 +72,63 @@ class AuthController extends Controller
         return redirect()->route('login')->with('success', '¡Registro exitoso! Tu cuenta ha sido creada y está pendiente de activación por el administrador.');
 
     }
+    
+    // Muestra el formulario de inicio de sesión
+    public function showLoginForm()
+    {
+        return view('auth.login');
+    }
+
+    // Procesa el inicio de sesión
+    public function login(Request $request)
+    {
+
+        // Estandarizar el correo a minúsculas antes de la validación
+        $request->merge(['correo' => strtolower($request->input('correo'))]);
+        
+        $credentials = $request->validate([
+            'correo' => 'required|email',
+            'password' => 'required',
+        ]);
+
+
+        // 1. Intentar autenticar al usuario por credenciales
+        if (Auth::attempt($credentials)) {
+
+            $user = Auth::user(); // Obtener el usuario autenticado
+
+            // 2. Verificar el estado del usuario ('0' = inactivo, '1' = activo)
+            if ($user->estado_user === '0') {
+                // Si está inactivo, cerrar la sesión y bloquear el acceso
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+
+                return back()->withErrors([
+                    // Mostrar mensaje de bloqueo
+                    'correo' => 'Tu usuario está inactivo. Contacta a la administración.',
+                ])->onlyInput('correo');
+            }
+
+            // Si está activo ('1'), continuar con el inicio de sesión normal
+            $request->session()->regenerate();
+            return redirect()->route('dashboard');
+        }
+
+        // Si las credenciales son incorrectas
+        return back()->withErrors([
+            'correo' => 'Las credenciales proporcionadas no coinciden con nuestros registros.',
+        ])->onlyInput('correo');
+    }
+
+    // Cierra la sesión del usuario
+    public function logout(Request $request)
+    {
+        Auth::logout(); // Elimina la información de autenticación de la sesión
+        $request->session()->invalidate(); // Invalida la sesión actual
+        $request->session()->regenerateToken(); // Genera un nuevo token CSRF
+
+        return redirect('/login'); // Redirige a la página del login
+    }
+
 }

@@ -3,7 +3,9 @@
 
 <head>
     <title>Informe Técnico N° {{ $informe->id_inf }}</title>
-    <link href="{{public_path('css/informes.css')}}" rel="stylesheet">
+    <style>
+        <?php echo file_get_contents(public_path('css/informes.css')); ?>
+    </style>
 </head>
 
 <body>
@@ -22,7 +24,7 @@
         <div class="text-col">
             <p>REPÚBLICA BOLIVARIANA DE VENEZUELA</p>
             <p>GOBIERNO BOLIVARIANO DEL ESTADO SUCRE</p>
-            <p>CORPORACION DE VIVIENDA DEL ESTADO SUCRE</p>
+            <p>CORPORACIÓN DE VIVIENDA DEL ESTADO SUCRE</p>
             <p>(CORVISUCRE)</p>
             <p>RIF: G-200164492</p>
             <p>CARÚPANO - ESTADO SUCRE</p>
@@ -47,44 +49,55 @@
     </div>
 
     {{-- Datos generales --}}
-    <table class="data-table">
-        <tr>
-            <td class="label">PROFESIONAL(ES) ASIGNADO(S):</td>
-            <td class="data-content">
-                Ing. {{ $informe->inspeccion->usuario->nombre ?? 'N/A' }}
-                {{ $informe->inspeccion->usuario->apellido ?? 'N/A' }}
-            </td>
-        </tr>
-        <tr>
-            <td class="label">FECHA DE LA INSPECCIÓN:</td>
-            <td class="data-content">
-                {{ \Carbon\Carbon::parse($informe->inspeccion->fecha_insp)->format('d/m/Y') }}
-            </td>
-        </tr>
-        <tr>
-            <td class="full-row-label">NOMBRE DE LA COMUNIDAD Y/O PROYECTO:</td>
-            <td colspan="3" class="full-row-content">
-                {{ $informe->comunidad ?? 'N/A' }}
-            </td>
-        </tr>
-        <tr>
-            <td class="label">RESPONSABLE:</td>
-            <td class="data-content">
-                {{ $informe->inspeccion->vivienda->propietario->nombre_propie ?? 'N/A' }}
-                {{ $informe->inspeccion->vivienda->propietario->apellido_propie ?? 'N/A' }}
-            </td>
-            <td class="label">C.I:</td>
-            <td class="data-content">{{ $informe->inspeccion->vivienda->propietario->cedula_propie ?? 'N/A' }}</td>
-        </tr>
-        <tr>
-            <td class="label">DIRECCIÓN:</td>
-            <td colspan="2" class="data-content">
-                {{ $informe->inspeccion->vivienda->direccion ?? 'N/A' }}
-            </td>
-            <td class="label">TLF:</td>
-            <td class="data-content">{{ $informe->inspeccion->vivienda->propietario->telefono ?? 'N/A' }}</td>
-        </tr>
-    </table>
+
+    <div style="font-size: 10pt; line-height: 1.5; margin-bottom: 15px;">
+
+        {{-- Fila 1: PROFESIONAL ASIGNADO --}}
+        <span style="font-weight: bold;">PROFESIONAL ASIGNADO:</span>
+        <span style="display: inline-block; width: 10px;"></span>
+        <span style="font-weight: normal;">Ing. {{ $informe->inspeccion->usuario->nombre ?? 'N/A' }}
+            {{ $informe->inspeccion->usuario->apellido ?? 'N/A' }}</span>
+        <br />
+
+        {{-- Fila 2: FECHA DE LA INSPECCIÓN --}}
+        <span style="font-weight: bold;">FECHA DE LA INSPECCIÓN:</span>
+        <span style="display: inline-block; width: 10px;"></span>
+        <span
+            style="font-weight: normal;">{{ \Carbon\Carbon::parse($informe->inspeccion->fecha_insp)->format('d/m/Y') }}</span>
+        <br />
+
+        {{-- Fila 3: NOMBRE DE LA COMUNIDAD Y/O PROYECTO --}}
+        <span style="font-weight: bold;">NOMBRE DE LA COMUNIDAD Y/O PROYECTO:</span>
+        <span style="display: inline-block; width: 10px;"></span>
+        <span style="font-weight: normal;">{{ $informe->comunidad ?? 'N/A' }}</span>
+        <br />
+
+        {{-- Fila 4 : RESPONSABLE --}}
+        <span style="font-weight: bold;">RESPONSABLE:</span>
+        <span style="display: inline-block; width: 10px;"></span>
+        <span style="font-weight: normal;">{{ $informe->inspeccion->vivienda->propietario->nombre_propie ?? 'N/A' }}
+            {{ $informe->inspeccion->vivienda->propietario->apellido_propie ?? 'N/A' }}</span>
+        <br />
+
+        {{-- Fila 5: CÉDULA DE IDENTIDAD --}}
+        <span style="font-weight: bold;">CÉDULA DE IDENTIDAD:</span>
+        <span style="display: inline-block; width: 10px;"></span>
+        <span style="font-weight: normal;">{{ $informe->inspeccion->vivienda->propietario->cedula_propie ?? 'N/A' }}</span>
+        <br />
+        
+        {{-- Fila 6: TELÉFONO --}}
+        <span style="font-weight: bold;">TELÉFONO:</span>
+        <span style="display: inline-block; width: 10px;"></span>
+        <span style="font-weight: normal;">{{ $informe->inspeccion->vivienda->propietario->telefono ?? 'N/A' }}</span>
+        <br />
+
+        {{-- Fila 7: DIRECCIÓN --}}
+        <span style="font-weight: bold;">DIRECCIÓN:</span>
+        <span style="display: inline-block; width: 10px;"></span>
+        <span style="font-weight: normal;">{{ $informe->inspeccion->vivienda->direccion ?? 'N/A' }}</span>
+        <br />
+
+    </div>
 
     {{-- Contenido de la inspección --}}
     <div class="section-title">1. ANTECEDENTES</div>
@@ -158,32 +171,76 @@
 
     {{-- Imagénes --}}
     @if ($informe->imagenes->count() > 0)
-        <div class="photo-grid">
-            @foreach ( $informe->imagenes as $index => $imagen)
-                        @php
 
-                $storagePath = storage_path('app/public/' . $imagen->ruta_archivo);
-                $imageData = '';
-                if (file_exists($storagePath)) {
-                    $imageData = 'data:image/' . pathinfo($storagePath, PATHINFO_EXTENSION) . ';base64,' . base64_encode(file_get_contents($storagePath));
+        @php
+            $img_count = 0; // Contador de imagen dentro de la página
+            $imagenes_por_fila = 2;
+            $imagenes_por_pagina = 6; // 2 imágenes por fila * 3 filas = 6 imágenes por página
+
+            // Abrimos la primera tabla
+            echo '<table class="photo-table">';
+        @endphp
+
+        @foreach ($informe->imagenes as $index => $imagen)
+
+            {{-- 1. Si es la primera imagen de una fila (1, 3, 5, etc.), abrimos una fila de tabla --}}
+            @if ($img_count % $imagenes_por_fila === 0)
+                <tr>
+            @endif
+
+                @php
+                    // --- Lógica de Manejo de Archivos (Tu lógica existente) ---
+                    $storagePath = storage_path('app/public/' . $imagen->ruta_archivo);
+                    $imageData = '';
+                    if (file_exists($storagePath)) {
+                        $imageData = 'data:image/' . pathinfo($storagePath, PATHINFO_EXTENSION) . ';base64,' . base64_encode(file_get_contents($storagePath));
+                    }
+                @endphp
+
+                {{-- 2. Insertamos la celda (columna) con la imagen --}}
+                <td class="photo-cell">
+                    @if ($imageData)
+                        <img src="{{ $imageData }}" alt="Foto de Evidencia">
+                    @else
+                        <p>[Imagen no encontrada]</p>
+                    @endif
+                </td>
+
+                {{-- 3. Si es la última imagen de una fila (2, 4, 6, etc.), cerramos la fila --}}
+                @if (($img_count + 1) % $imagenes_por_fila === 0)
+                    </tr>
+                @endif
+
+            {{-- 4. VERIFICACIÓN CRUCIAL DE CORTE DE PÁGINA --}}
+            @if (($img_count + 1) % $imagenes_por_pagina === 0)
+                @php
+                    // Cerramos la tabla actual
+                    echo '</table>';
+
+                    // Insertamos el corte de página
+                    echo '<div class="page-break"></div>';
+
+                    // Abrimos una nueva tabla para la siguiente página
+                    echo '<table class="photo-table">';
+                @endphp
+            @endif
+
+            @php
+                $img_count++; // Incrementamos el contador
+            @endphp
+        @endforeach
+
+        @php
+            // Cerramos la tabla final si el total de imágenes no fue múltiplo de 4
+            if ($img_count % $imagenes_por_pagina !== 0) {
+                // Aseguramos que la última fila se cierre si el conteo fue impar (ej. 1 o 3 imágenes)
+                if ($img_count % $imagenes_por_fila !== 0) {
+                    echo '</tr>';
                 }
-                        @endphp
+                echo '</table>';
+            }
+        @endphp
 
-                        <div class="photo-item">
-                            @if ($imageData)
-                                <img src="{{ $imageData }}" alt="Foto de Evidencia">
-                            @else
-                                <p>[Imagen no encontrada]</p>
-                            @endif
-                        </div>
-
-                        {{-- ⚠️ Lógica para forzar el corte de página después de la imagen #6, #12, #18, etc. --}}
-                        @if (($index + 1) % 6 === 0)
-                            <div class="page-break"></div>
-                        @endif
-            @endforeach
-            <div style="clear: both;"></div>
-        </div>
     @else
         <p>No se adjuntaron imágenes a este informe.</p>
     @endif
@@ -227,17 +284,17 @@
     <div class="report-title">CROQUIS DE UBICACIÓN DEL TERRENO</div>
 
     @php
-// Accedemos a los datos de vivienda a través de la relación de inspección
-$vivienda = $informe->inspeccion->vivienda;
-$lat = $vivienda->latitud ?? 'N/A';
-$long = $vivienda->longitud ?? 'N/A';
+        // Accedemos a los datos de vivienda a través de la relación de inspección
+        $vivienda = $informe->inspeccion->vivienda;
+        $lat = $vivienda->latitud ?? 'N/A';
+        $long = $vivienda->longitud ?? 'N/A';
 
-// Obtenemos la imagen del mapa
-$mapStoragePath = storage_path('app/public/' . $vivienda->map_image_file);
-$mapImageData = '';
-if (file_exists($mapStoragePath)) {
-    $mapImageData = 'data:image/' . pathinfo($mapStoragePath, PATHINFO_EXTENSION) . ';base64,' . base64_encode(file_get_contents($mapStoragePath));
-}
+        // Obtenemos la imagen del mapa
+        $mapStoragePath = storage_path('app/public/' . $vivienda->map_image_file);
+        $mapImageData = '';
+        if (file_exists($mapStoragePath)) {
+            $mapImageData = 'data:image/' . pathinfo($mapStoragePath, PATHINFO_EXTENSION) . ';base64,' . base64_encode(file_get_contents($mapStoragePath));
+        }
 
 
     @endphp
