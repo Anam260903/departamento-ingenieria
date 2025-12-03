@@ -10,6 +10,7 @@ use App\Http\Controllers\RecursosController;
 use App\Http\Controllers\InspeccionesController;
 use App\Http\Controllers\InformesController;
 use App\Http\Controllers\CalculosController;
+use App\Http\Controllers\DecisionesController;
 
 // Ruta para mostrar el formulario de inicio de sesión
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
@@ -172,3 +173,9 @@ Route::get('informes/exportar/{id_inf}/pdf', [InformesController::class, 'downlo
 
 // Ruta para mostrar la estimación de materiales
 Route::get('/estimacion-materiales', [CalculosController::class, 'index'])->name('estimacion-materiales')->middleware('auth');
+
+// Ruta para el módulo de toma de decisiones
+Route::get('/toma-decisiones', [DecisionesController::class, 'resumenInspeccion'])->name('decisiones.resumenInspeccion')->middleware('auth');
+
+// Ruta API para el resumen del modal
+Route::get('/api/inspeccion/resumen/{inspeccion}', [DecisionesController::class, 'obtenerResumenInspeccion'])->name('api.inspeccion.resumen');

@@ -31,7 +31,7 @@
                 </div>
             </div>
 
-            <div>
+            <div class="me-2 d-none d-lg-block">
                 <a class="navbar-brand d-flex align-items-center" href="{{ route('logout') }}" title="Cerrar sesión">
                     <img src="{{ asset('images/logo1.png') }}" alt="Logo" width="50" height="40">
                 </a>

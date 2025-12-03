@@ -20,6 +20,12 @@ body {
     }
 }
 
+@media (max-width: 991.98px) {
+    #page-content-wrapper {
+        padding-top: 120px; 
+    }
+}
+
 /* Estilos base del sidebar para todas las pantallas */
 #sidebar-wrapper {
     min-height: 100vh;
@@ -42,7 +48,9 @@ body.sb-sidenav-toggled #sidebar-wrapper {
 #page-content-wrapper {
     padding: 1.5rem;
     transition: margin 0.25s ease-out;
-    width: 90%;
+    width: 100%;
+    background-color: #f0f2f5;
+    padding-top: 56px;
 }
 
 /* Estado de 'toggled' para mostrar el menú en móviles */

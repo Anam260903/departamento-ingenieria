@@ -1,0 +1,52 @@
+/* Estilos base para la Card clickable */
+.card-insp-clickable {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0 !important;
+    border-radius: 0.5rem;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; /* Transición para el efecto hover */
+    cursor: pointer;
+}
+
+/* Efecto al pasar el mouse */
+.card-insp-clickable:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Caabecera del Card */
+.card-insp-clickable .card-body {
+    padding: 1.25rem;
+}
+
+/* Icono de la vivienda */
+.card-insp-clickable .card-title i {
+    color: #007bff;
+}
+
+/* Estilo para los badges */
+.badge-insp-pendiente {
+    background-color: #ffc107;
+    color: #343a40;
+    font-weight: bold;
+}
+
+.badge-insp-completada {
+    background-color: #28a745;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+/* Estilo para el pie de la card */
+.card-insp-clickable .card-footer-text {
+    font-size: 0.8rem;
+    color: #6c757d;
+    border-top: 1px solid #f8f9fa;
+    padding-top: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.pre-wrap {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-family: "Arial", sans-serif;
+}
