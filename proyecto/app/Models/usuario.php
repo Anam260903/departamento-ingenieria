@@ -30,6 +30,12 @@ class Usuario extends Authenticatable
         return $this->belongsTo(Roles::class, 'id_rol');
     }
 
+    // Relación: Un usuario tiene muchas inspecciones
+    public function inspeccionesPendientes()
+    {
+        return $this->hasMany(Inspeccion::class, 'id_user')->where('estado_insp', 0);
+    }
+
     // Campos que deben ocultarse al serializar el modelo
     protected $hidden = [
         'password',

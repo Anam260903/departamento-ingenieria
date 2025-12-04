@@ -174,8 +174,15 @@ Route::get('informes/exportar/{id_inf}/pdf', [InformesController::class, 'downlo
 // Ruta para mostrar la estimación de materiales
 Route::get('/estimacion-materiales', [CalculosController::class, 'index'])->name('estimacion-materiales')->middleware('auth');
 
-// Ruta para el módulo de toma de decisiones
-Route::get('/toma-decisiones', [DecisionesController::class, 'resumenInspeccion'])->name('decisiones.resumenInspeccion')->middleware('auth');
+// Rutas para el módulo de toma de decisiones
+// Ruta para el index
+Route::get('/toma-decisiones', [DecisionesController::class, 'index'])->name('decisiones.index')->middleware('auth');
+
+// Ruta para el resumen de inspecciones
+Route::get('/toma-decisiones/resumen-inspecciones', [DecisionesController::class, 'resumenInspeccion'])->name('decisiones.resumenInspeccion')->middleware('auth');
 
 // Ruta API para el resumen del modal
-Route::get('/api/inspeccion/resumen/{inspeccion}', [DecisionesController::class, 'obtenerResumenInspeccion'])->name('api.inspeccion.resumen');
+Route::get('/api/inspeccion/resumen/{inspeccion}', [DecisionesController::class, 'obtenerResumenInspeccion'])->name('api.inspeccion.resumen')->middleware('auth');
+
+// Ruta para la comparación de inspecciones
+Route::get('/toma-decisiones/comparacion', [DecisionesController::class, 'comparacion'])->name('decisiones.comparacion')->middleware('auth');

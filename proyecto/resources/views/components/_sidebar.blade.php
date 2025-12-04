@@ -52,7 +52,7 @@
             @endif
 
             @if (auth()->check() && auth()->user()->id_rol === 1)
-                <a href="{{ route('decisiones.resumenInspeccion') }}"
+                <a href="{{ route('decisiones.index') }}"
                     class="list-group-item list-group-item-action bg-white d-flex align-items-center @if(request()->routeIs('decisiones.index')) active @endif">
                     <i class="bi bi-journal-check me-2"></i> Toma de decisiones
                 </a>

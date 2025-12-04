@@ -39,18 +39,6 @@
                     <div class="alert alert-danger">{{ session('error') }}</div>
                 @endif
 
-                <div class="row justify-content-end mb-3">
-                    {{-- Botón comparar inspecciones --}}
-                    <div class="col-auto">
-                        {{-- Verifica si el usuario autenticado tiene id_rol igual a 1 (Administrador) --}}
-                        @if (auth()->check() && auth()->user()->id_rol === 1)
-                            <a href="#" class="btn btn-primary text-nowrap">
-                                Comparar inspecciones
-                            </a>
-                        @endif
-                    </div>
-                </div>
-
                 <div class="row g-4">
                     @forelse ($inspecciones as $inspeccion)
                         {{-- Card de Inspección --}}

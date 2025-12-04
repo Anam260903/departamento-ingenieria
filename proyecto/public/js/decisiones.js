@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const resumenContenido = document.getElementById('resumen-contenido');
     const mensajeError = document.getElementById('mensaje-error');
     const mensajeErrorTexto = document.getElementById('mensaje-error-texto');
+    const btnPdf = document.getElementById('btn-ver-pdf');
 
     if (!resumenModal) return; // Salir si el modal no existe en la página actual
 
@@ -21,8 +22,7 @@ document.addEventListener('DOMContentLoaded', function () {
         loadingSpinner.style.display = 'block';
         resumenContenido.style.display = 'none';
         mensajeError.style.display = 'none';
-
-        document.getElementById('btn-ver-pdf').style.display = 'none'; // Ocultar al inicio
+        btnPdf.style.display = 'none';
 
         // 2. Construir la URL de la API
         const url = url_template.replace(ID_PLACEHOLDER, id_insp);
@@ -61,9 +61,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     document.getElementById('info-fecha').textContent = data.fecha_inf;
 
                     // Lógica del botón PDF
-                    const btnPdf = document.getElementById('btn-ver-pdf');
-                    btnPdf.href = `${BASE_PDF_URL}/${data.id_informe}/pdf`;
-                    btnPdf.style.display = 'inline-block'; // Mostrar el botón
+                    if (data.id_informe) {
+                        const btnPdf = document.getElementById('btn-ver-pdf');
+                        btnPdf.href = `${BASE_PDF_URL}/${data.id_informe}/pdf`;
+                        btnPdf.style.display = 'inline-block'; // Mostrar el botón
+                    }
 
                     // Mostrar el contenido del resumen
                     resumenContenido.style.display = 'block';
@@ -102,4 +104,5 @@ document.addEventListener('DOMContentLoaded', function () {
                 resumenContenido.style.display = 'none';
             });
     });
+
 });
