@@ -133,53 +133,54 @@
                             </thead>
                             <tbody>
                                 @forelse ($recursos as $recurso)
-                                                                    <tr>
-                                                                        <td>{{ $recurso->codigo }}</td>
-                                                                        <td>{{ $recurso->nombre_rec }}</td>
-                                                                        <td>{{ $recurso->descripcion }}</td>
-                                                                        <td>
-                                                                            @php
-    // Busca la última asignación que no tiene fecha de devolución
-    $estaAsignado = $recurso->estaAsignado(); 
-                                                                            @endphp
+                                    <tr>
+                                        <td>{{ $recurso->codigo }}</td>
+                                        <td>{{ $recurso->nombre_rec }}</td>
+                                        <td>{{ $recurso->descripcion }}</td>
+                                        <td>
+                                            @php
+                                                // Busca la última asignación que no tiene fecha de devolución
+                                                $estaAsignado = $recurso->estaAsignado(); 
+                                            @endphp
 
-                                                                            @if ($estaAsignado)
-                                                                                <span class="badge badge-asignado">Asignado</span>
-                                                                            @else
-                                                                                <span class="badge badge-disponible">Disponible</span>
-                                                                            @endif
-                                                                        </td>
-                                                                        <td>
-                                                                            <div class="d-flex gap-2">
+                                            @if ($estaAsignado)
+                                                <span class="badge badge-asignado">Asignado</span>
+                                            @else
+                                                <span class="badge badge-disponible">Disponible</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            <div class="d-flex gap-2">
 
-                                                                                {{-- 1. Botón de ver detalles --}}
-                                                                                <a href="#" class="btn btn-info btn-sm btn-ver-observacion"
-                                                                                    title="Ver detalles" data-bs-toggle="modal"
-                                                                                    data-bs-target="#observacionModal"
-                                                                                    data-observacion="{{ json_encode($recurso->observacion) }}">
-                                                                                    <i class="bi bi-eye"></i>
-                                                                                </a>
+                                                {{-- 1. Botón de ver detalles --}}
+                                                <a href="#" class="btn btn-info btn-sm btn-ver-observacion"
+                                                    title="Ver detalles" data-bs-toggle="modal"
+                                                    data-bs-target="#observacionModal"
+                                                    data-observacion="{{ json_encode($recurso->observacion) }}">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
 
-                                                                                {{-- 2. Botón de editar --}}
-                                                                                <a href="{{ route('recursos.edit', $recurso->id_recurso) }}"
-                                                                                    class="btn btn-warning btn-sm" title="Editar recurso">
-                                                                                    <i class="bi bi-pencil"></i>
-                                                                                </a>
+                                                {{-- 2. Botón de editar --}}
+                                                <a href="{{ route('recursos.edit', $recurso->id_recurso) }}"
+                                                    class="btn btn-warning btn-sm" title="Editar recurso">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
 
-                                                                                {{-- 2. Botón de eliminar --}}
-                                                                                <form action="{{ route('recursos.destroy', $recurso->id_recurso) }}" method="POST" class="d-inline">
-                                                                                    @csrf
-                                                                                    @method('DELETE')
-                                                                                    <button type="submit" class="btn btn-danger btn-sm"
-                                                                                        title="Eliminar recurso"
-                                                                                        onclick="return confirm('¿Estás seguro de que quieres eliminar este recurso?')">
-                                                                                        <i class="bi bi-trash"></i>
-                                                                                    </button>
-                                                                                </form>
+                                                {{-- 2. Botón de eliminar --}}
+                                                <form action="{{ route('recursos.destroy', $recurso->id_recurso) }}"
+                                                    method="POST" class="d-inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-danger btn-sm"
+                                                        title="Eliminar recurso"
+                                                        onclick="return confirm('¿Estás seguro de que quieres eliminar este recurso?')">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </form>
 
-                                                                            </div>
-                                                                        </td>
-                                                                    </tr>
+                                            </div>
+                                        </td>
+                                    </tr>
                                 @empty
                                     <tr>
                                         <td colspan="5" class="text-center py-4">No hay recursos registrados.</td>
@@ -217,7 +218,5 @@
 
         @include('components._session-timeout')
 </body>
-
-</html>
 
 </html>

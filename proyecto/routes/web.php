@@ -178,6 +178,12 @@ Route::get('/estimacion-materiales', [CalculosController::class, 'index'])->name
 // Ruta para el index
 Route::get('/toma-decisiones', [DecisionesController::class, 'index'])->name('decisiones.index')->middleware('auth');
 
+// Ruta toma de decisiones de Recursos
+Route::get('/toma-decisiones/recursos', [DecisionesController::class, 'showRecursos'])->name('decisiones.recursos')->middleware('auth');
+
+// Endpoint AJAX para actualizar el Top N
+Route::get('/decisiones/recursos/top', [DecisionesController::class, 'obtenerTopRecursosJson'])->name('decisiones.recursos.top')->middleware('auth');
+
 // Ruta para el resumen de inspecciones
 Route::get('/toma-decisiones/resumen-inspecciones', [DecisionesController::class, 'resumenInspeccion'])->name('decisiones.resumenInspeccion')->middleware('auth');
 
@@ -186,3 +192,9 @@ Route::get('/api/inspeccion/resumen/{inspeccion}', [DecisionesController::class,
 
 // Ruta para la comparación de inspecciones
 Route::get('/toma-decisiones/comparacion', [DecisionesController::class, 'comparacion'])->name('decisiones.comparacion')->middleware('auth');
+
+// Ruta para obtener los detalles de la inspección
+Route::get('/toma-decisiones/comparar/detalle', [DecisionesController::class, 'obtenerDetallesInspeccion'])->name('decisiones.comparar.detalle')->middleware('auth');
+
+// Ruta para procesar la comparación de inspecciones
+Route::post('/toma-decisiones/comparar/procesar', [DecisionesController::class, 'procesarComparacion'])->name('decisiones.comparar.procesar')->middleware('auth');

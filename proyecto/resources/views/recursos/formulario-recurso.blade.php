@@ -57,7 +57,7 @@
                             <div class="col-md-6 mb-3">
                                 <label for="nombre_rec" class="form-label">Nombre</label>
                                 <input type="text" class="form-control @error('nombre_rec') is-invalid @enderror"
-                                    id="nombre_rec" name="nombre_rec" placeholder="Ej: ..."
+                                    id="nombre_rec" name="nombre_rec" placeholder="Ej: Laptop, cámara, escalera, medidor, etc."
                                     maxlength="30" value="{{ old('nombre_rec') }}" required>
                                 @error('nombre_rec')
                                     <div class="invalid-feedback">{{ $message }}</div>
