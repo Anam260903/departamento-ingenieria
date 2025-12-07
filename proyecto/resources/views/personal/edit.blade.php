@@ -145,7 +145,7 @@
                                     <input type="password" class="form-control @error('password') is-invalid @enderror"
                                         id="password" name="password" minlength="8" maxlength="15" placeholder="Nueva contraseña"
                                         data-bs-toggle="tooltip" data-bs-trigger="hover"
-                                        data-bs-title="8-15 caracteres. Debe incluir: Una letra mayúscula (A-Z). Una letra minúscula (a-z). Un número (0-9). Un símbolo (! $ # % @, etc.)">
+                                        data-bs-title="8-15 caracteres. Debe incluir: Una letra mayúscula (A-Z). Una letra minúscula (a-z). Un número (0-9). Un símbolo (! $ # % @ .)">
                                     <button class="btn btn-outline-secondary toggle-password" type="button">
                                         <i class="bi bi-eye"></i>
                                     </button>

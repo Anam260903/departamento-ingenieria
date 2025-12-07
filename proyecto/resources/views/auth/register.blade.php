@@ -5,10 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de Usuario</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"
-        rel="stylesheet">
     <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ asset('css/bootstrap-icons/bootstrap-icons.min.css') }}" rel="stylesheet" >
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
@@ -59,7 +55,7 @@
                                     pattern="[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+" title="Solo se permiten letras y espacios">
                             </div>
                             <div class="col-6">
-                                <input type="text" class="form-control" name="apellido" << placeholder="Apellido"
+                                <input type="text" class="form-control" name="apellido" placeholder="Apellido"
                                     value="{{ old('apellido') }}" required pattern="[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+"
                                     title="Solo se permiten letras y espacios">
                             </div>
@@ -75,7 +71,7 @@
                                 <div class="input-group">
                                     <input type="password" class="form-control" id="password-field" name="password"
                                         data-bs-toggle="tooltip" data-bs-trigger="hover"
-                                        data-bs-title="8-15 caracteres. Debe incluir: Una letra mayúscula (A-Z). Una letra minúscula (a-z). Un número (0-9). Un símbolo (! $ # % @, etc.)"
+                                        data-bs-title="8-15 caracteres. Debe incluir: Una letra mayúscula (A-Z). Una letra minúscula (a-z). Un número (0-9). Un símbolo (! $ # % @ .)"
                                         minlength="8" maxlength="15" placeholder="Contraseña" required>
                                     <span class="input-group-text" id="toggle-password">
                                         <i class="bi bi-eye-fill" id="eye-icon"></i>
@@ -88,7 +84,7 @@
                         <div class="mb-3">
                             <div class="input-group">
                                 <input type="password" class="form-control" id="password-confirm-field"
-                                    name="password_confirmation" maxlength="10" placeholder="Confirmar Contraseña"
+                                    name="password_confirmation" minlength="8" maxlength="15" placeholder="Confirmar Contraseña"
                                     required>
                                 <span class="input-group-text" id="toggle-password-confirm">
                                     <i class="bi bi-eye-fill" id="eye-icon-confirm"></i>

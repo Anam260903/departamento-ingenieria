@@ -2,7 +2,7 @@
 <html lang="es">
 
 <head>
-    <title>Recuperar Contraseña</title>
+    <title>Desafío de Seguridad</title>
     <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
     <link href="{{ asset('css/login.css') }}" rel="stylesheet">
 </head>
@@ -12,9 +12,7 @@
         <div class="row login-row">
             <div class="col-md-6 left-panel">
                 <div class="login-card">
-                    <h2 class="text-center mb-4">Recuperar Contraseña</h2>
-                    <p class="text-center">Ingresa tu correo electrónico para verificar tu identidad mediante una
-                        pregunta de seguridad.</p>
+                    <h2 class="text-center mb-4">Pregunta de Seguridad</h2>
 
                     @if (session('errors'))
                         <div class="alert alert-danger" role="alert">
@@ -24,13 +22,24 @@
                         </div>
                     @endif
 
-                    <form method="POST" action="{{ route('identify.olvideContraeña')}}">
+                    {{-- Pregunta de seguridad para restablecer la contraseña --}}
+                    <form method="POST" action="{{ route('validate.preguntas') }}">
                         @csrf
+                        <input type="hidden" name="challenge_token" value="{{ $challengeToken }}">
+
+                        <p class="lead">Pregunta: {{ $pregunta }}</p>
+
                         <div class="mb-3">
-                            <input type="email" class="form-control" name="correo"
-                                value="{{ old('correo')}}" required placeholder="Correo electrónico">
+                            <label for="respuesta" class="form-label">Tu Respuesta:</label>
+                            <input type="text" class="form-control @error('respuesta') is-invalid @enderror"
+                                id="respuesta" name="respuesta" required>
+                            @error('respuesta')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
-                        <button type="submit" class="btn btn-primary">Continuar</button>
+
+                        {{-- Botón de acción --}}
+                        <button type="submit" class="btn btn-primary">Verificar Respuesta</button>
                     </form>
                 </div>
             </div>

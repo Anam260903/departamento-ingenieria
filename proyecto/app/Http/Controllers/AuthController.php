@@ -9,13 +9,13 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
-    
+
     // Muestra el formulario de registro
     public function showRegisterForm()
     {
         return view('auth.register');
     }
-    
+
     // Procesa el registro de un nuevo usuario
     public function register(Request $request)
     {
@@ -46,13 +46,13 @@ class AuthController extends Controller
                 'min:8',
                 'max:15',
                 'confirmed',
-                'regex:/^.*(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!$#%@]).*$/'
+                'regex:/^.*(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!$#%@,.]).*$/'
             ],
         ], [
             // Mensaje personalizado para la Regex
             'cedula_user.regex' => 'La cédula ingresada no cumple con el formato válido. Por favor, ingrese un número de cédula real.',
             'correo.regex' => 'Solo se permiten direcciones de correo electrónico con el dominio @gmail.com.',
-            'password.regex' => 'La contraseña debe contener al menos una mayúscula, una minúscula, un número y un símbolo (! $ # % @).',
+            'password.regex' => 'La contraseña debe contener al menos una mayúscula, una minúscula, un número y un símbolo (! $ # % @ .).',
             'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
             'password.max' => 'La contraseña no puede exceder los 15 caracteres.',
         ]);
@@ -72,7 +72,7 @@ class AuthController extends Controller
         return redirect()->route('login')->with('success', '¡Registro exitoso! Tu cuenta ha sido creada y está pendiente de activación por el administrador.');
 
     }
-    
+
     // Muestra el formulario de inicio de sesión
     public function showLoginForm()
     {
@@ -85,7 +85,7 @@ class AuthController extends Controller
 
         // Estandarizar el correo a minúsculas antes de la validación
         $request->merge(['correo' => strtolower($request->input('correo'))]);
-        
+
         $credentials = $request->validate([
             'correo' => 'required|email',
             'password' => 'required',
@@ -112,7 +112,25 @@ class AuthController extends Controller
 
             // Si está activo ('1'), continuar con el inicio de sesión normal
             $request->session()->regenerate();
+
+            // Lógica de redirección a registro de preguntas de seguridad
+            // A. Excluir al usuario administrador master
+            $MASTER_ADMIN_EMAIL = 'admin@gmail.com';
+            $NUM_QUESTIONS_REQUIRED = 3;
+
+            if ($user->correo !== $MASTER_ADMIN_EMAIL) {
+
+                // B. Verificar si el usuario ya tiene las 3 preguntas registradas
+                if ($user->preguntasSeguridad()->count() < $NUM_QUESTIONS_REQUIRED) {
+
+                    // Redirigir al formulario de registro de preguntas
+                    return redirect()->route('form.preguntasSeguridad')->with('warning', 'Debes registrar tus preguntas de seguridad para completar el proceso de primer inicio de sesión.');
+                }
+            }
+
+            // C. Si cumple todos los requisitos
             return redirect()->route('dashboard');
+
         }
 
         // Si las credenciales son incorrectas

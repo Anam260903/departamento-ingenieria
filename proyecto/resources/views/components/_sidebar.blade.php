@@ -26,7 +26,7 @@
             </a>
 
             <a href="{{ route('perfil') }}"
-                class="list-group-item list-group-item-action bg-white d-flex align-items-center @if(request()->routeIs('perfil')) active @endif">
+                class="list-group-item list-group-item-action bg-white d-flex align-items-center @if(request()->routeIs('perfil') || request()->routeIs('seguridad.verificarContraseña') || request()->routeIs('seguridad.form.actualizarPreguntas') || request()->routeIs('seguridad.actualizarPreguntas')) active @endif">
                 <i class="bi bi-person me-2"></i> Perfil
             </a>
 
@@ -53,7 +53,7 @@
 
             @if (auth()->check() && auth()->user()->id_rol === 1)
                 <a href="{{ route('decisiones.index') }}"
-                    class="list-group-item list-group-item-action bg-white d-flex align-items-center @if(request()->routeIs('decisiones.index')) active @endif">
+                    class="list-group-item list-group-item-action bg-white d-flex align-items-center @if(request()->routeIs('decisiones.index') || request()->routeIs('decisiones.recursos') || request()->routeIs('decisiones.recursos.top') || request()->routeIs('decisiones.resumenInspeccion') || request()->routeIs('api.inspeccion.resumen') || request()->routeIs('decisiones.comparacion')) active @endif">
                     <i class="bi bi-journal-check me-2"></i> Toma de decisiones
                 </a>
             @endif

@@ -30,6 +30,12 @@ class Usuario extends Authenticatable
         return $this->belongsTo(Roles::class, 'id_rol');
     }
 
+    // Relación: Un usuario tiene muchas preguntas de seguridad
+    public function preguntasSeguridad()
+    {
+        return $this->hasMany(PreguntaSeguridad::class, 'id_user', 'id_user');
+    }
+
     // Relación: Un usuario tiene muchas inspecciones
     public function inspeccionesPendientes()
     {
@@ -66,11 +72,5 @@ class Usuario extends Authenticatable
     public function setApellidoAttribute($value)
     {
         $this->attributes['apellido'] = ucwords(strtolower($value));
-    }
-
-    //Funcion para enviar el correo de restablecimiento de contraseña
-    public function getEmailForPasswordReset()
-    {
-        return $this->correo;
     }
 }

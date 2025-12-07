@@ -72,11 +72,11 @@ class PerfilController extends Controller
                 'min:8',
                 'max:15',
                 'confirmed',
-                'regex:/^.*(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!$#%@]).*$/'
+                'regex:/^.*(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!$#%@,.]).*$/'
             ],
         ], [
             // Mensaje personalizado para la Regex
-            'password_nueva.regex' => 'La contraseña debe contener al menos una mayúscula, una minúscula, un número y un símbolo (! $ # % @).',
+            'password_nueva.regex' => 'La contraseña debe contener al menos una mayúscula, una minúscula, un número y un símbolo (! $ # % @ .).',
             'password_nueva.min' => 'La contraseña debe tener al menos 8 caracteres.',
             'password_nueva.max' => 'La contraseña no puede exceder los 15 caracteres.',
         ]);

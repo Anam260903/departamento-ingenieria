@@ -122,13 +122,13 @@ class PersonalController extends Controller
                 'min:8',
                 'max:15',
                 'confirmed',
-                'regex:/^.*(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!$#%@]).*$/'
+                'regex:/^.*(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!$#%@,.]).*$/'
             ],
         ], [
             // Mensaje personalizado para la Regex
             'cedula_user.regex' => 'La cédula ingresada no cumple con el formato válido. Por favor, ingrese un número de cédula real.',
             'correo.regex' => 'Solo se permiten direcciones de correo electrónico con el dominio @gmail.com.',
-            'password.regex' => 'La contraseña debe contener al menos una mayúscula, una minúscula, un número y un símbolo (! $ # % @).',
+            'password.regex' => 'La contraseña debe contener al menos una mayúscula, una minúscula, un número y un símbolo (! $ # % @ .).',
             'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
             'password.max' => 'La contraseña no puede exceder los 15 caracteres.',
         ]);

@@ -24,9 +24,20 @@
                 <h1 class="mb-4 h3">MI PERFIL</h1>
 
                 {{-- Mensajes de sesión --}}
-                @if(session('success'))
+                @php
+                    $mensaje = session('status') ?? session('success');
+                @endphp
+
+                @if($mensaje)
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        {{ session('success') }}
+                        {{ $mensaje }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
+
+                @if(session('error'))
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        {{ session('error') }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
@@ -103,29 +114,45 @@
                                 <label for="password_nueva" class="form-label">Nueva contraseña</label>
                                 <div class="input-group">
                                     <input type="password" class="form-control" id="password_nueva"
-                                    data-bs-toggle="tooltip" data-bs-trigger="hover"
-                                    data-bs-title="8-15 caracteres. Debe incluir: Una letra mayúscula (A-Z). Una letra minúscula (a-z). Un número (0-9). Un símbolo (! $ # % @, etc.)"    
-                                    name="password_nueva" minlength="8" maxlength="15" required>
-                                    <button class="btn btn-outline-secondary toggle-password" type="button">
-                                        <i class="bi bi-eye"></i>
-                                    </button>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="password_confirmacion" class="form-label">Confirma nueva contraseña</label>
-                                <div class="input-group">
-                                    <input type="password" class="form-control" id="password_nueva_confirmation"
-                                        name="password_nueva_confirmation" minlength="8" maxlength="15" required>
+                                        data-bs-toggle="tooltip" data-bs-trigger="hover"
+                                        data-bs-title="8-15 caracteres. Debe incluir: Una letra mayúscula (A-Z). Una letra minúscula (a-z). Un número (0-9). Un símbolo (! $ # % @ .)"
+                                        name="password_nueva" minlength="8" maxlength="15" required>
                                     <button class="btn btn-outline-secondary toggle-password" type="button">
                                         <i class="bi bi-eye"></i>
                                     </button>
                                 </div>
-                            </div>
 
-                            <div class="d-grid gap-2">
-                                <button type="submit" class="btn btn-primary">Guardar</button>
-                            </div>
+                                <div class="mb-3">
+                                    <label for="password_confirmacion" class="form-label">Confirma nueva
+                                        contraseña</label>
+                                    <div class="input-group">
+                                        <input type="password" class="form-control" id="password_nueva_confirmation"
+                                            name="password_nueva_confirmation" minlength="8" maxlength="15" required>
+                                        <button class="btn btn-outline-secondary toggle-password" type="button">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary">Guardar</button>
+                                </div>
                         </form>
+                    </div>
+
+                </div>
+
+                {{-- Actualizar preguntas de seguridad--}}
+                <div class="card shadow-sm p-4 mt-4">
+                    <h5 class="card-title text-center mb-4">Preguntas de Seguridad</h5>
+                    <p class="text-center text-muted">Utiliza tus preguntas para recuperar tu contraseña si la olvidas.
+                    </p>
+
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#confirmPasswordModal">
+                            <i class="bi bi-shield-lock-fill"></i> Actualizar Preguntas
+                        </button>
                     </div>
                 </div>
 
@@ -133,19 +160,73 @@
         </div>
 
     </div>
+
+    {{-- Modal para confirmar identidad con contraseña --}}
+    <div class="modal fade" id="confirmPasswordModal" tabindex="-1" aria-labelledby="confirmPasswordModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmPasswordModalLabel">Confirma tu Identidad</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <form method="POST" action="{{ route('seguridad.verificarContraseña') }}">
+                    @csrf
+                    <div class="modal-body">
+                        <p class="text-muted">Ingresa tu contraseña actual para poder modificar tus preguntas de
+                            seguridad.</p>
+
+                        <div class="mb-3">
+                            <label for="password_modal" class="form-label">Contraseña actual</label>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="password_modal" name="password"
+                                    minlength="8" maxlength="15" placeholder="Contraseña actual" required>
+                                <button class="btn btn-outline-secondary toggle-password" type="button">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+
+                            @error('password', 'confirmQuestions')
+                                <div class="text-danger mt-1">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Continuar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script src="{{ asset('js/dashboard.js') }}"></script>
+    <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
     <script>
         // Inicializar Tooltips y Popovers
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded ', function () {
             // Inicializa Tooltips
             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
             var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
                 return new bootstrap.Tooltip(tooltipTriggerEl)
             })
+
+            // Verificamos si hay cualquier error dentro de Error Bag.
+            @if ($errors->confirmQuestions->any())
+                // 1. Crear una nueva instancia del Modal de Bootstrap
+                var confirmModal = new bootstrap.Modal(document.getElementById('confirmPasswordModal'));
+
+                // 2. Mostrar el modal
+                confirmModal.show();
+
+                // 3. Enfocar el campo para que el usuario pueda corregir inmediatamente
+                var passwordField = document.getElementById('password_modal');
+                if (passwordField) {
+                    passwordField.focus();
+                }
+            @endif
         });
     </script>
-
-    <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
 
     @include('components._session-timeout')
 </body>

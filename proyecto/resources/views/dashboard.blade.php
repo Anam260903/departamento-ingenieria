@@ -21,15 +21,19 @@
         <div id="page-content-wrapper">
             <div class="container-fluid">
                 <h1 class="mt-4 h3">INICIO</h1>
-                
+
                 {{-- Mensajes de sesión --}}
-                @if(session('success'))
+                @php
+                    $mensaje = session('status') ?? session('success');
+                @endphp
+
+                @if($mensaje)
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        {{ session('success') }}
+                        {{ $mensaje }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
-                
+
                 @if ($errors->any())
                     <div class="alert alert-danger">
                         <ul>
@@ -82,8 +86,7 @@
                     <div class="col-12">
                         <div class="card shadow-sm p-4">
                             <h5 class="text-center mb-4">Informes realizados por mes</h5>
-                            <canvas id="informesChart"
-                                data-chart-data="{{ json_encode($datosGrafico) }}"
+                            <canvas id="informesChart" data-chart-data="{{ json_encode($datosGrafico) }}"
                                 data-chart-labels="{{ json_encode($meses) }}">
                             </canvas>
                         </div>

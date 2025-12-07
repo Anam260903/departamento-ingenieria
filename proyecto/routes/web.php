@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\Auth\PasswordResetController;
+use App\Http\Controllers\Auth\PreguntasSeguridadController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\PersonalController;
@@ -25,11 +25,23 @@ Route::post('/session/extend', function (Illuminate\Http\Request $request) {
     return response()->json(['status' => 'extended']);
 })->name('session.extend')->middleware('auth'); // Asegúrate que solo sea accesible si está logueado
 
-// Rutas de recuperación de contraseña
-Route::get('forgot-password', [PasswordResetController::class, 'showLinkRequestForm'])->name('password.request');
-Route::post('forgot-password', [PasswordResetController::class, 'sendResetLinkEmail'])->name('password.email');
-Route::get('reset-password/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
-Route::post('reset-password', [PasswordResetController::class, 'reset'])->name('password.update');
+// Rutas para registrar preguntas de seguridad después dellogin por primera vez
+Route::get('/registrar/preguntas-seguridad', [PreguntasSeguridadController::class, 'showRegistrationForm'])->name('form.preguntasSeguridad')->middleware('auth');
+Route::post('/registar/preguntas-seguridad', [PreguntasSeguridadController::class, 'registerQuestions'])->name('register.preguntasSeguridad')->middleware('auth');
+
+// Rutas para recuperar contraseña
+
+// Paso 1: Pedir el correo/cédula para identificar al usuario
+Route::get('/has-olvidado-tu-contraseña', [PreguntasSeguridadController::class, 'showIdentifierForm'])->name('form.olvideContraseña');
+Route::post('/has-olvidado-tu-contraseña/identificar', [PreguntasSeguridadController::class, 'identifyUser'])->name('identify.olvideContraeña');
+
+// Paso 2: Mostrar pregunta de seguridad aleatoria y pedir respuesta
+Route::get('/responder/preguntas-seguridad', [PreguntasSeguridadController::class, 'showChallengeForm'])->name('form.preguntas')->middleware('guest');
+Route::post('/responder/preguntas-seguridad', [PreguntasSeguridadController::class, 'validateAnswer'])->name('validate.preguntas');
+
+// Paso 3: Restablecer la contraseña (si la respuesta fue correcta)
+Route::get('/restablecer-contraseña-de-seguridad', [PreguntasSeguridadController::class, 'showResetForm'])->name('form.reestablecerContraseña')->middleware('guest');
+Route::post('restablecer-contraseña', [PreguntasSeguridadController::class, 'resetPassword'])->name('update.contraseña');
 
 // Ruta para mostrar el formulario de registro
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
@@ -51,6 +63,19 @@ Route::post('/perfil/actualizar', [PerfilController::class, 'update'])->name('pe
 
 // Ruta para actualizar la contraseña del perfil (POST, protegida por middleware)
 Route::post('/perfil/cambiar-contrasena', [PerfilController::class, 'changePassword'])->name('perfil.change-password')->middleware('auth');
+
+Route::middleware(['auth'])->group(function () {
+    
+    // --- Rutas de Actualización de Preguntas de Seguridad ---
+    // 1. Verifica la contraseña actual
+    Route::post('/perfil/seguridad/verificar-password', [PreguntasSeguridadController::class, 'verifyCurrentPassword'])->name('seguridad.verificarContraseña');
+    
+    // 2. Muestra el formulario para registrar las nuevas preguntas
+    Route::get('/perfil/seguridad/actualizar', [PreguntasSeguridadController::class, 'showUpdateForm'])->name('seguridad.form.actualizarPreguntas');
+    
+    // 3. Procesa la actualización de las preguntas
+    Route::post('/perfil/seguridad/guardar', [PreguntasSeguridadController::class, 'updateQuestions'])->name('seguridad.actualizarPreguntas');
+});
 
 // Ruta para mostrar la lista del personal
 Route::get('personal', [PersonalController::class, 'index'])->name('personal.index')->middleware('auth');

@@ -43,10 +43,15 @@
 
                 {{-- Mensajes de éxito o error --}}
                 @if (session('success'))
-                    <div class="alert alert-success">{{ session('success') }}</div>
+                    <div class="alert alert-success">{{ session('success') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
                 @endif
                 @if (session('error'))
-                    <div class="alert alert-danger">{{ session('error') }}</div>
+                    <div class="alert alert-danger">{{ session('error') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
                 @endif
 
                 <div class="row justify-content-end mb-3">
@@ -266,7 +271,7 @@
                                 <select id="mes_modal" name="mes" class="form-select" required>
                                     <option value="">Seleccione Mes</option>
                                     @php
-                                        \Carbon\Carbon::setLocale('es');
+\Carbon\Carbon::setLocale('es');
                                     @endphp
                                     {{-- Listar los 12 meses --}}
                                     @for ($m = 1; $m <= 12; $m++)
