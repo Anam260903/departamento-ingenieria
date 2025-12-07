@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Inspeccion;
+use App\Models\Informe;
 use App\Models\Usuario;
 use App\Models\asignacion_recursos;
 use Illuminate\Database\Eloquent\Builder;
@@ -436,146 +437,32 @@ class DecisionesController extends Controller
 
 
     /**
-     * Muestra la vista inicial para la comparación de inspecciones
+     * Muestra la vista para la comparación de inspecciones
      */
+
     public function comparacion()
     {
-        // 1. Filtrar solo inspecciones con estado_insp = 1 (completadas)
-        // y que tienen una relación 'informe' existente.
-        $inspecciones = Inspeccion::where('estado_insp', 1)
-            ->whereHas('informe')
-            ->with('vivienda.propietario')
-            ->get()
-            // Mapeamos para obtener solo los campos necesarios y el nombre completo
-            ->map(function ($inspeccion) {
-                $nombrePropietario = optional(optional($inspeccion->vivienda)->propietario)->nombre_propie . ' ' . optional(optional($inspeccion->vivienda)->propietario)->apellido_propie;
-                return [
-                    'id' => $inspeccion->id_insp,
-                    'codigo_inspeccion' => $inspeccion->id_insp,
-                    'vivienda_nombre' => trim($nombrePropietario) ?: 'Propietario Desconocido',
-                ];
-            })
-            ->sortBy('vivienda_nombre'); // Ordenamos por el nombre
+        // Obtener las inspecciones que tienen un informe asociado
+        $inspecciones = Inspeccion::whereHas('informe')
+            ->with(['vivienda.propietario'])
+            ->orderBy('fecha_insp', 'desc')
+            ->get();
 
-        // Estructura de las preguntas con sus ponderaciones
-        $criterios = $this->getCriteriosPonderados();
+        // Mapear los datos para enviarlos a la vista
+        $dataInspecciones = $inspecciones->map(function ($insp) {
+            return [
+                'id' => $insp->id_insp,
+                'propietario' => $insp->vivienda->propietario->nombre_propie . ' ' . $insp->vivienda->propietario->apellido_propie,
+                'fecha' => Carbon::parse($insp->fecha_insp)->format('d/m/Y'),
+                'comunidad' => $insp->informe ? $insp->informe->comunidad : 'N/A',
+            ];
+        });
 
         return view('toma-decisiones.comparacion-inspecciones', [
-            'inspecciones' => $inspecciones,
-            'criterios' => $criterios,
+            'inspecciones' => $dataInspecciones,
         ]);
     }
 
-    /**
-     * Devuelve los criterios de comparación y sus ponderaciones
-     */
-    private function getCriteriosPonderados()
-    {
-        // Definición de las preguntas clave y su importancia (ponderación)
-        // La suma total de ponderaciones es 100
-        return [
-            [
-                'id' => 'informe_aprobado',
-                'pregunta' => '¿El Informe Técnico ha sido aprobado?',
-                'ponderacion' => 10,
-                'descripcion' => 'Fundamental. Si no está aprobado, la prioridad es baja.'
-            ],
-            [
-                'id' => 'alto_riesgo',
-                'pregunta' => '¿El informe clasifica la vivienda como de Alto Riesgo Estructural (urgencia)?',
-                'ponderacion' => 30, // Máxima ponderación para riesgo estructural
-                'descripcion' => 'Indica necesidad inmediata de intervención.'
-            ],
-            [
-                'id' => 'recursos_disponibles',
-                'pregunta' => '¿Los recursos/materiales críticos requeridos están disponibles?',
-                'ponderacion' => 25,
-                'descripcion' => 'Afecta la viabilidad de iniciar la obra de inmediato.'
-            ],
-            [
-                'id' => 'personal_disponible',
-                'pregunta' => '¿Hay personal con la especialidad requerida disponible?',
-                'ponderacion' => 15,
-                'descripcion' => 'Sin personal especializado, la intervención se pospone.'
-            ],
-            [
-                'id' => 'zona_prioritaria',
-                'pregunta' => '¿La ubicación de la vivienda se encuentra en una zona de alta prioridad de ejecución actual?',
-                'ponderacion' => 20,
-                'descripcion' => 'Factor estratégico de ejecución regional.'
-            ],
-        ];
-    }
+    
 
-    /**
-     * Maneja la solicitud AJAX para obtener detalles de una inspección
-     */
-    public function obtenerDetallesInspeccion(Request $request)
-    {
-        $inspeccionId = $request->input('id');
-
-        // Cargamos la inspección con sus relaciones Vivienda, Propietario e Informe
-        $inspeccion = Inspeccion::with(['vivienda.propietario', 'informe'])
-            ->where('id_insp', $inspeccionId)
-            ->first();
-
-        if ($inspeccion) {
-            $propietario = optional($inspeccion->vivienda->propietario);
-            $informe = optional($inspeccion->informe);
-
-            // Construimos el nombre completo del propietario
-            $nombrePropietario = $propietario->nombre_propie . ' ' . $propietario->apellido_propie;
-
-            return response()->json([
-                'nombre' => $nombrePropietario,
-                'fecha' => $inspeccion->fecha_insp ? Carbon::parse($inspeccion->fecha_insp)->format('d/m/Y') : 'N/A',
-                'comunidad' => $informe->comunidad ?? 'N/A',
-            ]);
-        }
-
-        return response()->json(['error' => 'Inspección no encontrada'], 404);
-    }
-
-    /**
-     * Procesa los resultados del formulario de comparación (AJAX)
-     */
-    public function procesarComparacion(Request $request)
-    {
-        $puntuacion1 = $request->input('puntuacion1');
-        $puntuacion2 = $request->input('puntuacion2');
-        $nombre1 = $request->input('nombre1');
-        $nombre2 = $request->input('nombre2');
-
-        $diferencia = abs($puntuacion1 - $puntuacion2);
-
-        if ($puntuacion1 > $puntuacion2) {
-            $ganador = $nombre1;
-            $perdedor = $nombre2;
-        } elseif ($puntuacion2 > $puntuacion1) {
-            $ganador = $nombre2;
-            $perdedor = $nombre1;
-        } else {
-            // Empate
-            return response()->json([
-                'resultado' => "¡Empate técnico!",
-                'recomendacion' => "Ambas inspecciones, {$nombre1} y {$nombre2}, obtuvieron la misma puntuación de {$puntuacion1} puntos. Se recomienda una revisión detallada de los factores de riesgo (Alto Riesgo Estructural y Disponibilidad de Recursos) para desempatar la prioridad."
-            ]);
-        }
-
-        // Lógica de recomendación simple basada en la diferencia
-        $resultadoTexto = "Prioridad Clara: El proyecto en {$ganador} ({$puntuacion1} pts) tiene mayor prioridad sobre {$perdedor} ({$puntuacion2} pts).";
-
-        if ($diferencia >= 30) {
-            $recomendacion = "Existe una diferencia crítica de {$diferencia} puntos, indicando que {$ganador} debe ser ejecutado de inmediato. Concentre los esfuerzos logísticos y de personal en esta ubicación.";
-        } elseif ($diferencia >= 10) {
-            $recomendacion = "Existe una diferencia moderada de {$diferencia} puntos. Se sugiere priorizar {$ganador}. Verifique si la diferencia se debe al factor de Alto Riesgo o la Disponibilidad de Recursos.";
-        } else {
-            $recomendacion = "La diferencia de {$diferencia} puntos es muy pequeña. Aunque {$ganador} tiene una ligera ventaja, es vital reevaluar si un cambio en la disponibilidad de recursos (personal/materiales) podría cambiar rápidamente la prioridad.";
-        }
-
-        return response()->json([
-            'resultado' => $resultadoTexto,
-            'recomendacion' => $recomendacion,
-        ]);
-    }
 }
