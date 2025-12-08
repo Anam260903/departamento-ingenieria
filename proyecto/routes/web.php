@@ -11,6 +11,7 @@ use App\Http\Controllers\InspeccionesController;
 use App\Http\Controllers\InformesController;
 use App\Http\Controllers\CalculosController;
 use App\Http\Controllers\DecisionesController;
+use App\Http\Controllers\NotificacionController;
 
 // Ruta para mostrar el formulario de inicio de sesión
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
@@ -217,3 +218,7 @@ Route::get('/api/inspeccion/resumen/{inspeccion}', [DecisionesController::class,
 
 // Ruta para la comparación de inspecciones
 Route::get('/toma-decisiones/comparacion', [DecisionesController::class, 'comparacion'])->name('decisiones.comparacion')->middleware('auth');
+
+// Rutas para notificaciones
+Route::get('/notificaciones', [NotificacionController::class, 'index'])->name('notifications.index');
+Route::get('/notificaciones/{notificacion}/leida', [NotificacionController::class, 'markAsRead'])->name('notifications.markAsRead');

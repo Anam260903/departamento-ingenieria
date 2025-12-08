@@ -9,6 +9,7 @@ use App\Models\Propietario;
 use App\Models\roles;
 use App\Models\asignacion_recursos;
 use App\Models\Recursos;
+use App\Models\Notificacion;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -250,6 +251,13 @@ class PersonalController extends Controller
 
             $inspeccion->save();
 
+            // Crear notificación
+            Notificacion::create([
+                'id_user' => $personal->id_user,
+                'mensaje' => "Se te ha asignado la inspección #{$inspeccion->id_insp}. Revísala en tus registros.",
+                'tipo' => 'inspeccion_asignada',
+            ]);
+
             // Mensaje de éxito
             return back()->with('success', 'Inspección #' . $inspeccion->id_insp . ' asignada a ' . $personal->nombre . ' ' . $personal->apellido . ' correctamente.');
 
@@ -323,6 +331,13 @@ class PersonalController extends Controller
             $nombreRecurso = $recurso ? $recurso->nombre_rec : 'Recurso Desconocido';
             $usuario = Usuario::find($id_user);
             $nombreUsuario = $usuario ? $usuario->nombre : 'Usuario Desconocido';
+
+            // Crear notificación
+            Notificacion::create([
+                'id_user' => $id_user,
+                'mensaje' => "Se te ha asignado el recurso '{$nombreRecurso}'. ¡Cuídalo bien!",
+                'tipo' => 'recurso_asignado',
+            ]);
 
             return redirect()->route('personal.index')->with(
                 'success',
