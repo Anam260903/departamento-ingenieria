@@ -5,10 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perfil de Usuario</title>
-    <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/bootstrap-icons/bootstrap-icons.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
+    <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/bootstrap-icons/bootstrap-icons.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/dashboard.css') }}" rel="stylesheet">
 </head>
 
 <body>
@@ -99,17 +99,19 @@
                         <form action="{{ route('perfil.change-password') }}" method="POST">
                             @csrf
 
+                            {{-- Contraseña actual --}}
                             <div class="mb-3">
                                 <label for="password_actual" class="form-label">Contraseña actual</label>
                                 <div class="input-group">
                                     <input type="password" class="form-control" id="password_actual"
                                         name="password_actual" maxlength="10" required>
                                     <button class="btn btn-outline-secondary toggle-password" type="button">
-                                        <i class="bi bi-eye"></i>
-                                    </button>
+                                        <i class="bi bi-eye"></i> </button>
                                 </div>
                             </div>
 
+
+                            {{-- Contraseña nueva --}}
                             <div class="mb-3">
                                 <label for="password_nueva" class="form-label">Nueva contraseña</label>
                                 <div class="input-group">
@@ -118,47 +120,44 @@
                                         data-bs-title="8-15 caracteres. Debe incluir: Una letra mayúscula (A-Z). Una letra minúscula (a-z). Un número (0-9). Un símbolo (! $ # % @ .)"
                                         name="password_nueva" minlength="8" maxlength="15" required>
                                     <button class="btn btn-outline-secondary toggle-password" type="button">
-                                        <i class="bi bi-eye"></i>
-                                    </button>
+                                        <i class="bi bi-eye"></i> </button>
                                 </div>
+                            </div>
 
-                                <div class="mb-3">
-                                    <label for="password_confirmacion" class="form-label">Confirma nueva
-                                        contraseña</label>
-                                    <div class="input-group">
-                                        <input type="password" class="form-control" id="password_nueva_confirmation"
-                                            name="password_nueva_confirmation" minlength="8" maxlength="15" required>
-                                        <button class="btn btn-outline-secondary toggle-password" type="button">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </div>
+                            {{-- Confirmación de contraseña nueva --}}
+                            <div class="mb-3">
+                                <label for="password_confirmacion" class="form-label">Confirma nueva contraseña</label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" id="password_nueva_confirmation"
+                                        name="password_nueva_confirmation" minlength="8" maxlength="15" required>
+                                    <button class="btn btn-outline-secondary toggle-password" type="button">
+                                        <i class="bi bi-eye"></i> </button>
                                 </div>
+                            </div>
 
-                                <div class="d-grid gap-2">
-                                    <button type="submit" class="btn btn-primary">Guardar</button>
-                                </div>
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">Guardar</button>
+                            </div>
                         </form>
                     </div>
-
                 </div>
-
-                {{-- Actualizar preguntas de seguridad--}}
-                <div class="card shadow-sm p-4 mt-4">
-                    <h5 class="card-title text-center mb-4">Preguntas de Seguridad</h5>
-                    <p class="text-center text-muted">Utiliza tus preguntas para recuperar tu contraseña si la olvidas.
-                    </p>
-
-                    <div class="d-grid gap-2">
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                            data-bs-target="#confirmPasswordModal">
-                            <i class="bi bi-shield-lock-fill"></i> Actualizar Preguntas
-                        </button>
-                    </div>
-                </div>
-
             </div>
-        </div>
 
+            {{-- Actualizar preguntas de seguridad--}}
+            <div class="card shadow-sm p-4 mt-4">
+                <h5 class="card-title text-center mb-4">Preguntas de Seguridad</h5>
+                <p class="text-center text-muted">Utiliza tus preguntas para recuperar tu contraseña si la olvidas.
+                </p>
+
+                <div class="d-grid gap-2">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#confirmPasswordModal">
+                        <i class="bi bi-shield-lock-fill"></i> Actualizar Preguntas
+                    </button>
+                </div>
+            </div>
+
+        </div>
     </div>
 
     {{-- Modal para confirmar identidad con contraseña --}}
@@ -201,10 +200,11 @@
     </div>
 
     <script src="{{ asset('js/dashboard.js') }}"></script>
+    <script src="{{ asset('js/app.js') }}"></script>
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
     <script>
         // Inicializar Tooltips y Popovers
-        document.addEventListener('DOMContentLoaded ', function () {
+        document.addEventListener('DOMContentLoaded', function () {
             // Inicializa Tooltips
             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
             var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {

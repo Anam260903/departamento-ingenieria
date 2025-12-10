@@ -44,31 +44,4 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Lógica para mostrar/ocultar contraseñas
-    document.querySelectorAll(".toggle-password").forEach((button) => {
-        button.addEventListener("click", function () {
-            const passwordInput = this.previousElementSibling;
-            const icon = this.querySelector("i");
-
-            const type =
-                passwordInput.getAttribute("type") === "password"
-                    ? "text"
-                    : "password";
-            passwordInput.setAttribute("type", type);
-
-            icon.classList.toggle("bi-eye");
-            icon.classList.toggle("bi-eye-slash");
-        });
-    });
-
-    // Script para permitir solo letras en campos de texto
-    document
-        .querySelectorAll('[name="nombre"], [name="apellido"]')
-        .forEach((input) => {
-            input.addEventListener("input", function () {
-                this.value = this.value.replace(/[^A-Za-zñÑáéíóúÁÉÍÓÚ\s]/g, "");
-            });
-        });
 });
-
-

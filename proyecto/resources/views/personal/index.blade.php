@@ -152,12 +152,12 @@
                                         {{-- Estado (Activo/Inactivo) --}}
                                         <td class="align-middle text-center text-sm">
                                             @php
-                                                $estado_numerico = $user->estado_user;
+    $estado_numerico = $user->estado_user;
 
-                                                $estado = ($estado_numerico == 1) ? 'ACIVO' : 'INACTIVO';
+    $estado = ($estado_numerico == 1) ? 'ACIVO' : 'INACTIVO';
 
-                                                $esActivo = ($estado_numerico === '1');
-                                                $badgeClass = $esActivo ? 'bg-success' : 'bg-secondary';
+    $esActivo = ($estado_numerico === '1');
+    $badgeClass = $esActivo ? 'bg-success' : 'bg-secondary';
                                             @endphp
                                             <span class="badge {{ $badgeClass }} text-white text-uppercase">
                                                 {{ $estado }}
@@ -249,9 +249,8 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                             <button type="submit" class="btn btn-primary" id="assign-btn" disabled>
-                                <i class="bi bi-person-fill-add me-2"></i> Asignar
+                                Asignar
                             </button>
                         </div>
                     </form>
@@ -288,8 +287,7 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-danger" id="assign-resource-btn-submit" disabled>
+                            <button type="submit" class="btn btn-danger w-100" id="assign-resource-btn-submit" disabled>
                                 Asignar Recurso
                             </button>
                         </div>

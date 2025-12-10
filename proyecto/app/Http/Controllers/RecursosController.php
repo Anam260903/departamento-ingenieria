@@ -339,12 +339,12 @@ class RecursosController extends Controller
         $query = asignacion_recursos::with(['usuario', 'recurso'])
             ->orderBy('fecha_asignacion', 'desc');
 
-        // FILTRO CRÍTICO: Si el usuario es Rol 2, filtrar por su ID
+        // Si el usuario es Rol 2, filtrar por su ID
         if ($user->id_rol === 2) {
             $query->where('id_user', $user->id_user);
         }
 
-        $asignaciones = $query->get($user->id_user);
+        $asignaciones = $query->get();
 
         // 2. Cargar la vista que contiene el PDF
         $pdf = PDF::loadView('recursos.pdf.historial-asignaciones-pdf', compact('asignaciones'));

@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
             // 2. Si la observación está vacía, mostrar un mensaje por defecto
             if (!observacion || observacion.trim() === "") {
                 observacion =
-                    "No se registraron observaciones para esta inspección.";
+                    "No se registraron observaciones para este recurso.";
             }
 
             // 3. Inyectar el contenido en el modal

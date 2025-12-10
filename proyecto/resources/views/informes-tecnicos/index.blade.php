@@ -223,7 +223,6 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                         <button type="button" class="btn btn-primary" id="btnContinuarInforme"
                             data-base-url="{{ url('informes/crear') }}/">
                             Iniciar informe</button>

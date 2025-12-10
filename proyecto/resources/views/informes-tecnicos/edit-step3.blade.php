@@ -90,15 +90,13 @@
                                 {{-- 2. Campos visibles para entrada manual) --}}
                                 <div class="row g-2 mb-3">
                                     <div class="col-md-6">
-                                        <label for="latitud_manual" class="form-label small mb-1">Latitud</label>
-                                        <input type="text" class="form-control" id="latitud_manual"
-                                            placeholder="Ej: 10.6698"
+                                        <label for="latitud_input" class="form-label small mb-1">Latitud</label>
+                                        <input type="text" class="form-control" id="latitud_input" name="latitud" placeholder="Ej: 10.6698"
                                             value="{{ old('latitud', $informe->inspeccion->vivienda->latitud) }}">
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="longitud_manual" class="form-label small mb-1">Longitud</label>
-                                        <input type="text" class="form-control" id="longitud_manual"
-                                            placeholder="Ej: -63.2573"
+                                        <label for="longitud_input" class="form-label small mb-1">Longitud</label>
+                                        <input type="text" class="form-control" id="longitud_input" name="longitud" placeholder="Ej: -63.2573"
                                             value="{{ old('longitud', $informe->inspeccion->vivienda->longitud) }}">
                                     </div>
                                 </div>
@@ -107,8 +105,8 @@
                                 <label for="map_screenshot" class="form-label h5">Captura de Pantalla del Mapa</label>
                                 <input type="file" class="form-control @error('map_screenshot') is-invalid @enderror"
                                     id="map_screenshot" name="map_screenshot" accept="image">
-                                    @if (!($informe->inspeccion->vivienda->map_image_file ?? false)) @endif
-                                <p class= "text-muted small">Por favor, suba una captura de pantalla del mapa para el
+                                @if (!($informe->inspeccion->vivienda->map_image_file ?? false)) @endif
+                                <p class="text-muted small">Por favor, suba una captura de pantalla del mapa para el
                                     informe PDF. (Archivo actual:
                                     {{ $informe->inspeccion->vivienda->map_image_file ?? 'Ninguno' }})
                                 </p>
@@ -117,11 +115,7 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
 
-                                {{-- 4. Campos ocultos para enviar al controlador --}}
-                                <input type="hidden" name="latitud" id="latitud_input"
-                                    value="{{ old('latitud', $informe->inspeccion->vivienda->latitud) }}">
-                                <input type="hidden" name="longitud" id="longitud_input"
-                                    value="{{ old('longitud', $informe->inspeccion->vivienda->longitud) }}">
+                                {{-- 4. Campo oculto para enviar al controlador --}}
                                 <input type="hidden" name="map_image_file" id="map_image_file_input"
                                     value="{{ old('map_image_file', $informe->inspeccion->vivienda->map_image_file) }}">
                             </div>
@@ -148,7 +142,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
     <script src="{{ asset('js/informes.js') }}"></script>
-    
+
 
     @include('components._session-timeout')
 </body>

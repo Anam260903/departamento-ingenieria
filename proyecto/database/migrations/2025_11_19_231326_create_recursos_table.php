@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('nombre_rec', 30);
             $table->string('descripcion',);
             $table->text('observacion')->nullable();
+            $table->timestamp('deleted_at')->nullable()->default(null);
             $table->timestamps();
         });
     }

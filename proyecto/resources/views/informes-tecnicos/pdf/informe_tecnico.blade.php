@@ -82,9 +82,10 @@
         {{-- Fila 5: CÉDULA DE IDENTIDAD --}}
         <span style="font-weight: bold;">CÉDULA DE IDENTIDAD:</span>
         <span style="display: inline-block; width: 10px;"></span>
-        <span style="font-weight: normal;">{{ $informe->inspeccion->vivienda->propietario->cedula_propie ?? 'N/A' }}</span>
+        <span
+            style="font-weight: normal;">{{ $informe->inspeccion->vivienda->propietario->cedula_propie ?? 'N/A' }}</span>
         <br />
-        
+
         {{-- Fila 6: TELÉFONO --}}
         <span style="font-weight: bold;">TELÉFONO:</span>
         <span style="display: inline-block; width: 10px;"></span>
@@ -113,7 +114,7 @@
     <div class="section-title">3. CARACTERÍSTICAS DE LA VIVIENDA</div>
     <div class="content-box">
         {!! nl2br(e($informe->inspeccion->vivienda->caracteristicas ?? 'No se proporcionaron características de la vivienda.')) !!}
-        
+
     </div>
 
     <div class="section-title">4. RESULTADOS DE LA INSPECCIÓN</div>
@@ -146,7 +147,7 @@
             <img src="{{ public_path('images/logo2.jpg') }}" class="logo-img">
         </div>
 
-        {{-- Texto cntrado --}}
+        {{-- Texto centrado --}}
         <div class="text-col">
             <p>REPÚBLICA BOLIVARIANA DE VENEZUELA</p>
             <p>GOBIERNO BOLIVARIANO DEL ESTADO SUCRE</p>
@@ -174,31 +175,31 @@
     @if ($informe->imagenes->count() > 0)
 
         @php
-    $img_count = 0; // Contador de imagen dentro de la página
-    $imagenes_por_fila = 2;
-    $imagenes_por_pagina = 6; // 2 imágenes por fila * 3 filas = 6 imágenes por página
+            $img_count = 0; // Contador de imagen dentro de la página
+            $imagenes_por_fila = 2;
+            $imagenes_por_pagina = 6;
 
-    // Abrimos la primera tabla
-    echo '<table class="photo-table">';
+            // Abrimos la primera tabla
+            echo '<table class="photo-table">';
         @endphp
 
         @foreach ($informe->imagenes as $index => $imagen)
 
-            {{-- 1. Si es la primera imagen de una fila (1, 3, 5, etc.), abrimos una fila de tabla --}}
+            {{-- 1. Si es la primera imagen de una fila, abrimos una fila de tabla --}}
             @if ($img_count % $imagenes_por_fila === 0)
                 <tr>
             @endif
 
                 @php
-        // --- Lógica de Manejo de Archivos (Tu lógica existente) ---
-        $storagePath = storage_path('app/public/' . $imagen->ruta_archivo);
-        $imageData = '';
-        if (file_exists($storagePath)) {
-            $imageData = 'data:image/' . pathinfo($storagePath, PATHINFO_EXTENSION) . ';base64,' . base64_encode(file_get_contents($storagePath));
-        }
+                    // Lógica de Manejo de Archivos
+                    $storagePath = storage_path('app/public/' . $imagen->ruta_archivo);
+                    $imageData = '';
+                    if (file_exists($storagePath)) {
+                        $imageData = 'data:image/' . pathinfo($storagePath, PATHINFO_EXTENSION) . ';base64,' . base64_encode(file_get_contents($storagePath));
+                    }
                 @endphp
 
-                {{-- 2. Insertamos la celda (columna) con la imagen --}}
+                {{-- 2. Insertamos la celda con la imagen --}}
                 <td class="photo-cell">
                     @if ($imageData)
                         <img src="{{ $imageData }}" alt="Foto de Evidencia">
@@ -207,39 +208,38 @@
                     @endif
                 </td>
 
-                {{-- 3. Si es la última imagen de una fila (2, 4, 6, etc.), cerramos la fila --}}
+                {{-- 3. Si es la última imagen de una fila, cerramos la fila --}}
                 @if (($img_count + 1) % $imagenes_por_fila === 0)
                     </tr>
                 @endif
 
-            {{-- 4. VERIFICACIÓN CRUCIAL DE CORTE DE PÁGINA --}}
+            {{-- 4. Verificacion para el corte de página --}}
             @if (($img_count + 1) % $imagenes_por_pagina === 0)
                 @php
-            // Cerramos la tabla actual
-            echo '</table>';
+                    // Cerramos la tabla actual
+                    echo '</table>';
 
-            // Insertamos el corte de página
-            echo '<div class="page-break"></div>';
+                    echo '<div class="page-break"></div>';
 
-            // Abrimos una nueva tabla para la siguiente página
-            echo '<table class="photo-table">';
+                    // Abrimos una nueva tabla para la siguiente página
+                    echo '<table class="photo-table">';
                 @endphp
             @endif
 
             @php
-        $img_count++; // Incrementamos el contador
+                $img_count++; // Incrementamos el contador
             @endphp
         @endforeach
 
         @php
-    // Cerramos la tabla final si el total de imágenes no fue múltiplo de 4
-    if ($img_count % $imagenes_por_pagina !== 0) {
-        // Aseguramos que la última fila se cierre si el conteo fue impar (ej. 1 o 3 imágenes)
-        if ($img_count % $imagenes_por_fila !== 0) {
-            echo '</tr>';
-        }
-        echo '</table>';
-    }
+            // Cerramos la tabla final si el total de imágenes no fue múltiplo de 4
+            if ($img_count % $imagenes_por_pagina !== 0) {
+                // Aseguramos que la última fila se cierre si el conteo fue impar
+                if ($img_count % $imagenes_por_fila !== 0) {
+                    echo '</tr>';
+                }
+                echo '</table>';
+            }
         @endphp
 
     @else
@@ -285,18 +285,25 @@
     <div class="report-title">CROQUIS DE UBICACIÓN DEL TERRENO</div>
 
     @php
-// Accedemos a los datos de vivienda a través de la relación de inspección
-$vivienda = $informe->inspeccion->vivienda;
-$lat = $vivienda->latitud ?? 'N/A';
-$long = $vivienda->longitud ?? 'N/A';
+        // Accedemos a los datos de vivienda a través de la relación de inspección
+        $vivienda = $informe->inspeccion->vivienda;
+        $lat = $vivienda->latitud ?? 'N/A';
+        $long = $vivienda->longitud ?? 'N/A';
 
-// Obtenemos la imagen del mapa
-$mapStoragePath = storage_path('app/public/' . $vivienda->map_image_file);
-$mapImageData = '';
-if (file_exists($mapStoragePath)) {
-    $mapImageData = 'data:image/' . pathinfo($mapStoragePath, PATHINFO_EXTENSION) . ';base64,' . base64_encode(file_get_contents($mapStoragePath));
-}
+        // Inicializamos la data del mapa vacía
+        $mapImageData = '';
 
+        // Verificar si existe un nombre de archivo para el mapa
+        if (!empty($vivienda->map_image_file)) {
+
+            // Obtenemos la imagen del mapa
+            $mapStoragePath = storage_path('app/public/' . $vivienda->map_image_file);
+
+            // Lógica de verificación de archivo y codificación
+            if (file_exists($mapStoragePath)) {
+                $mapImageData = 'data:image/' . pathinfo($mapStoragePath, PATHINFO_EXTENSION) . ';base64,' . base64_encode(file_get_contents($mapStoragePath));
+            }
+        }
 
     @endphp
 

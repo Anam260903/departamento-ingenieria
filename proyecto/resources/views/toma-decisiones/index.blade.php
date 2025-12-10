@@ -24,7 +24,6 @@
             <div class="container-fluid py-4">
 
                 <h1 class="mb-4 h3">TOMA DE DECISIONES</h1>
-                <p>Información </p>
 
                 {{-- Bloque de alertas --}}
                 @if (session('warning'))

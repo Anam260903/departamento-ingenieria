@@ -81,8 +81,6 @@ function getCsrfToken() {
     // Referencias a los campos HTML
     const latInput = document.getElementById('latitud_input');
     const lonInput = document.getElementById('longitud_input');
-    const latManual = document.getElementById('latitud_manual');
-    const lonManual = document.getElementById('longitud_manual');
 
     // Manejo de valores iniciales
     const defaultLat = parseFloat(latInput?.value) || 10.6698;
@@ -97,12 +95,9 @@ function getCsrfToken() {
      */
     const updateCoordinates = (lat, lng) => {
         // Validación para asegurar que los elementos existen antes de intentar actualizarlos
-        if (latManual && lonManual && latInput && lonInput) {
-            // 1. Actualiza los campos visibles (manuales)
-            latManual.value = lat.toFixed(8);
-            lonManual.value = lng.toFixed(8);
+        if (latInput && lonInput) {
 
-            // 2. Actualiza los campos ocultos (los que se envían al servidor)
+            // Actualiza los campos ocultos
             latInput.value = lat.toFixed(8);
             lonInput.value = lng.toFixed(8);
         }
@@ -112,10 +107,10 @@ function getCsrfToken() {
      * Mueve el marcador y el mapa basándose en las coordenadas ingresadas manualmente.
      */
     const updateMapFromManualInput = () => {
-        if (!map || !marker || !latManual || !lonManual) return; // Salir si el mapa no está inicializado
+        if (!map || !marker || !latInput|| !lonInput) return;
 
-        const lat = parseFloat(latManual.value);
-        const lng = parseFloat(lonManual.value);
+        const lat = parseFloat(latInput.value);
+        const lng = parseFloat(lonInput.value);
 
         // Validación
         if (isNaN(lat) || isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
@@ -125,14 +120,10 @@ function getCsrfToken() {
 
         const newLocation = [lat, lng];
 
-        // Mover el marcador
+        // Mover el marcador y centrar el mapa
         marker.setLatLng(newLocation);
-
-        // Centrar el mapa
         map.setView(newLocation, map.getZoom() > 10 ? map.getZoom() : 18);
 
-        // Actualizar los campos ocultos
-        updateCoordinates(lat, lng);
     };
 
     // 3. Función de inicialización principal
