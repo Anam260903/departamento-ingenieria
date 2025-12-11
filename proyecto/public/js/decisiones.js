@@ -1,4 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
+    
+    var toggleButton = document.getElementById('NotificacionToggle');
+    
     // 1. Obtener la URL Template del objeto global definido en Blade
     const url_template = window.AppConfig?.resumenUrlTemplate || '/api/inspeccion/resumen/PLACEHOLDER';
     const ID_PLACEHOLDER = 'PLACEHOLDER'; // Definimos el marcador a reemplazar
@@ -106,8 +109,19 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 
-    // Script para la comparación de inspecciones
+    // Código para el dropdown de notificaciones
 
-    
+    if (toggleButton) {
+        // Crear una nueva instancia de Dropdown de Bootstrap
+        var dropdown = new bootstrap.Dropdown(toggleButton);
+
+        // Agrega un listener de click para manejar el toggle
+        toggleButton.addEventListener('click', function (e) {
+            e.preventDefault(); // Previene el comportamiento por defecto del enlace '#'
+            dropdown.toggle();  // Fuerza la acción de mostrar/ocultar
+        });
+    }
+
+
 
 });

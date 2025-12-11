@@ -199,13 +199,14 @@
         </div>
     </div>
 
+    <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('js/dashboard.js') }}"></script>
     <script src="{{ asset('js/app.js') }}"></script>
-    <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
     <script>
         // Inicializar Tooltips y Popovers
         document.addEventListener('DOMContentLoaded', function () {
             // Inicializa Tooltips
+            var toggleButton = document.getElementById('NotificacionToggle');
             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
             var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
                 return new bootstrap.Tooltip(tooltipTriggerEl)
@@ -225,7 +226,22 @@
                     passwordField.focus();
                 }
             @endif
+
+
+        // Código para el dropdown de notificaciones
+        var toggleButton = document.getElementById('NotificacionToggle');
+            if (toggleButton) {
+                // Crear una nueva instancia de Dropdown de Bootstrap
+                var dropdown = new bootstrap.Dropdown(toggleButton);
+
+                // Agrega un listener de click para manejar el toggle
+                toggleButton.addEventListener('click', function (e) {
+                    e.preventDefault(); // Previene el comportamiento por defecto del enlace '#'
+                    dropdown.toggle();  // Fuerza la acción de mostrar/ocultar
+                });
+            }
         });
+
     </script>
 
     @include('components._session-timeout')

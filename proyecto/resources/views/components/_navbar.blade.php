@@ -28,8 +28,8 @@
             </div>
 
             <div class="nav-item dropdown me-4">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
-                    aria-expanded="false" title="Notificaciones">
+                <a class="nav-link" href="#" id="NotificacionToggle" role="button" data-bs-toggle="dropdown"
+                    aria-expanded="false" data-bs-auto-close="outside" title="Notificaciones">
                     <i class="bi bi-bell-fill fs-4 text-white"></i>
 
                     {{-- Contador de no leídas --}}
@@ -40,8 +40,8 @@
                         </span>
                     @endif
                 </a>
-
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown" style="width: 300px;">
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="NotificacionToggle" id="menuNotificaciones"
+                    style="width: 300px;">
                     <li class="dropdown-header text-center fw-bold">Notificaciones
                         ({{ isset($unreadCount) ? $unreadCount : 0 }} sin leer)</li>
                     <li>
@@ -98,17 +98,8 @@
         </div>
     </nav>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Inicialización de Dropdowns
-            var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'));
-            var dropdownList = dropdownElementList.map(function (dropdownToggleEl) {
-                return new bootstrap.Dropdown(dropdownToggleEl);
-            });
-        });
-    </script>
-
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
+
 </body>
 
 </html>

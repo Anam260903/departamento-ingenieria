@@ -41,8 +41,8 @@
 
                 <div class="d-flex justify-content-end mb-3 gap-2">
                     <div class="col-auto">
-                        <a href="{{ route('recursos.asignaciones.exportar.pdf') }}" class="btn btn-secondary text-nowrap"
-                            title="Descargar Historial de Asignaciones">
+                        <a href="{{ route('recursos.asignaciones.exportar.pdf') }}"
+                            class="btn btn-secondary text-nowrap" title="Descargar Historial de Asignaciones">
                             <i class="bi bi-file-earmark-pdf me-2"></i>Descargar historial
                         </a>
                     </div>
@@ -214,7 +214,6 @@
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('js/dashboard.js') }}"></script>
     <script src="{{ asset('js/recursos.js') }}"></script>
-
 
     @include('components._session-timeout')
 </body>

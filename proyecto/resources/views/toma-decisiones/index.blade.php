@@ -54,7 +54,7 @@
                     <div class="col-auto">
                         {{-- Verifica si el usuario autenticado tiene id_rol igual a 1 (Administrador) --}}
                         @if (auth()->check() && auth()->user()->id_rol === 1)
-                            <a href="{{ route('decisiones.comparacion') }}" class="btn btn-info text-nowrap">
+                            <a href="{{ route('decisiones.comparacion') }}" class="btn btn-success text-nowrap">
                                 <i class="bi bi-tools me-2"></i> Herramienta de Comparación de Inspecciones
                             </a>
                         @endif
@@ -63,8 +63,8 @@
                     <div class="col-auto">
                         {{-- Verifica si el usuario autenticado tiene id_rol igual a 1 (Administrador) --}}
                         @if (auth()->check() && auth()->user()->id_rol === 1)
-                            <a href="{{ route('decisiones.recursos') }}" class="btn btn-info text-nowrap">
-                                <i class="bi bi-tools me-2"></i> Recursos
+                            <a href="{{ route('decisiones.recursos') }}" class="btn btn-danger text-nowrap">
+                                <i class="bi bi-boxes me-2"></i> Recursos
                             </a>
                         @endif
                     </div>
@@ -128,6 +128,7 @@
 
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('js/dashboard.js') }}"></script>
+
     <script
         src="[https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js](https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js)"></script>
 
@@ -268,6 +269,20 @@
                     }
                 }
             });
+
+            // Código para el dropdown de notificaciones
+            var toggleButton = document.getElementById('NotificacionToggle');
+            if (toggleButton) {
+                // Crear una nueva instancia de Dropdown de Bootstrap
+                var dropdown = new bootstrap.Dropdown(toggleButton);
+
+                // Agrega un listener de click para manejar el toggle
+                toggleButton.addEventListener('click', function (e) {
+                    e.preventDefault(); // Previene el comportamiento por defecto del enlace '#'
+                    dropdown.toggle();  // Fuerza la acción de mostrar/ocultar
+                });
+            }
+
 
         });
     </script>

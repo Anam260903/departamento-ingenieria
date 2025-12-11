@@ -23,7 +23,7 @@
 
             <div class="container-fluid py-4">
 
-                <h1 class="mb-4 h3">COMPARACIÓN DE PRIORIDADES DE INSPECCIÓN</h1>
+                <h1 class="mb-4 h3">TOMA DE DECISIONES</h1>
                 <p class="text-muted">Seleccione dos inspecciones para compararlas basándose en criterios de riesgo y
                     logística.</p>
 
@@ -368,7 +368,7 @@
                     resultSpan.classList.add('text-success'); // Verde para indicar que no hay urgencia
 
                 }
-                
+
                 // Lógica de empate (Puntuación > 0)
                 else if (score1 === score2) {
                     // Empate (sólo si score1 y score2 son > 0)
@@ -376,7 +376,7 @@
                     recommendationText = `Ambas inspecciones, ${propietario1} y ${propietario2}, obtuvieron la misma puntuación de ${score1} puntos. Se recomienda una revisión detallada de los factores de riesgo (Alto Riesgo Estructural) y la Disponibilidad de Recursos para desempatar la prioridad.`;
                     resultSpan.classList.add('text-warning');
                 }
-                
+
                 // Lógica de Mayor/Menos prioridad
                 else {
                     let ganador = (score1 > score2) ? propietario1 : propietario2;
@@ -404,6 +404,19 @@
                 resultSpan.textContent = resultText;
                 recommendationP.innerHTML = recommendationText;
             });
+
+            // Código para el dropdown de notificaciones
+            var toggleButton = document.getElementById('NotificacionToggle');
+            if (toggleButton) {
+                // Crear una nueva instancia de Dropdown de Bootstrap
+                var dropdown = new bootstrap.Dropdown(toggleButton);
+
+                // Agrega un listener de click para manejar el toggle
+                toggleButton.addEventListener('click', function (e) {
+                    e.preventDefault(); // Previene el comportamiento por defecto del enlace '#'
+                    dropdown.toggle();  // Fuerza la acción de mostrar/ocultar
+                });
+            }
         });
     </script>
 

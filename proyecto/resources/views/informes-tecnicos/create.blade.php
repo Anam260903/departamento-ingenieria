@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nuevo Informe Técnico - Paso 1</title>
+    <title> Informe Técnico - Paso 1</title>
     <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('css/bootstrap-icons/bootstrap-icons.min.css') }}" >
@@ -204,8 +204,8 @@ $formAction = $isEditing
 
     {{-- SCRIPTS --}}
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ asset('js/dashboard.js') }}"></script>
     <script src="{{ asset('js/informes.js') }}"></script>
+    <script src="{{ asset('js/dashboard.js') }}"></script>
 
     @include('components._session-timeout')
 </body>

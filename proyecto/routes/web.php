@@ -222,3 +222,4 @@ Route::get('/toma-decisiones/comparacion', [DecisionesController::class, 'compar
 // Rutas para notificaciones
 Route::get('/notificaciones', [NotificacionController::class, 'index'])->name('notifications.index');
 Route::get('/notificaciones/{notificacion}/leida', [NotificacionController::class, 'markAsRead'])->name('notifications.markAsRead');
+Route::post('/notificaciones/marcar-todo-leido', [NotificacionController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');

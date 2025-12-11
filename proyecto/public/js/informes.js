@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', function () {
 
-    console.log('Script informes.js cargado. Configurando delegación de eventos...');
+    var toggleButton = document.getElementById('NotificacionToggle');
+
+    
 
     document.addEventListener('click', function (e) {
 
@@ -437,5 +439,17 @@ function initStep5PhotoUpload() {
 
         // 2. Ejecutar la función principal de manejo de archivos
         handleFiles(files);
+    }
+
+     // Código para el dropdown de notificaciones
+    if (toggleButton) {
+        // Crear una nueva instancia de Dropdown de Bootstrap
+        var dropdown = new bootstrap.Dropdown(toggleButton);
+
+        // Agrega un listener de click para manejar el
+        toggleButton.addEventListener('click', function (e) {
+            e.preventDefault(); // Previene el comportamiento por defecto del enlace '#'
+            dropdown.toggle();  // Fuerza la acción de mostrar/ocultar
+        });
     }
 }

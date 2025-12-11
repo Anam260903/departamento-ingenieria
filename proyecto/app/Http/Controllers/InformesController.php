@@ -1,12 +1,14 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Models\Usuario;
 use App\Models\Informe;
 use App\Models\Inspeccion;
 use App\Models\Propietario;
 use App\Models\Vivienda;
 use App\Models\calculos;
 use App\Models\evidencia_fotografica;
+use App\Models\Notificacion;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -17,7 +19,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Collection;
 use Illuminate\Routing\Controller as BaseController;
-use Illuminate\Support\Str; 
+use Illuminate\Support\Str;
 
 class InformesController extends BaseController
 {
@@ -381,8 +383,8 @@ class InformesController extends BaseController
         // 1. Validación de los campos, incluyendo la imagen
         $validatedData = $request->validate([
             'recomendaciones' => 'required|string',
-            'latitud' => 'required|numeric',
-            'longitud' => 'required|numeric',
+            'latitud' => 'nullable|numeric',
+            'longitud' => 'nullable|numeric',
             // Validamos la subida del archivo: debe ser una imagen, máx 2MB, opcional si ya existe una (en una edición)
             'map_screenshot' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
@@ -558,7 +560,6 @@ class InformesController extends BaseController
                 ]);
             }
 
-
             // 3. Insertar todos los registros usando la relación
             $informe->imagenes()->saveMany($imagenesModelos);
 
@@ -598,10 +599,13 @@ class InformesController extends BaseController
     public function destroy($id_inf)
     {
         try {
-            $informe = Informe::findOrFail($id_inf);
+            $informe = Informe::with('inspeccion.vivienda.propietario')->findOrFail($id_inf);
 
             // AUTORIZACIÓN: Solo el administrador puede eliminar.
             $this->authorize('delete', $informe);
+
+            // LLamada a la notificación
+            $this->sendAdminNotification('deleted', $id_inf);
 
             $informe->delete();
 
@@ -645,5 +649,44 @@ class InformesController extends BaseController
 
         // 4. Configurar y retornar el PDF para la descarga con el nuevo nombre
         return $pdf->setPaper('a4', 'portrait')->download($nombre_archivo);
+    }
+
+    /**
+     * Crea y envía una notificación a todos los administradores (id_rol = 1) sobre un informe eliminado.
+     *
+     * @param string $action Siempre 'deleted' para este caso.
+     * @param \App\Models\Informe $informe Instancia del informe cargado con relaciones.
+     * @return void
+     */
+    private function sendAdminNotification(string $action, Informe $informe): void
+    {
+        if ($action !== 'deleted') {
+            return;
+        }
+
+        // 1. Obtener datos del usuario que realizó la acción
+        $user = Auth::user();
+        $userName = $user->nombre . ' ' . $user->apellido;
+
+        // 2. Obtener datos del propietario del informe
+        $propietario = $informe->inspeccion->vivienda->propietario;
+        $propietarioName = $propietario->nombre_propie . ' ' . $propietario->apellido_propie;
+
+        // 3. Crear el mensaje
+        $message = "El Informe #{$informe->id_inf} (Propietario: {$propietarioName}) ha sido ELIMINADO por {$userName}.";
+        $type = 'informe_eliminado';
+
+        // 4. Buscar todos los administradores (id_rol == 1)
+        $administrators = Usuario::where('id_rol', 1)->get();
+
+        // 5. Crear una notificación para cada administrador
+        foreach ($administrators as $admin) {
+            Notificacion::create([
+                'id_user' => $admin->id_user,
+                'mensaje' => $message,
+                'tipo' => $type,
+                'leida' => false,
+            ]);
+        }
     }
 }

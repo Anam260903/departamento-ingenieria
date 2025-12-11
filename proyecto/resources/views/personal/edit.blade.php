@@ -195,6 +195,7 @@
             })
         });
     </script>
+    <script src="{{ asset('js/personal.js') }}"></script>
 
     @include('components._session-timeout')
 </body>

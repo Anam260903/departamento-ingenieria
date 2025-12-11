@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Inspeccion;
 use App\Models\Propietario;
 use App\Models\Vivienda;
+use App\Models\Usuario;
+use App\Models\Notificacion;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\QueryException;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -225,6 +227,9 @@ class InspeccionesController extends Controller
                 'id_viv' => $vivienda->id_viv,
             ]);
 
+            // Llamada a la notificación
+            $this->sendAdminNotification('updated', $id_insp);
+
             // 5. Redirigir al usuario
             return redirect()->route('inspecciones.index')->with('success', '¡Inspección #' . $id_insp . ' actualizada con éxito!');
 
@@ -273,6 +278,9 @@ class InspeccionesController extends Controller
 
             // Al usar el Trait SoftDeletes, el método delete() establece deleted_at.
             $inspeccion->delete();
+
+            // Llamada a la notificación
+            $this->sendAdminNotification('deleted', $id_insp);
 
             return redirect()->route('inspecciones.index')->with('success', '¡Inspección #' . $id_insp . ' eliminada correctamente!');
 
@@ -366,4 +374,39 @@ class InspeccionesController extends Controller
 
         return $pdf->setPaper('a4', 'portrait')->download($nombreArchivo);
     }
+
+    /**
+     * Crea y envía una notificación a todos los administradores
+     */
+    private function sendAdminNotification(string $action, int $inspeccionId): void
+    {
+        // 1. Obtener el nombre del usuario que realizó la acción
+        $user = Auth::user();
+        $userName = $user->nombre . ' ' . $user->apellido;
+
+        // 2. Determinar el mensaje y tipo de la notificación
+        if ($action === 'updated') {
+            $message = "La Inspección #{$inspeccionId} ha sido ACTUALIZADA por {$userName}.";
+            $type = 'inspeccion_actualizada';
+        } elseif ($action === 'deleted') {
+            $message = "La Inspección #{$inspeccionId} ha sido ELIMINADA por {$userName}.";
+            $type = 'inspeccion_eliminada';
+        } else {
+            return; // No hacer nada si la acción no es reconocida
+        }
+
+        // 3. Buscar todos los administradores (id_rol == 1).
+        $administrators = Usuario::where('id_rol', 1)->get();
+
+        // 4. Crear una notificación para cada administrador
+        foreach ($administrators as $admin) {
+            Notificacion::create([
+                'id_user' => $admin->id_user,
+                'mensaje' => $message,
+                'tipo' => $type,
+                'leida' => false,
+            ]);
+        }
+    }
+
 }

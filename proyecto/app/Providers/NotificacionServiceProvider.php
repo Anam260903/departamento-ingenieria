@@ -21,7 +21,7 @@ class NotificacionServiceProvider extends ServiceProvider
                 $notificaciones = Notificacion::where('id_user', $user->id_user)
                     ->orderBy('leida', 'asc') // Las no leídas primero
                     ->orderBy('created_at', 'desc')
-                    ->limit(7)
+                    ->limit(5)
                     ->get();
 
                 $unreadCount = $notificaciones->where('leida', false)->count();

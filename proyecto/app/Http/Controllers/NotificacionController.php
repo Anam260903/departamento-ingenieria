@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 class NotificacionController extends Controller
 {
     /**
-     * Marca una notificación como leída y redirige al dashboard
+     * Marca una notificación como leída
      */
     public function markAsRead(Notificacion $notificacion)
     {
@@ -21,8 +21,7 @@ class NotificacionController extends Controller
         $notificacion->leida = true;
         $notificacion->save();
 
-        // Redirige al dashboard
-        return redirect()->route('dashboard');
+        return back();
     }
 
     /**
@@ -37,6 +36,15 @@ class NotificacionController extends Controller
 
         Notificacion::where('id_user', Auth::id())->update(['leida' => true]);
 
-        return view('notifications.index', compact('notificaciones'));
+        return view('notificaciones', compact('notificaciones'));
+    }
+
+    public function markAllAsRead()
+    {
+        Notificacion::where('id_user', Auth::id())
+            ->where('leida', false)
+            ->update(['leida' => true]);
+
+        return redirect()->route('notifications.index')->with('success', 'Todas las notificaciones han sido marcadas como leídas.');
     }
 }

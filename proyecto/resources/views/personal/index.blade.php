@@ -319,8 +319,6 @@
             </script>
         @endpush
 
-
-
         {{-- Script para manejar la URL dinámica --}}
         <script>
             document.addEventListener('DOMContentLoaded', function () {
@@ -333,11 +331,9 @@
                     const selectedProfesion = this.value;
 
                     if (selectedProfesion) {
-                        // Genera la URL de la ruta nombrada, reemplazando el parámetro
-                        // 'personal.exportar.pdf.filtro' es la ruta que creamos antes: personal/exportar/pdf/{profesion}
                         const url = '{{ route('personal.exportar.pdf.filtro', ['profesion' => '__PROFESION__']) }}';
 
-                        // Reemplaza el placeholder por la profesión seleccionada en la acción del formulario
+                        // Reemplazar el placeholder por la profesión seleccionada en la acción del formulario
                         formElement.action = url.replace('__PROFESION__', selectedProfesion);
                         downloadButton.disabled = false; // Habilita el botón de descarga
 

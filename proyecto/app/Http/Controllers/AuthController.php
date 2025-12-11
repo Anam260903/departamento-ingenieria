@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Usuario;
+use App\Models\Notificacion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
@@ -58,7 +59,7 @@ class AuthController extends Controller
         ]);
 
         // 2. Crear el nuevo usuario
-        Usuario::create([
+        $newUser = Usuario::create([
             'nombre' => $request->nombre,
             'apellido' => $request->apellido,
             'cedula_user' => $request->cedula_user,
@@ -67,6 +68,9 @@ class AuthController extends Controller
             'estado_user' => '0', // Inactivo por defecto
             'id_rol' => 2,      // Rol 'Usuario' por defecto
         ]);
+
+        // Llamada a la notifiación
+        $this->sendNewUserRegistrationNotification($newUser);
 
         // 3. Redirigir al usuario con mensaje
         return redirect()->route('login')->with('success', '¡Registro exitoso! Tu cuenta ha sido creada y está pendiente de activación por el administrador.');
@@ -147,6 +151,31 @@ class AuthController extends Controller
         $request->session()->regenerateToken(); // Genera un nuevo token CSRF
 
         return redirect('/login'); // Redirige a la página del login
+    }
+
+    /**
+     * Crea y envía una notificación a todos los administradores (id_rol = 1) sobre un nuevo registro
+     */
+    private function sendNewUserRegistrationNotification(Usuario $newUser): void
+    {
+        // 1. Crear el mensaje
+        $userName = $newUser->nombre . ' ' . $newUser->apellido;
+        $userEmail = $newUser->correo;
+        $message = "Nuevo usuario registrado: {$userName} ({$userEmail}). Pendiente de activación.";
+        $type = 'nuevo_registro';
+
+        // 2. Buscar todos los administradores (id_rol == 1)
+        $administrators = Usuario::where('id_rol', 1)->get();
+
+        // 3. Crear una notificación para cada administrador
+        foreach ($administrators as $admin) {
+            Notificacion::create([
+                'id_user' => $admin->id_user,
+                'mensaje' => $message,
+                'tipo' => $type,
+                'leida' => false,
+            ]);
+        }
     }
 
 }

@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Obtenemos todos los botones de "Ver detalles"
     var verBotones = document.querySelectorAll(".btn-ver-observacion");
     var modalContent = document.getElementById("modalObservacionContent");
+    var toggleButton = document.getElementById('NotificacionToggle');
 
     verBotones.forEach(function (button) {
         button.addEventListener("click", function () {
@@ -19,4 +20,18 @@ document.addEventListener("DOMContentLoaded", function () {
             modalContent.textContent = observacion;
         });
     });
+
+    // Código para el dropdown de notificaciones
+
+    if (toggleButton) {
+        // Crear una nueva instancia de Dropdown de Bootstrap
+        var dropdown = new bootstrap.Dropdown(toggleButton);
+
+        // Agrega un listener de click para manejar el toggle
+        toggleButton.addEventListener('click', function (e) {
+            e.preventDefault(); // Previene el comportamiento por defecto del enlace '#'
+            dropdown.toggle();  // Fuerza la acción de mostrar/ocultar
+        });
+    }
+
 });

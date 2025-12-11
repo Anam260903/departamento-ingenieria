@@ -41,7 +41,7 @@
                     <div class="alert alert-danger">{{ session('error') }}</div>
                 @endif
 
-                 {{-- Recomendación --}}
+                {{-- Recomendación --}}
                 <div class="row mb-5">
                     <div class="col-12">
                         <div class="card shadow-lg border-primary border-2 rounded-4">
@@ -247,6 +247,19 @@
                         alert('Error al cargar datos. Verifique la consola para más detalles.');
                     });
             });
+
+            // Código para el dropdown de notificaciones
+            var toggleButton = document.getElementById('NotificacionToggle');
+            if (toggleButton) {
+                // Crear una nueva instancia de Dropdown de Bootstrap
+                var dropdown = new bootstrap.Dropdown(toggleButton);
+
+                // Agrega un listener de click para manejar el toggle
+                toggleButton.addEventListener('click', function (e) {
+                    e.preventDefault(); // Previene el comportamiento por defecto del enlace '#'
+                    dropdown.toggle();  // Fuerza la acción de mostrar/ocultar
+                });
+            }
 
         });
     </script>

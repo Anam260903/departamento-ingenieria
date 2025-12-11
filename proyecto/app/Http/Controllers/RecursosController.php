@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Recursos;
 use App\Models\Usuario;
 use App\Models\asignacion_recursos;
+use App\Models\Notificacion;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
@@ -224,6 +225,9 @@ class RecursosController extends Controller
                 'observacion' => $request->observacion,
             ]);
 
+            // LLamada a la notificación
+            $this->sendAdminNotification('updated', $recurso->id_recurso, $recurso->nombre_rec);
+
             // 3. Redireccionar con mensaje de éxito
             return redirect()->route('recursos.index')->with('success', 'Recurso "' . $recurso->nombre_rec . '" actualizado exitosamente.');
         } catch (\Exception $e) {
@@ -245,6 +249,9 @@ class RecursosController extends Controller
             $this->authorize('manage', $recurso);
 
             $recurso->delete();
+
+            // LLamada a la notificación
+            $this->sendAdminNotification('deleted', $recurso->id_recurso, $recurso->nombre_rec);
 
             return redirect()->route('recursos.index')->with('success', '¡Recurso #' . $id_recurso . ' eliminado correctamente!');
 
@@ -284,6 +291,10 @@ class RecursosController extends Controller
 
             // 5. Obtener el nombre del recurso para el mensaje de éxito
             $recursoNombre = $asignacion->recurso->nombre_rec ?? 'Recurso Desconocido';
+            $usuarioAsignado = $asignacion->usuarioAsignado->nombre . ' ' . $asignacion->usuarioAsignado->apellido ?? 'Usuario Desconocido';
+
+            // LLamada a la notificación
+            $this->sendAdminNotification('returned', $id_asignacion, $recursoNombre, $usuarioAsignado);
 
             // 6. Redirección exitosa
             return redirect()->route('recursos.assignments.history')->with('success', '¡Recurso "' . $recursoNombre . '" marcado como devuelto con éxito!');
@@ -405,6 +416,46 @@ class RecursosController extends Controller
         $nombreArchivo = "Historial_Asignaciones_Filtrado_{$rangoFechas['desde']}_a_{$rangoFechas['hasta']}.pdf";
 
         return $pdf->download($nombreArchivo);
+    }
+
+    /**
+     * Crea y envía una notificación a todos los administradores
+     */
+    private function sendAdminNotification(string $action, int $id, string $recursoNombre, ?string $usuarioAsignado = null): void
+    {
+        // 1. Obtener el nombre del usuario que realizó la acción
+        $user = Auth::user();
+        $userName = $user->nombre . ' ' . $user->apellido;
+
+        // 2. Determinar el mensaje y tipo de la notificación
+        $message = '';
+        $type = '';
+
+        if ($action === 'updated') {
+            $message = "El recurso '{$recursoNombre}' (#{$id}) ha sido ACTUALIZADO por {$userName}.";
+            $type = 'recurso_actualizado';
+        } elseif ($action === 'deleted') {
+            $message = "El recurso '{$recursoNombre}' (#{$id}) ha sido ELIMINADO por {$userName}.";
+            $type = 'recurso_eliminado';
+        } elseif ($action === 'returned' && $usuarioAsignado) {
+            $message = "El recurso '{$recursoNombre}' (Asignación #{$id}) ha sido DEVUELTO por {$usuarioAsignado}.";
+            $type = 'recurso_devuelto';
+        } else {
+            return;
+        }
+
+        // 3. Buscar todos los administradores (id_rol == 1)
+        $administrators = Usuario::where('id_rol', 1)->get();
+
+        // 4. Crear una notificación para cada administrador
+        foreach ($administrators as $admin) {
+            Notificacion::create([
+                'id_user' => $admin->id_user,
+                'mensaje' => $message,
+                'tipo' => $type,
+                'leida' => false,
+            ]);
+        }
     }
 
 }

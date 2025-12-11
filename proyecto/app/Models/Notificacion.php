@@ -16,7 +16,7 @@ class Notificacion extends Model
         'leida',
     ];
 
-    // Relación con el usuario
+    // Relación: Muchas notificaciones pertenecen a un usuario
     public function usuario()
     {
         return $this->belongsTo(Usuario::class, 'id_user', 'id_user');
