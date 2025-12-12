@@ -139,6 +139,10 @@ Route::middleware('auth')->group(function () {
 // Ruta para marcar una inspección como completada
 Route::patch('inspecciones/{id_insp}/complete', [InspeccionesController::class, 'completeInspection'])->name('inspecciones.complete')->middleware('auth');
 
+// Ruta para cancelar la asignación de una inspección
+Route::patch('inspecciones/{inspeccion}/cancelar-asignacion', [InspeccionesController::class, 'cancelAssignment'])
+    ->name('inspecciones.cancel_assignment')->middleware('auth');
+
 // Ruta para exportar listado de inspecciones a PDF
 Route::get('inspecciones/exportar/pdf', [InspeccionesController::class, 'exportarPDF'])->name('inspecciones.exportar.pdf')->middleware('auth');
 

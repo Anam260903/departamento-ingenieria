@@ -541,7 +541,6 @@ class InformesController extends BaseController
         // 3. Ejecutar la validación
         $request->validate($rules);
 
-        $informe = Informe::findOrFail($request->id_inf);
         // Autorización: Verifica si el usuario puede actualizar los datos
         $this->authorize('update', $informe); // Pasa el modelo para la verificación de pertenencia
 
@@ -564,6 +563,10 @@ class InformesController extends BaseController
             $informe->imagenes()->saveMany($imagenesModelos);
 
         }
+
+        // Llamada a la notificación
+        $informe->load('inspeccion.vivienda.propietario');
+        $this->sendAdminNotification('updated', $informe);
 
         // Fin del informe: Redirigir a la página del listado de informes con un mensaje
 
@@ -605,7 +608,7 @@ class InformesController extends BaseController
             $this->authorize('delete', $informe);
 
             // LLamada a la notificación
-            $this->sendAdminNotification('deleted', $id_inf);
+            $this->sendAdminNotification('deleted', $informe);
 
             $informe->delete();
 
@@ -652,41 +655,60 @@ class InformesController extends BaseController
     }
 
     /**
-     * Crea y envía una notificación a todos los administradores (id_rol = 1) sobre un informe eliminado.
+     * Crea y envía una notificación a todos los administradores (id_rol = 1) del módulo de Informes.
      *
-     * @param string $action Siempre 'deleted' para este caso.
+     * @param string $action 'updated' o 'deleted'.
      * @param \App\Models\Informe $informe Instancia del informe cargado con relaciones.
      * @return void
      */
     private function sendAdminNotification(string $action, Informe $informe): void
     {
-        if ($action !== 'deleted') {
-            return;
-        }
+        try {
+            // 1. Obtener datos del usuario que realizó la acción
+            $user = Auth::user();
+            if (!$user) {
+                \Log::warning("Notificación de informe fallida: Usuario no autenticado.");
+                return;
+            }
+            $userName = $user->nombre . ' ' . $user->apellido;
 
-        // 1. Obtener datos del usuario que realizó la acción
-        $user = Auth::user();
-        $userName = $user->nombre . ' ' . $user->apellido;
+            // 2. Obtener datos del propietario
+            $propietarioName = 'Propietario Desconocido';
+            $propietario = optional(optional($informe->inspeccion)->vivienda)->propietario;
 
-        // 2. Obtener datos del propietario del informe
-        $propietario = $informe->inspeccion->vivienda->propietario;
-        $propietarioName = $propietario->nombre_propie . ' ' . $propietario->apellido_propie;
+            if ($propietario) {
+                $propietarioName = $propietario->nombre_propie . ' ' . $propietario->apellido_propie;
+            }
 
-        // 3. Crear el mensaje
-        $message = "El Informe #{$informe->id_inf} (Propietario: {$propietarioName}) ha sido ELIMINADO por {$userName}.";
-        $type = 'informe_eliminado';
+            // 3. Determinar el mensaje y tipo
+            $message = '';
+            $type = '';
 
-        // 4. Buscar todos los administradores (id_rol == 1)
-        $administrators = Usuario::where('id_rol', 1)->get();
+            if ($action === 'deleted') {
+                $message = "El Informe #{$informe->id_inf} (Propietario: {$propietarioName}) ha sido ELIMINADO por {$userName}.";
+                $type = 'informe_eliminado';
+            } elseif ($action === 'updated') {
+                $message = "El Informe #{$informe->id_inf} (Propietario: {$propietarioName}) ha sido ACTUALIZADO/FINALIZADO por {$userName}.";
+                $type = 'informe_actualizado';
+            } else {
+                return;
+            }
 
-        // 5. Crear una notificación para cada administrador
-        foreach ($administrators as $admin) {
-            Notificacion::create([
-                'id_user' => $admin->id_user,
-                'mensaje' => $message,
-                'tipo' => $type,
-                'leida' => false,
-            ]);
+            // 4. Buscar todos los administradores (id_rol == 1)
+            $administrators = Usuario::where('id_rol', 1)->get();
+
+            // 5. Crear una notificación para cada administrador
+            foreach ($administrators as $admin) {
+                Notificacion::create([
+                    'id_user' => $admin->id_user,
+                    'mensaje' => $message,
+                    'tipo' => $type,
+                    'leida' => false,
+                ]);
+            }
+
+        } catch (\Exception $e) {
+            \Log::error("Error FATAL al crear notificación de informe #{$informe->id_inf}: " . $e->getMessage() . " en línea " . $e->getLine());
         }
     }
 }

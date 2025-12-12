@@ -1,5 +1,19 @@
 document.addEventListener("DOMContentLoaded", function () {
 
+     var toggleButton = document.getElementById('NotificacionToggle');
+
+ // Código para el dropdown de notificaciones
+    if (toggleButton) {
+        // Crear una nueva instancia de Dropdown de Bootstrap
+        var dropdown = new bootstrap.Dropdown(toggleButton);
+
+        // Agrega un listener de click para manejar el
+        toggleButton.addEventListener('click', function (e) {
+            e.preventDefault(); // Previene el comportamiento por defecto del enlace '#'
+            dropdown.toggle();  // Fuerza la acción de mostrar/ocultar
+        });
+    }
+    
     // Lógica para mostrar/ocultar contraseñas
     // Seleccionamos todos los botones que tienen la clase 'toggle-password'
     document.querySelectorAll(".toggle-password").forEach((button) => {
@@ -27,7 +41,7 @@ document.addEventListener("DOMContentLoaded", function () {
         
     // Script para permitir solo letras en campos de texto
     document
-        .querySelectorAll('[name="nombre"], [name="apellido"]')
+        .querySelectorAll('[name="nombre"], [name="apellido"], [name="propietario_nombre"], [name="propietario_apellido"]')
         .forEach((input) => {
             input.addEventListener("input", function () {
                 this.value = this.value.replace(/[^A-Za-zñÑáéíóúÁÉÍÓÚ\s]/g, "");

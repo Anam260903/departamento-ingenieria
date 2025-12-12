@@ -85,7 +85,22 @@
                 <div class="row mt-4">
                     <div class="col-12">
                         <div class="card shadow-sm p-4">
+                            <div>
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button"
+                                        id="descargarGraficoDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-download"></i> Descargar
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="descargarGraficoDropdown">
+                                        <li><a class="dropdown-item" href="#" id="descargarPng">Descargar como PNG</a>
+                                        </li>
+                                        <li><a class="dropdown-item" href="#" id="descargarJpg">Descargar como JPG</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
                             <h5 class="text-center mb-4">Informes realizados por mes</h5>
+
                             <canvas id="informesChart" data-chart-data="{{ json_encode($datosGrafico) }}"
                                 data-chart-labels="{{ json_encode($meses) }}">
                             </canvas>

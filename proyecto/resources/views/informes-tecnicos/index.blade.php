@@ -232,9 +232,11 @@
         </div>
     </div>
 
+    <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('js/app.js') }}"></script>
     <script src="{{ asset('js/dashboard.js') }}"></script>
 
-    <script>
+      <script>
         document.addEventListener('DOMContentLoaded', function () {
             const btnContinuar = document.getElementById('btnContinuarInforme');
 
@@ -259,9 +261,7 @@
             }
         });
     </script>
-
-    <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ asset('js/dashboard.js') }}"></script>
+    
     <script src="{{ asset('js/informes.js') }}"></script>
 
     @include('components._session-timeout')

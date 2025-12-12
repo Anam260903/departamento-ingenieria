@@ -64,8 +64,19 @@ class InspeccionPolicy
             return Response::allow();
         }
 
-        // Un usuario normal (id_rol = 2) solo puede eliminar si el id_user coincide
         return Response::deny('Solo los administradores pueden eliminar inspecciones.');
+    }
+
+    /**
+     * Determinar si el cancelar la asignación la inspección.
+     */
+    public function reassign(Usuario $user, Inspeccion $inspeccion): Response
+    {
+        // Un administrador (id_rol = 1) siempre puede eliminar
+        if ($user->id_rol === 1) {
+            return Response::allow();
+        }
+        return Response::deny('Solo los administradores pueden cancelar asignaciones de inspecciones.');
     }
 
     /**

@@ -354,8 +354,8 @@ class PersonalController extends Controller
      */
     public function exportarPersonalPDF()
     {
-        // 1. Obtener todos los usuarios del modelo Usuarios
-        $usuarios = Usuario::all();
+        // 1. Obtener todos los usuarios EXCLUYENDO el admin master
+        $usuarios = Usuario::where('correo', '!=', 'admin@gmail.com')->get();
 
         // 2. Cargar la vista que contiene el PDF
         // Asegúrate que la ruta de la vista sea correcta (e.g., 'usuarios.pdf.reporte-personal-pdf')
@@ -376,9 +376,11 @@ class PersonalController extends Controller
      */
     public function exportarPersonalPorProfesionPDF(Request $request, $profesion)
     {
-        // 1. Obtener los usuarios filtrados por la profesión
-        $usuarios = Usuario::where('profesion', $profesion)->get();
-
+        // 1. Obtener los usuarios filtrados por la profesión, EXCLUYENDO el admin master
+        $usuarios = Usuario::where('profesion', $profesion)
+            ->where('correo', '!=', 'admin@gmail.com')
+            ->get();
+            
         // 2. Variables para la vista
         $tituloReporte = "REPORTE LISTADO DE PERSONAL - PROFESIÓN: " . strtoupper($profesion);
 

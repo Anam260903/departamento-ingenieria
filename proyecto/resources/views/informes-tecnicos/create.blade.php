@@ -37,7 +37,7 @@
                 @endif
 
                 <div class="container-fluid py-4">
-                    <h1 class="mb-4 h3">NUEVO INFORME TÉCNICO</h1>
+                    <h1 class="mb-4 h3">INFORME TÉCNICO</h1>
 
                     {{-- Barra de progreso --}}
                     <div class="step-container">
@@ -204,6 +204,7 @@ $formAction = $isEditing
 
     {{-- SCRIPTS --}}
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('js/app.js') }}"></script>
     <script src="{{ asset('js/informes.js') }}"></script>
     <script src="{{ asset('js/dashboard.js') }}"></script>
 

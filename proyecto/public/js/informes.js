@@ -1,9 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
 
-    var toggleButton = document.getElementById('NotificacionToggle');
-
-    
-
     document.addEventListener('click', function (e) {
 
         // Verificamos si el clic fue en el botón #btnContinuarInforme o en un descendiente
@@ -217,7 +213,6 @@ function getCsrfToken() {
 /**
  * Lógica de eventos para el paso 4 de informes técnicos
  */
-
 
 // Función Única para la Carga del Contenido 
 function loadCalculoContent(id, materialsTextarea) {
@@ -441,15 +436,5 @@ function initStep5PhotoUpload() {
         handleFiles(files);
     }
 
-     // Código para el dropdown de notificaciones
-    if (toggleButton) {
-        // Crear una nueva instancia de Dropdown de Bootstrap
-        var dropdown = new bootstrap.Dropdown(toggleButton);
-
-        // Agrega un listener de click para manejar el
-        toggleButton.addEventListener('click', function (e) {
-            e.preventDefault(); // Previene el comportamiento por defecto del enlace '#'
-            dropdown.toggle();  // Fuerza la acción de mostrar/ocultar
-        });
-    }
+    
 }

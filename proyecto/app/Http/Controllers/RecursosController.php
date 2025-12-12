@@ -272,7 +272,7 @@ class RecursosController extends Controller
 
         try {
             // 1. Encuentra la asignación
-            $asignacion = asignacion_recursos::with('recurso')->findOrFail($id_asignacion);
+            $asignacion = asignacion_recursos::with(['recurso', 'usuario'])->findOrFail($id_asignacion);
             $user = Auth::user();
 
             // 2. AUTORIZACIÓN 2 (Verificación de propiedad para Rol 2):
@@ -291,7 +291,7 @@ class RecursosController extends Controller
 
             // 5. Obtener el nombre del recurso para el mensaje de éxito
             $recursoNombre = $asignacion->recurso->nombre_rec ?? 'Recurso Desconocido';
-            $usuarioAsignado = $asignacion->usuarioAsignado->nombre . ' ' . $asignacion->usuarioAsignado->apellido ?? 'Usuario Desconocido';
+            $usuarioAsignado = optional($asignacion->usuario)->nombre . ' ' . optional($asignacion->usuario)->apellido ?? 'Usuario Desconocido';
 
             // LLamada a la notificación
             $this->sendAdminNotification('returned', $id_asignacion, $recursoNombre, $usuarioAsignado);

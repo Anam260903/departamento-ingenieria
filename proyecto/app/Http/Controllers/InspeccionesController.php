@@ -228,7 +228,8 @@ class InspeccionesController extends Controller
             ]);
 
             // Llamada a la notificación
-            $this->sendAdminNotification('updated', $id_insp);
+            $inspeccion->load('vivienda.propietario');
+            $this->sendAdminNotification('updated', $inspeccion);
 
             // 5. Redirigir al usuario
             return redirect()->route('inspecciones.index')->with('success', '¡Inspección #' . $id_insp . ' actualizada con éxito!');
@@ -266,6 +267,49 @@ class InspeccionesController extends Controller
     }
 
     /**
+     * Cancela la asignación de una inspección, dejándola disponible para reasignación.
+     * Solo disponible para administradores si no hay informe asociado.
+     */
+    public function cancelAssignment(Inspeccion $inspeccion)
+    {
+        // 1. Autorización
+        $this->authorize('reassign', $inspeccion);
+
+        try {
+            // 2. Verificación: Debe estar asignada y no tener informe
+            if ($inspeccion->id_user === null) {
+                return back()->with('warning', 'Esta inspección no estaba asignada a nadie.');
+            }
+
+            // Si existe un informe (la inspección ya fue trabajada), no debe cancelarse la asignación
+            if ($inspeccion->informe()->exists()) {
+                return back()->with('error', 'No se puede cancelar la asignación. El informe técnico ya fue iniciado/creado.');
+            }
+
+            $usuarioAnteriorId = $inspeccion->id_user;
+
+            // 3. Lógica de cancelación
+            $inspeccion->id_user = null; // Quitar el usuario asignado
+            $inspeccion->save();
+
+            // Llamada a la notificación
+            $inspeccion->load('vivienda.propietario');
+            $this->sendAdminNotification('canceled', $inspeccion);
+
+            return redirect()->route('inspecciones.index')->with(
+                'success',
+                "La asignación de la inspección #{$inspeccion->id_insp} ha sido cancelada (Usuario ID: {$usuarioAnteriorId}). Está disponible para reasignación."
+            );
+
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            return back()->with('error', 'No tienes permiso para reasignar inspecciones.');
+        } catch (\Exception $e) {
+            \Log::error("Error al cancelar asignación de inspección #{$inspeccion->id_insp}: " . $e->getMessage());
+            return back()->with('error', 'Ocurrió un error inesperado al cancelar la asignación.');
+        }
+    }
+
+    /**
      * Elimina una inspección (Soft Delete)
      */
     public function destroy($id_insp)
@@ -280,7 +324,8 @@ class InspeccionesController extends Controller
             $inspeccion->delete();
 
             // Llamada a la notificación
-            $this->sendAdminNotification('deleted', $id_insp);
+            $inspeccion = Inspeccion::with('vivienda.propietario')->findOrFail($id_insp);
+            $this->sendAdminNotification('deleted', $inspeccion);
 
             return redirect()->route('inspecciones.index')->with('success', '¡Inspección #' . $id_insp . ' eliminada correctamente!');
 
@@ -376,37 +421,61 @@ class InspeccionesController extends Controller
     }
 
     /**
-     * Crea y envía una notificación a todos los administradores
+     * Crea y envía una notificación a todos los administradores (id_rol = 1)
      */
-    private function sendAdminNotification(string $action, int $inspeccionId): void
+    private function sendAdminNotification(string $action, Inspeccion $inspeccion): void
     {
-        // 1. Obtener el nombre del usuario que realizó la acción
-        $user = Auth::user();
-        $userName = $user->nombre . ' ' . $user->apellido;
+        try {
+            $user = Auth::user();
+            $userName = $user->nombre . ' ' . $user->apellido;
+            $inspeccionId = $inspeccion->id_insp;
 
-        // 2. Determinar el mensaje y tipo de la notificación
-        if ($action === 'updated') {
-            $message = "La Inspección #{$inspeccionId} ha sido ACTUALIZADA por {$userName}.";
-            $type = 'inspeccion_actualizada';
-        } elseif ($action === 'deleted') {
-            $message = "La Inspección #{$inspeccionId} ha sido ELIMINADA por {$userName}.";
-            $type = 'inspeccion_eliminada';
-        } else {
-            return; // No hacer nada si la acción no es reconocida
-        }
+            // Obtener nombre del propietario
+            $propietarioName = 'Propietario Desconocido';
+            $propietario = optional($inspeccion->vivienda)->propietario;
 
-        // 3. Buscar todos los administradores (id_rol == 1).
-        $administrators = Usuario::where('id_rol', 1)->get();
+            if ($propietario) {
+                $propietarioName = $propietario->nombre_propie . ' ' . $propietario->apellido_propie;
+            }
 
-        // 4. Crear una notificación para cada administrador
-        foreach ($administrators as $admin) {
-            Notificacion::create([
-                'id_user' => $admin->id_user,
-                'mensaje' => $message,
-                'tipo' => $type,
-                'leida' => false,
-            ]);
+            // Definir el prefijo del mensaje con el propietario
+            $prefijo = "(Prop.: {$propietarioName})";
+
+            $message = '';
+            $type = '';
+
+            // 2. Determinar el mensaje y tipo de la notificación
+            if ($action === 'updated') {
+                $message = "Inspección #{$inspeccionId} {$prefijo} ha sido ACTUALIZADA por {$userName}.";
+                $type = 'inspeccion_actualizada';
+            } elseif ($action === 'deleted') {
+                $message = "Inspección #{$inspeccionId} {$prefijo} ha sido ELIMINADA por {$userName}.";
+                $type = 'inspeccion_eliminada';
+            } elseif ($action === 'canceled') {
+                $message = "El Administrador {$userName} ha CANCELADO la asignación de {$prefijo}. Está disponible para reasignación.";
+                $type = 'asignacion_cancelada';
+            } else {
+                \Log::warning("sendAdminNotification: Acción no reconocida: {$action} para Inspección ID: {$inspeccionId}");
+                return;
+            }
+
+            // 3. Buscar todos los administradores (id_rol == 1).
+            $administrators = Usuario::where('id_rol', 1)->get();
+
+            // 4. Crear una notificación para cada administrador
+            foreach ($administrators as $admin) {
+                Notificacion::create([
+                    'id_user' => $admin->id_user,
+                    'mensaje' => $message,
+                    'tipo' => $type,
+                    'leida' => false,
+                ]);
+            }
+
+            \Log::info("Notificación de inspección #{$inspeccionId} enviada exitosamente para la acción '{$action}'.");
+
+        } catch (\Exception $e) {
+            \Log::error("Error al crear notificación de inspección #{$inspeccionId}: " . $e->getMessage());
         }
     }
-
 }

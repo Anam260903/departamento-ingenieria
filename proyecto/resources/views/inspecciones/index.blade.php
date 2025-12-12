@@ -191,20 +191,35 @@
                                                         <button type="submit" class="btn btn-success btn-sm"
                                                             title="Marcar como Completada"
                                                             onclick="return confirm('¿Está seguro de que desea marcar esta inspección como COMPLETADA?')"
-                                                            {{-- Se deshabilita el botón si ya está completada --}}
-                                                            @if ($inspeccion->estado_insp == 1)
-                                                            disabled @endif>
+                                                            {{-- Se deshabilita el botón si ya está completada --}} @if ($inspeccion->estado_insp == 1) disabled @endif>
                                                             <i class="bi bi-check-circle"></i>
                                                         </button>
                                                     </form>
                                                 @endif
 
-                                                {{-- 5. Botón de eliminar --}}
                                                 {{-- Verifica si el usuario autenticado tiene id_rol igual a 1
                                                 (Administrador) --}}
                                                 @if (auth()->check() && auth()->user()->id_rol === 1)
 
 
+                                                    {{-- 5. Botón: Cancelar Asignación / Reasignar --}}
+                                                    @if ($inspeccion->id_user !== null && $inspeccion->informe === null)
+
+                                                        <form
+                                                            action="{{ route('inspecciones.cancel_assignment', $inspeccion->id_insp) }}"
+                                                            method="POST" class="d-inline">
+                                                            @csrf
+                                                            @method('PATCH')
+
+                                                            <button type="submit" class="btn btn-secondary btn-sm"
+                                                                title="Cancelar asignación"
+                                                                onclick="return confirm('¿Está seguro de que desea cancelar la asignación de esta inspección? Esto la dejará disponible para reasignar.')">
+                                                                <i class="bi bi-person-x"></i>
+                                                            </button>
+                                                        </form>
+                                                    @endif
+
+                                                    {{-- 6. Botón de eliminar --}}
                                                     <form action="{{ route('inspecciones.destroy', $inspeccion->id_insp) }}"
                                                         method="POST" class="d-inline">
                                                         @csrf
@@ -271,7 +286,7 @@
                                 <select id="mes_modal" name="mes" class="form-select" required>
                                     <option value="">Seleccione Mes</option>
                                     @php
-\Carbon\Carbon::setLocale('es');
+                                        \Carbon\Carbon::setLocale('es');
                                     @endphp
                                     {{-- Listar los 12 meses --}}
                                     @for ($m = 1; $m <= 12; $m++)
