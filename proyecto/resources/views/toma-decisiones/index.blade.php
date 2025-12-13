@@ -79,6 +79,21 @@
                                         class="bi bi-person-lines-fill me-2"></i> Carga de Trabajo por Inspector</h5>
                                 <small class="text-muted">Inspecciones pendientes asignadas. Útil para
                                     reasignación.</small>
+
+                                {{-- Botón para descargar gráfico1 --}}
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button"
+                                        id="descargarCargaToggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-download"></i> Descargar
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="descargarCargaToggle">
+                                        <li><a class="dropdown-item" href="#" data-chart-id="cargaTrabajoChart"
+                                                data-format="png">Descargar como PNG</a></li>
+                                        <li><a class="dropdown-item" href="#" data-chart-id="cargaTrabajoChart"
+                                                data-format="jpg">Descargar como JPG</a></li>
+                                    </ul>
+                                </div>
+
                             </div>
                             <div class="card-body p-4">
                                 <canvas id="cargaTrabajoChart" style="max-height: 350px;"></canvas>
@@ -96,6 +111,21 @@
                                 <h5 class="card-title mb-0 text-dark fw-bold"><i class="bi bi-graph-up me-2"></i>
                                     Inspecciones Completadas </h5>
                                 <small class="text-muted">Comparación mensual vs. Período anterior.</small>
+
+                                {{-- Botón para descargar gráfico 2 --}}
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button"
+                                        id="descargarHistoricoToggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-download"></i> Descargar
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="descargarHistoricoToggle">
+                                        <li><a class="dropdown-item" href="#" data-chart-id="historicoChart"
+                                                data-format="png">Descargar como PNG</a></li>
+                                        <li><a class="dropdown-item" href="#" data-chart-id="historicoChart"
+                                                data-format="jpg">Descargar como JPG</a></li>
+                                    </ul>
+                                </div>
+
                             </div>
                             <div class="card-body p-4">
                                 <canvas id="historicoChart" style="max-width: 400px; max-height: 350px;"></canvas>
@@ -111,6 +141,22 @@
                                     Disponibilidad de Personal</h5>
                                 <small class="text-muted">Porcentaje de inspectores disponibles para nuevas
                                     asignaciones.</small>
+
+                                {{-- Botón para descargar gráfico 3 --}}
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button"
+                                        id="descargarDisponibilidadToggle" data-bs-toggle="dropdown"
+                                        aria-expanded="false">
+                                        <i class="bi bi-download"></i> Descargar
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="descargarDisponibilidadToggle">
+                                        <li><a class="dropdown-item" href="#" data-chart-id="disponibilidadChart"
+                                                data-format="png">Descargar como PNG</a></li>
+                                        <li><a class="dropdown-item" href="#" data-chart-id="disponibilidadChart"
+                                                data-format="jpg">Descargar como JPG</a></li>
+                                    </ul>
+                                </div>
+
                             </div>
                             <div class="card-body p-4 d-flex justify-content-center">
                                 <canvas id="disponibilidadChart" style="max-width: 400px; max-height: 350px;"></canvas>
@@ -128,164 +174,15 @@
 
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('js/dashboard.js') }}"></script>
-
-    <script
-        src="[https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js](https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js)"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-
-            // Datos pasados desde el controlador
-            const historicoData = @json($historicoData);
-            const cargaTrabajoData = @json($cargaTrabajoData);
-            const disponibilidadData = @json($disponibilidadData);
-
-            // GRÁFICO 1: Carga de trabajo 
-            const cargaTrabajoCtx = document.getElementById('cargaTrabajoChart');
-            new Chart(cargaTrabajoCtx, {
-                type: 'bar',
-                data: {
-                    labels: cargaTrabajoData.labels,
-                    datasets: [{
-                        label: 'Inspecciones Pendientes Asignadas',
-                        data: cargaTrabajoData.data,
-                        backgroundColor: [
-                            'rgba(255, 99, 132, 0.6)',
-                            'rgba(54, 162, 235, 0.6)',
-                            'rgba(255, 206, 86, 0.6)',
-                            'rgba(75, 192, 192, 0.6)'
-                        ],
-                        borderColor: [
-                            'rgba(255, 99, 132, 1)',
-                            'rgba(54, 162, 235, 1)',
-                            'rgba(255, 206, 86, 1)',
-                            'rgba(75, 192, 192, 1)'
-                        ],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    indexAxis: 'y',
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            display: false,
-                        }
-                    },
-                    scales: {
-                        x: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Total Asignado'
-                            }
-                        }
-                    }
-                }
-            });
-
-
-            // GRÁFICO 2: Seguimiento histórico (Mes Actual vs. Mes Anterior)
-            const historicoCtx = document.getElementById('historicoChart');
-
-            new Chart(historicoCtx, {
-                type: 'bar',
-                data: {
-                    labels: historicoData.labels, // Contiene las 3 etiquetas de meses
-                    datasets: [
-                        {
-                            label: 'Inspecciones Completadas',
-                            // Data contiene los 3 conteos de los meses
-                            data: historicoData.data,
-                            backgroundColor: [
-                                '#adb5bd', // Gris para Mes - 2 (más antiguo)
-                                '#0d6efd', // Azul para Mes - 1
-                                '#28a745'  // Verde para Mes Actual
-                            ],
-                            borderColor: [
-                                '#adb5bd',
-                                '#0d6efd',
-                                '#28a745'
-                            ],
-                            borderWidth: 1,
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                            display: false,
-                        },
-                        title: {
-                            display: false
-                        },
-                        tooltip: {
-                        }
-                    },
-                    scales: {
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Período Mensual'
-                            }
-                        },
-                        y: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Número de Inspecciones'
-                            }
-                        }
-                    }
-                }
-            });
-
-            // GRÁFICO 3: Disponibilidad de personal
-            const disponibilidadCtx = document.getElementById('disponibilidadChart');
-
-            new Chart(disponibilidadCtx, {
-                type: 'doughnut', // Gráfico de Anillo
-                data: {
-                    // Los labels ya vienen con los conteos
-                    labels: disponibilidadData.labels,
-                    datasets: [{
-                        label: 'Conteo de Personal',
-                        data: disponibilidadData.data,
-                        backgroundColor: disponibilidadData.backgroundColor,
-                        hoverOffset: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                        },
-                        title: {
-                            display: false
-                        }
-                    }
-                }
-            });
-
-            // Código para el dropdown de notificaciones
-            var toggleButton = document.getElementById('NotificacionToggle');
-            if (toggleButton) {
-                // Crear una nueva instancia de Dropdown de Bootstrap
-                var dropdown = new bootstrap.Dropdown(toggleButton);
-
-                // Agrega un listener de click para manejar el toggle
-                toggleButton.addEventListener('click', function (e) {
-                    e.preventDefault(); // Previene el comportamiento por defecto del enlace '#'
-                    dropdown.toggle();  // Fuerza la acción de mostrar/ocultar
-                });
-            }
-
-
-        });
+        window.historicoData = @json($historicoData);
+        window.cargaTrabajoData = @json($cargaTrabajoData);
+        window.disponibilidadData = @json($disponibilidadData);
     </script>
+
+    <script src="{{ asset('js/decisiones.js') }}"></script>
 
 
     @include('components._session-timeout')

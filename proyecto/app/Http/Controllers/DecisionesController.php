@@ -43,14 +43,16 @@ class DecisionesController extends Controller
         // --- Lógica para el Gráfico 2: Comparación de 3 meses ---
 
         // 1. Definir los rangos de fechas
+
+        // Mes Actual (Diciembre 2025)
         $fecha_actual_inicio = now()->startOfMonth();
         $fecha_actual_fin = now()->endOfMonth();
 
-        // Mes Anterior
-        $fecha_mes1_anterior_inicio = now()->subMonth()->startOfMonth();
-        $fecha_mes1_anterior_fin = now()->subMonth()->endOfMonth();
+        // Mes Anterior (Noviembre 2025)
+        $fecha_mes1_anterior_inicio = now()->copy()->subMonth()->startOfMonth();
+        $fecha_mes1_anterior_fin = now()->copy()->subMonth()->endOfMonth();
 
-        // Dos Meses Anteriores
+        // Dos Meses Anteriores (Octubre 2025)
         $fecha_mes2_anterior_inicio = now()->copy()->subMonths(2)->startOfMonth();
         $fecha_mes2_anterior_fin = now()->copy()->subMonths(2)->endOfMonth();
 
@@ -463,6 +465,6 @@ class DecisionesController extends Controller
         ]);
     }
 
-    
+
 
 }

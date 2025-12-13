@@ -1,7 +1,377 @@
 document.addEventListener('DOMContentLoaded', function () {
-    
-    var toggleButton = document.getElementById('NotificacionToggle');
-    
+
+    // --- 1. DEFINICIÓN DE UTILIDADES Y VARIABLES GLOBALES ---
+
+    // Almacena las instancias de los gráficos
+    let chartInstances = {};
+    const margin = 20; // Margen para la descarga de imagen
+
+    // Función para inicializar los Dropdowns de Bootstrap
+    const initializeDropdown = (toggleId) => {
+        const toggleButton = document.getElementById(toggleId);
+        if (toggleButton && window.bootstrap && window.bootstrap.Dropdown) {
+            const dropdown = new window.bootstrap.Dropdown(toggleButton);
+            toggleButton.addEventListener('click', function (e) {
+                dropdown.toggle();
+            });
+        }
+    };
+
+    // Helper para obtener datos desde las variables globales inyectadas por Blade 
+    const getChartData = (varName) => window[varName] || { labels: [], data: [] }; // Retorna arrays vacíos si no hay datos
+
+    // --- 2. FUNCIÓN DE DESCARGA GENÉRICA ---
+    function descargarGrafico(chartId, formato) {
+        const chartInstance = chartInstances[chartId];
+        if (!chartInstance) {
+            console.error('Instancia de gráfico no encontrada para la descarga:', chartId);
+            return;
+        }
+
+        const canvasOriginal = chartInstance.canvas;
+
+        // Crear un nuevo canvas temporal
+        const canvasTemporal = document.createElement('canvas');
+        canvasTemporal.width = canvasOriginal.width + 2 * margin;
+        canvasTemporal.height = canvasOriginal.height + 2 * margin;
+
+        const ctxTemp = canvasTemporal.getContext('2d');
+
+        // 1. Dibujar el fondo blanco en el canvas temporal completo
+        ctxTemp.fillStyle = 'white';
+        ctxTemp.fillRect(0, 0, canvasTemporal.width, canvasTemporal.height);
+
+        // 2. Dibujar el contenido del gráfico original con el desfase del margen
+        ctxTemp.drawImage(canvasOriginal, margin, margin);
+
+        // 3. Obtener el Data URL de la imagen (PNG o JPG)
+        let dataURL;
+        let mimeType = (formato === 'png') ? 'image/png' : 'image/jpeg';
+        let quality = (formato === 'jpg') ? 1.0 : undefined;
+
+        dataURL = canvasTemporal.toDataURL(mimeType, quality);
+
+        // 4. Crear un enlace temporal para forzar la descarga
+        const a = document.createElement('a');
+        a.download = `${chartId}_${new Date().toISOString().split('T')[0]}.${formato}`;
+        a.href = dataURL;
+
+        // 5. Simular el clic en el enlace
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+
+    // --- 3. FUNCIÓN DE INICIALIZACIÓN DE GRÁFICOS ---
+    function initializeCharts() {
+
+        if (typeof window.Chart === 'undefined') {
+            console.error('Error: La librería Chart.js (window.Chart) no se ha cargado correctamente.');
+            return;
+        }
+
+        // GRÁFICO 1: Carga de trabajo 
+        const cargaTrabajoCtx = document.getElementById('cargaTrabajoChart');
+        if (cargaTrabajoCtx) {
+            try {
+                const data = getChartData('cargaTrabajoData');
+                chartInstances['cargaTrabajoChart'] = new window.Chart(cargaTrabajoCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            label: 'Inspecciones Pendientes Asignadas',
+                            data: data.data,
+                            backgroundColor: ['rgba(255, 99, 132, 0.6)', 'rgba(54, 162, 235, 0.6)', 'rgba(255, 206, 86, 0.6)', 'rgba(75, 192, 192, 0.6)'],
+                            borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)', 'rgba(255, 206, 86, 1)', 'rgba(75, 192, 192, 1)'],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        plugins: { legend: { display: false } },
+                        scales: { x: { beginAtZero: true, title: { display: true, text: 'Total Asignado' } } }
+                    }
+                });
+                console.log("Gráfico 1 (Carga de Trabajo) inicializado con éxito.");
+            } catch (error) {
+                console.error('ERROR FATAL AL INICIALIZAR GRÁFICO 1 (Carga de Trabajo):', error);
+            }
+        }
+
+        // GRÁFICO 2: Seguimiento histórico (Mes Actual vs. Mes Anterior)
+        const historicoCtx = document.getElementById('historicoChart');
+        if (historicoCtx) {
+            try {
+                const data = getChartData('historicoData');
+                chartInstances['historicoChart'] = new window.Chart(historicoCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            label: 'Inspecciones Completadas',
+                            data: data.data,
+                            categoryPercentage: 0.7,
+                            barPercentage: 0.9,
+                            backgroundColor: ['#adb5bd', '#0d6efd', '#28a745'],
+                            borderColor: ['#adb5bd', '#0d6efd', '#28a745'],
+                            borderWidth: 1,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false,
+                        },
+                        hover: {
+                            mode: 'index',
+                            intersect: false
+                        },
+                        plugins: {
+                            legend: { display: false, position: 'top' },
+                            title: { display: false }
+                        },
+                        animation: {
+                            tooltip: { duration: 0 }
+                        },
+                        scales: {
+                            x: {
+                                distribution: 'linear',
+                                title: { display: true, text: 'Período Mensual' }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                title: { display: true, text: 'Número de Inspecciones' }
+                            }
+                        }
+                    }
+                });
+                console.log("Gráfico 2 (Histórico) inicializado con éxito.");
+            } catch (error) {
+                console.error('ERROR FATAL AL INICIALIZAR GRÁFICO 2 (Histórico):', error);
+            }
+        }
+
+        // GRÁFICO 3: Disponibilidad de personal
+        const disponibilidadCtx = document.getElementById('disponibilidadChart');
+        if (disponibilidadCtx) {
+            try {
+                const data = getChartData('disponibilidadData');
+                chartInstances['disponibilidadChart'] = new window.Chart(disponibilidadCtx, {
+                    type: 'doughnut', // Gráfico de Anillo
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            label: 'Conteo de Personal',
+                            data: data.data,
+                            backgroundColor: data.backgroundColor,
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { position: 'bottom' }, title: { display: false } }
+                    }
+                });
+                console.log("Gráfico 3 (Disponibilidad) inicializado con éxito.");
+            } catch (error) {
+                console.error('ERROR FATAL AL INICIALIZAR GRÁFICO 3 (Disponibilidad):', error);
+            }
+        }
+    }
+
+    // GRÁFICOS DE RECURSOS
+
+    let topRecursosChartInstance = null;
+
+    // Helper para obtener datos desde las variables globales inyectadas por Blade
+    const getChartDataRecursos = (varName) => window[varName] || {};
+
+
+    function initializeRecursosCharts() {
+
+        if (typeof window.Chart === 'undefined') {
+            console.error('Error: La librería Chart.js no se ha cargado para los gráficos de recursos.');
+            return;
+        }
+
+        // GRÁFICO 4: Uso de recursos por inspector
+        const usoRecursosCtx = document.getElementById('usoRecursosChart');
+        const usoRecursosData = getChartDataRecursos('usoRecursosPorInspector');
+
+        if (usoRecursosCtx && usoRecursosData.labels) {
+            try {
+                // Almacenar instancia para descarga
+                chartInstances['usoRecursosChart'] = new window.Chart(usoRecursosCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: usoRecursosData.labels,
+                        datasets: usoRecursosData.datasets.map(dataset => ({
+                            label: dataset.label,
+                            data: dataset.data,
+                            backgroundColor: dataset.backgroundColor,
+                            borderColor: '#fff',
+                            borderWidth: 1,
+                        }))
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                            },
+                        },
+                        scales: {
+                            x: {
+                                stacked: true,
+                                title: { display: true, text: 'Inspector' }
+                            },
+                            y: {
+                                stacked: true,
+                                beginAtZero: true,
+                                title: { display: true, text: 'Total de Asignaciones' }
+                            }
+                        }
+                    }
+                });
+                console.log("Gráfico 4 (Uso de Recursos) inicializado con éxito.");
+            } catch (error) {
+                console.error('ERROR FATAL AL INICIALIZAR GRÁFICO 4 (Uso de Recursos):', error);
+            }
+        }
+
+        // GRÁFICO 5: Recursos más solicitados (Top N)
+        const topRecursosDataInicial = getChartDataRecursos('topRecursosData');
+        if (topRecursosDataInicial.labels) {
+            renderTopRecursosChart(topRecursosDataInicial.labels, topRecursosDataInicial.data);
+            console.log("Gráfico 5 (Top Recursos) inicializado con éxito.");
+        }
+    }
+
+
+    // GRÁFICO 5: Función de renderizado reusable (para AJAX)
+    function renderTopRecursosChart(labels, data) {
+        const topRecursosCtx = document.getElementById('topRecursosChart');
+        if (!topRecursosCtx) return;
+
+        if (topRecursosChartInstance) {
+            topRecursosChartInstance.destroy();
+        }
+
+        try {
+            topRecursosChartInstance = new window.Chart(topRecursosCtx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Número de Asignaciones',
+                        data: data,
+                        backgroundColor: 'rgba(255, 159, 64, 0.8)',
+                        borderColor: 'rgb(255, 159, 64)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    interaction: { mode: 'nearest', intersect: true, axis: 'y' },
+                    hover: { mode: 'nearest', intersect: true },
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Frecuencia de Uso' }
+                        }
+                    }
+                }
+            });
+            // Almacenar instancia para descarga
+            chartInstances['topRecursosChart'] = topRecursosChartInstance;
+
+        } catch (error) {
+            console.error('ERROR FATAL AL INICIALIZAR GRÁFICO 5 (Top Recursos):', error);
+        }
+    }
+
+    // --- LÓGICA DE EVENTOS DE RECURSOS ---
+
+    // Manejar el cambio de mes (AJAX)
+    const mesSelector = document.getElementById('mes-selector');
+    if (mesSelector) {
+        mesSelector.addEventListener('change', function () {
+            const mesAno = this.value;
+            // Usar la ruta dinámica para obtener los datos del mes seleccionado
+            const url = `/decisiones/recursos/top?mes=${mesAno}`;
+            const recomendacionElement = document.getElementById('recomendacion-texto');
+
+            recomendacionElement.innerHTML = 'Cargando...'; // Feedback de carga
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.labels && data.data) {
+                        // Re-renderizar el gráfico con los nuevos datos
+                        renderTopRecursosChart(data.labels, data.data);
+
+                        // Actualizar la recomendación
+                        recomendacionElement.innerHTML = data.recomendacion.replace(/\n/g, '<br>');
+
+                    } else {
+                        renderTopRecursosChart(['Sin datos'], [0]);
+                        recomendacionElement.innerHTML = "Datos no disponibles para el mes seleccionado.";
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al cargar datos de recursos:', error);
+                    recomendacionElement.innerHTML = 'Error fatal al cargar datos. Consulte la consola.';
+                });
+        });
+    }
+
+    // --- 4. FUNCIÓN DE INICIALIZACIÓN DE LISTENERS ---
+    function initializeDropdownsAndDownloadListeners() {
+        // Inicializar los 3 dropdowns de descarga
+        initializeDropdown('descargarCargaToggle');
+        initializeDropdown('descargarHistoricoToggle');
+        initializeDropdown('descargarDisponibilidadToggle');
+        initializeDropdown('descargarUsoRecursosToggle');
+        initializeDropdown('descargarTopRecursosToggle');
+
+        // Inicializar el dropdown de Notificaciones
+        initializeDropdown('NotificacionToggle');
+
+        // Delega el evento de clic a todos los elementos del dropdown de descarga
+        document.querySelectorAll('[data-chart-id]').forEach(link => {
+            link.addEventListener('click', function (e) {
+                e.preventDefault();
+                const chartId = this.getAttribute('data-chart-id');
+                const format = this.getAttribute('data-format');
+                descargarGrafico(chartId, format);
+            });
+        });
+    }
+
+    // --- 5. LÓGICA DE EJECUCIÓN (Asegurando que la inicialización de los botones no falle) ---
+
+    // 1. Ejecutar la lógica de inicialización de listeners y dropdowns inmediatamente
+    try {
+        initializeDropdownsAndDownloadListeners();
+        initializeRecursosCharts();
+        initializeRecursosDropdownsAndListeners();
+        console.log("Dropdowns y listeners de descarga inicializados con éxito.");
+    } catch (error) {
+        console.error('ERROR FATAL AL INICIALIZAR DROPDOWNS/LISTENERS:', error);
+    }
+
+    // 2. Inicializar los gráficos
+    initializeCharts();
+
+    // Script para el modal de resumen de inspección
     // 1. Obtener la URL Template del objeto global definido en Blade
     const url_template = window.AppConfig?.resumenUrlTemplate || '/api/inspeccion/resumen/PLACEHOLDER';
     const ID_PLACEHOLDER = 'PLACEHOLDER'; // Definimos el marcador a reemplazar
@@ -107,21 +477,4 @@ document.addEventListener('DOMContentLoaded', function () {
                 resumenContenido.style.display = 'none';
             });
     });
-
-
-    // Código para el dropdown de notificaciones
-
-    if (toggleButton) {
-        // Crear una nueva instancia de Dropdown de Bootstrap
-        var dropdown = new bootstrap.Dropdown(toggleButton);
-
-        // Agrega un listener de click para manejar el toggle
-        toggleButton.addEventListener('click', function (e) {
-            e.preventDefault(); // Previene el comportamiento por defecto del enlace '#'
-            dropdown.toggle();  // Fuerza la acción de mostrar/ocultar
-        });
-    }
-
-
-
 });

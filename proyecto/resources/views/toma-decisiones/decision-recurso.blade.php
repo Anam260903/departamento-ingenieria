@@ -70,6 +70,21 @@
                                     ingeniero. Cada segmento representa un recurso
                                     ({{ count($usoRecursosPorInspector['datasets']) }} recursos diferentes
                                     registrados).</small>
+
+                                {{-- Botón para descargar gráfico 4 --}}
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button"
+                                        id="descargarUsoRecursosToggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-download"></i> Descargar
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="descargarUsoRecursosToggle">
+                                        <li><a class="dropdown-item" href="#" data-chart-id="usoRecursosChart"
+                                                data-format="png">Descargar como PNG</a></li>
+                                        <li><a class="dropdown-item" href="#" data-chart-id="usoRecursosChart"
+                                                data-format="jpg">Descargar como JPG</a></li>
+                                    </ul>
+                                </div>
+
                             </div>
                             <div class="card-body p-4">
                                 <canvas id="usoRecursosChart" style="max-height: 400px;"></canvas>
@@ -85,6 +100,21 @@
                                     Top 10 Recursos Más Solicitados</h5>
                                 <small class="text-muted">Identifique los recursos de alta demanda para gestión de
                                     inventario y compras.</small>
+
+                                {{-- Botón para descargar gráfico 5 --}}
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button"
+                                        id="descargarTopRecursosToggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-download"></i> Descargar
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="descargarTopRecursosToggle">
+                                        <li><a class="dropdown-item" href="#" data-chart-id="topRecursosChart"
+                                                data-format="png">Descargar como PNG</a></li>
+                                        <li><a class="dropdown-item" href="#" data-chart-id="topRecursosChart"
+                                                data-format=" jpg">Descargar como JPG</a></li>
+                                    </ul>
+                                </div>
+
                             </div>
                             <div class="card-body p-4">
                                 <div class="row mb-3 align-items-center">
@@ -112,157 +142,15 @@
 
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('js/dashboard.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    {{-- Scripts para Chart.js --}}
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-
-            // Datos pasados desde el controlador
-            const usoRecursosPorInspector = @json($usoRecursosPorInspector);
-            let topRecursosData = @json($topRecursosData);
-
-            let topRecursosChartInstance = null; // Instancia global para el gráfico 5 (Top N)
-
-            // GRÁFICO 4: Uso de recursos por inspector
-            const usoRecursosCtx = document.getElementById('usoRecursosChart');
-            new Chart(usoRecursosCtx, {
-                type: 'bar',
-                data: {
-                    labels: usoRecursosPorInspector.labels,
-                    datasets: usoRecursosPorInspector.datasets.map(dataset => ({
-                        label: dataset.label,
-                        data: dataset.data,
-                        backgroundColor: dataset.backgroundColor,
-                        borderColor: '#fff',
-                        borderWidth: 1,
-                    }))
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'right', // Colocar la leyenda a la derecha
-                        }
-                    },
-                    scales: {
-                        x: {
-                            stacked: true,
-                            title: {
-                                display: true,
-                                text: 'Inspector'
-                            }
-                        },
-                        y: {
-                            stacked: true,
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Total de Asignaciones'
-                            }
-                        }
-                    }
-                }
-            });
-
-            // GRÁFICO 5: Recursos más solicitados (Top N)
-            function renderTopRecursosChart(labels, data) {
-                const topRecursosCtx = document.getElementById('topRecursosChart');
-
-                if (topRecursosChartInstance) {
-                    topRecursosChartInstance.destroy();
-                }
-
-                topRecursosChartInstance = new Chart(topRecursosCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Número de Asignaciones',
-                            data: data,
-                            // Un color consistente para todas las barras del Top N
-                            backgroundColor: 'rgba(255, 159, 64, 0.8)',
-                            borderColor: 'rgb(255, 159, 64)',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        indexAxis: 'y',
-                        responsive: true,
-                        plugins: {
-                            legend: {
-                                display: false,
-                            },
-                            title: {
-                                display: false,
-                            }
-                        },
-                        scales: {
-                            x: {
-                                beginAtZero: true,
-                                title: {
-                                    display: true,
-                                    text: 'Frecuencia de Uso'
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-
-            // Renderizar el gráfico inicial (mes actual)
-            renderTopRecursosChart(topRecursosData.labels, topRecursosData.data);
-
-
-            // Manejar el cambio de mes
-            document.getElementById('mes-selector').addEventListener('change', function () {
-                const mesAno = this.value;
-                // Usar la ruta dinámica para obtener los datos del mes seleccionado
-                const url = `/decisiones/recursos/top?mes=${mesAno}`;
-
-                fetch(url)
-                    .then(response => response.json())
-                    .then(data => {
-                        const recomendacionElement = document.getElementById('recomendacion-texto');
-
-                        if (data.labels && data.data) {
-                            // Actualizar la instancia del gráfico
-                            topRecursosChartInstance.data.labels = data.labels;
-                            topRecursosChartInstance.data.datasets[0].data = data.data;
-                            topRecursosChartInstance.update();
-
-                            // Actualizar la recomendación
-                            recomendacionElement.innerHTML = data.recomendacion.replace(/\n/g, '<br>');
-
-                        } else {
-                            // Manejo de error si los datos no vienen correctos
-                            topRecursosChartInstance.data.labels = ['Sin datos'];
-                            topRecursosChartInstance.data.datasets[0].data = [0];
-                            topRecursosChartInstance.update();
-                            recomendacionElement.innerHTML = "Error al cargar los datos o datos no disponibles para el mes seleccionado.";
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error al cargar datos de recursos:', error);
-                        alert('Error al cargar datos. Verifique la consola para más detalles.');
-                    });
-            });
-
-            // Código para el dropdown de notificaciones
-            var toggleButton = document.getElementById('NotificacionToggle');
-            if (toggleButton) {
-                // Crear una nueva instancia de Dropdown de Bootstrap
-                var dropdown = new bootstrap.Dropdown(toggleButton);
-
-                // Agrega un listener de click para manejar el toggle
-                toggleButton.addEventListener('click', function (e) {
-                    e.preventDefault(); // Previene el comportamiento por defecto del enlace '#'
-                    dropdown.toggle();  // Fuerza la acción de mostrar/ocultar
-                });
-            }
-
-        });
+        window.usoRecursosPorInspector = @json($usoRecursosPorInspector);
+        window.topRecursosData = @json($topRecursosData);
+        window.mesActualTopN = "{{ $mesActualTopN }}"; 
     </script>
+
+    <script src="{{ asset('js/decisiones.js') }}"></script>
 
     @include('components._session-timeout')
 </body>
