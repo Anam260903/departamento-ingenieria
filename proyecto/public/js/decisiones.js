@@ -302,12 +302,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Manejar el cambio de mes (AJAX)
     const mesSelector = document.getElementById('mes-selector');
+    const mesDisplayLabel = document.getElementById('mes-display-label'); // Nuevo elemento
+    const recomendacionElement = document.getElementById('recomendacion-texto');
+
     if (mesSelector) {
         mesSelector.addEventListener('change', function () {
             const mesAno = this.value;
-            // Usar la ruta dinámica para obtener los datos del mes seleccionado
             const url = `/decisiones/recursos/top?mes=${mesAno}`;
-            const recomendacionElement = document.getElementById('recomendacion-texto');
+
+            // 1. Obtener el texto del mes selccionado
+            const selectedOption = this.options[this.selectedIndex];
+            const selectedMonthText = selectedOption.textContent.trim();
+
+            // 2. Actualizar inmediatamente la etiqueta de datos
+            if (mesDisplayLabel) {
+                mesDisplayLabel.textContent = `Datos de: ${selectedMonthText}`;
+            }
 
             recomendacionElement.innerHTML = 'Cargando...'; // Feedback de carga
 
@@ -316,6 +326,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 .then(data => {
                     if (data.labels && data.data) {
                         // Re-renderizar el gráfico con los nuevos datos
+                        // Asumiendo que la función renderTopRecursosChart está definida en otra parte
                         renderTopRecursosChart(data.labels, data.data);
 
                         // Actualizar la recomendación
@@ -356,7 +367,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // --- 5. LÓGICA DE EJECUCIÓN (Asegurando que la inicialización de los botones no falle) ---
+    // --- 5. LÓGICA DE EJECUCIÓN ---
 
     // 1. Ejecutar la lógica de inicialización de listeners y dropdowns inmediatamente
     try {

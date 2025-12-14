@@ -54,9 +54,10 @@ class InformesController extends BaseController
             });
         }
 
+         // Ejecutar consulta y aplicar paginación
         $informes = $query
             ->orderBy('fecha_inf', 'desc')
-            ->paginate(10); // Paginación
+            ->paginate(10);
 
         // 4. Pasar los datos a la vista
         return view('informes-tecnicos.index', compact('informes'));

@@ -128,7 +128,7 @@
                                                 </option>
                                             @endforeach
                                         </select>
-                                        <small class="text-muted">Datos de: {{ $mesActualTopN }}</small>
+                                        <small class="text-muted" id="mes-display-label">Datos de: {{ $mesActualTopN }}</small>
                                     </div>
                                 </div>
                                 <canvas id="topRecursosChart" style="max-height: 400px;"></canvas>

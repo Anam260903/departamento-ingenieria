@@ -166,9 +166,11 @@
                     </div>
 
                     {{-- Enlaces de paginación --}}
-                    <div class="d-flex justify-content-center mt-3">
-                        {{ $informes->links('pagination::bootstrap-5') }}
-                    </div>
+                    @if ($informes->lastPage() > 1)
+                        <div class="d-flex justify-content-center mt-3">
+                            {{ $informes->appends(request()->query())->links() }}
+                        </div>
+                    @endif
                 </div>
 
             </div>
@@ -236,7 +238,7 @@
     <script src="{{ asset('js/app.js') }}"></script>
     <script src="{{ asset('js/dashboard.js') }}"></script>
 
-      <script>
+    <script>
         document.addEventListener('DOMContentLoaded', function () {
             const btnContinuar = document.getElementById('btnContinuarInforme');
 
@@ -261,7 +263,7 @@
             }
         });
     </script>
-    
+
     <script src="{{ asset('js/informes.js') }}"></script>
 
     @include('components._session-timeout')

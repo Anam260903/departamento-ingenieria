@@ -54,8 +54,8 @@ class RecursosController extends Controller
             }
         }
 
-        // 4. Ejecutar la consulta y ordenar
-        $recursos = $query->orderBy('nombre_rec', 'asc')->get();
+        // 4. Ejecutar la consulta, ordenar y aplicar paginación
+        $recursos = $query->orderBy('nombre_rec', 'asc')->paginate(10);
 
         // 5. Pasar los resultados a la vista
         return view('recursos.index', compact('recursos'));

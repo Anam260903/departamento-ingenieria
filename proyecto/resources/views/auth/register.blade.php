@@ -103,27 +103,10 @@
 
         </div>
     </div>
-    <script src="{{ asset('js/register.js') }}"></script>
+    
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const passwordField = document.getElementById('password-field');
-
-            if (passwordField) {
-                // 1. Creamos la instancia del tooltip
-                const passwordTooltip = new bootstrap.Tooltip(passwordField);
-
-                // 2. Definimos una función que solo oculte el tooltip.
-                const hideTooltipOnFocus = function () {
-                    // Ocultamos el tooltip
-                    passwordTooltip.hide();
-                };
-
-                // 3. Asignamos el evento 'focus'
-                passwordField.addEventListener('focus', hideTooltipOnFocus);
-            }
-        });
-    </script>
+    <script src="{{ asset('js/register.js') }}"></script>
+    
 </body>
 
 </html>

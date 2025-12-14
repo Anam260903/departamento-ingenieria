@@ -1,6 +1,17 @@
 document.addEventListener('DOMContentLoaded', function () {
 
-    // Lógica para Asignar Inspecciones (assignInspectionModal)
+    // --- 1. Inicialización de Tooltips de Bootstrap ---
+    
+    // Verificamos si la clase Tooltip de Bootstrap está definida
+    if (typeof bootstrap !== 'undefined' && typeof bootstrap.Tooltip !== 'undefined') {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        });
+    }
+
+
+    // --- 2. Lógica para Asignar Inspecciones (assignInspectionModal) ---
 
     const modal = document.getElementById('assignInspectionModal');
     const select = document.getElementById('id_insp');
@@ -27,8 +38,6 @@ document.addEventListener('DOMContentLoaded', function () {
             // Rutas dinámicas
             const fetchUrl = API_ROUTES.fetchInspections.replace(':userId', userId);
             const postUrl = API_ROUTES.postInspection.replace(':userId', userId);
-            form.setAttribute('action', postUrl);
-
             form.setAttribute('action', postUrl);
 
             // 3. Petición AJAX para obtener las inspecciones disponibles
@@ -65,6 +74,12 @@ document.addEventListener('DOMContentLoaded', function () {
                                 assignButton.setAttribute('disabled', 'true');
                             }
                         };
+                        
+                        // Si solo hay una opción aparte de la de placeholder, habilitarla y seleccionarla.
+                        if (data.inspecciones.length === 1) {
+                            select.selectedIndex = 1; // Selecciona la única inspección disponible
+                            assignButton.removeAttribute('disabled');
+                        }
                     }
                 })
                 .catch(error => {
@@ -76,8 +91,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 
-
-    // Lógica para Asignar Recursos (assignResourceModal)
+    // --- 3. Lógica para Asignar Recursos (assignResourceModal) ---
 
     const resourceModal = document.getElementById('assignResourceModal');
     const resourceSelect = document.getElementById('id_recurso');
@@ -101,7 +115,7 @@ document.addEventListener('DOMContentLoaded', function () {
             resourceUserNameSpan.textContent = userName;
 
             // Rutas dinámicas para la asignación de recursos
-            const fetchResourcesUrl = API_ROUTES.fetchResources; // Ya está completa
+            const fetchResourcesUrl = API_ROUTES.fetchResources;
             const postResourceUrl = API_ROUTES.postResource.replace(':userId', userId);
             resourceForm.setAttribute('action', postResourceUrl);
 
@@ -147,48 +161,38 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Lógica para filtrar por profesión y descargar PDF
+    // --- 4. Lógica para filtrar por profesión y descargar PDF ---
 
-    // Obtenemos las referencias a los elementos del DOM
     const selectElement = document.getElementById('profesion-select');
     const formElement = document.getElementById('form-pdf-filtro');
     const downloadButton = document.getElementById('btn-descargar-filtro');
 
-    // Verificamos que todos los elementos existan antes de agregar el listener
-    if (selectElement && formElement && downloadButton) {
+    if (selectElement && formElement && downloadButton && API_ROUTES.pdfFilterBase) {
 
         // Función que se ejecuta al cambiar la selección en el dropdown
         selectElement.addEventListener('change', function () {
             const selectedProfesion = this.value;
 
+            // La URL base viene de Blade 
             if (selectedProfesion) {
-                const urlBase = '/personal/exportar/pdf/__PROFESION__';
-
-                // Construimos la URL final reemplazando el placeholder
-                formElement.action = urlBase.replace('__PROFESION__', selectedProfesion);
+                // Reemplazamos el placeholder en la URL base con el valor seleccionado
+                formElement.action = API_ROUTES.pdfFilterBase.replace('__PROFESION__', selectedProfesion);
 
                 downloadButton.disabled = false; // Habilita el botón de descarga
             } else {
+                // Restauramos el action si no hay selección
+                formElement.action = API_ROUTES.pdfFilterBase.replace('__PROFESION__', '__PROFESION_PLACEHOLDER__');
                 downloadButton.disabled = true; // Deshabilita si no hay selección
             }
         });
 
-        // Inicialmente, el botón está deshabilitado
-        downloadButton.disabled = true;
-    }
-
-    // Código para el dropdown de notificaciones
-    // Selecciona el botón por su ID
-    var toggleButton = document.getElementById('NotificacionToggle');
-
-    if (toggleButton) {
-        // Crear una nueva instancia de Dropdown de Bootstrap
-        var dropdown = new bootstrap.Dropdown(toggleButton);
-
-        // Agrega un listener de click para manejar el
-        toggleButton.addEventListener('click', function (e) {
-            e.preventDefault(); // Previene el comportamiento por defecto del enlace '#'
-            dropdown.toggle();  // Fuerza la acción de mostrar/ocultar
-        });
+        // Aseguramos que el botón de descarga filtrada esté deshabilitado inicialmente.
+        if (!selectElement.value) {
+             downloadButton.disabled = true;
+        } else {
+             // Si por alguna razón hay un valor seleccionado por 'old', ajustamos la acción y lo habilitamos
+             formElement.action = API_ROUTES.pdfFilterBase.replace('__PROFESION__', selectElement.value);
+             downloadButton.disabled = false;
+        }
     }
 });

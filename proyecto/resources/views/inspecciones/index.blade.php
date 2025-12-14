@@ -158,6 +158,10 @@
                                             @endif
                                         </td>
                                         <td>
+                                            @php $usuario = $informe->inspeccion->usuario ?? null; @endphp
+                                            {{ $usuario ? ($usuario->nombre . ' ' . $usuario->apellido) : 'N/A' }}
+                                        </td>
+                                        <td>
                                             @if($inspeccion->estado_insp == 0)
                                                 <span class="badge badge-pendiente">Pendiente</span>
                                             @else
@@ -242,6 +246,11 @@
                             </tbody>
                         </table>
                     </div>
+                    @if ($inspecciones->lastPage() > 1)
+                        <div class="mt-4 d-flex justify-content-center">
+                            {{ $inspecciones->appends(request()->input())->links() }}
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>

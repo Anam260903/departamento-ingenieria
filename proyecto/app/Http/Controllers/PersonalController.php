@@ -33,13 +33,16 @@ class PersonalController extends Controller
         // 1. Inicializar la consulta
         $query = Usuario::with('rol');
 
+        // Exclusión del usuario administrador master por correo electrónico
+        $query->where('correo', '!=', 'admin@gmail.com');
+
         // 2. Filtrar por Palabra Clave
         // Buscar por Cédula, Nombre, Apellido, Correo, Profesión.
         if ($request->filled('keyword')) {
             $keyword = $request->keyword;
             $query->where(function ($q) use ($keyword) {
 
-                $q->where('cedula_user', 'like', '%' . $keyword . '%')
+                $q->where ('cedula_user', 'like', '%' . $keyword . '%')
                     ->orWhere('nombre', 'like', '%' . $keyword . '%')
                     ->orWhere('apellido', 'like', '%' . $keyword . '%')
                     ->orWhere('correo', 'like', '%' . $keyword . '%')
@@ -56,12 +59,13 @@ class PersonalController extends Controller
             $query->where('estado_user', (int) $request->estado);
         }
 
-        // 4. Ejecutar la consulta y ordenar
-        $personal = $query->orderBy('nombre', 'asc')->get();
+        // 4. Ejecutar la consulta ordenar y aplicar paginación
+        $personal = $query->orderBy('nombre', 'asc')->paginate(10);
 
         // 5. Obtener las profesiones únicas para el filtro PDF
         $profesionesUnicas = Usuario::select('profesion')
             ->whereNotNull('profesion')
+            ->where('correo', '!=', 'admin@gmail.com')
             ->distinct()
             ->orderBy('profesion', 'asc')
             ->pluck('profesion'); // Obtiene solo los valores del campo 'profesion'

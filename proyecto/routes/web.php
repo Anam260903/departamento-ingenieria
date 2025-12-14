@@ -12,6 +12,7 @@ use App\Http\Controllers\InformesController;
 use App\Http\Controllers\CalculosController;
 use App\Http\Controllers\DecisionesController;
 use App\Http\Controllers\NotificacionController;
+use App\Http\Controllers\RespaldoController;
 
 // Ruta para mostrar el formulario de inicio de sesión
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
@@ -227,3 +228,8 @@ Route::get('/toma-decisiones/comparacion', [DecisionesController::class, 'compar
 Route::get('/notificaciones', [NotificacionController::class, 'index'])->name('notifications.index');
 Route::get('/notificaciones/{notificacion}/leida', [NotificacionController::class, 'markAsRead'])->name('notifications.markAsRead');
 Route::post('/notificaciones/marcar-todo-leido', [NotificacionController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
+
+// Ruta para generar y descargar el respaldo de la base de datos
+Route::get('/backup/database', [RespaldoController::class, 'backup'])
+    ->middleware(['auth', 'admin'])
+    ->name('backup.database');

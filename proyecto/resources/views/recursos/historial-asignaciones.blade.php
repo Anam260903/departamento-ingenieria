@@ -173,10 +173,11 @@
                         </table>
                     </div>
 
-                    <div class="mt-4">
-                        {{ $asignaciones->links() }}
-                    </div>
 
+                    <div class="mt-4 d-flex justify-content-center">
+                        {{-- Aplicamos appends() para mantener todos los filtros en la paginación --}}
+                        {{ $asignaciones->appends(request()->input())->links() }}
+                    </div>
                 </div>
             </div>
         </div>
@@ -189,7 +190,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="modalFiltroAsignacionesLabel">Filtrar Historial de Asignaciones</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
                 <form action="{{ route('recursos.asignaciones.exportar.pdf.fecha') }}" method="GET">
@@ -207,15 +208,14 @@
                         <button type="submit" class="btn btn-primary">Descargar PDF Filtrado</button>
                     </div>
                 </form>
+                </div> </div>
             </div>
-        </div>
-    </div>
 
-    <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ asset('js/dashboard.js') }}"></script>
-    <script src="{{ asset('js/recursos.js') }}"></script>
+            <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
+            <script src="{{ asset('js/dashboard.js') }}"></script>
+            <script src="{{ asset('js/recursos.js') }}"></script>
 
-    @include('components._session-timeout')
+            @include('components._session-timeout')
 </body>
 
 </html>

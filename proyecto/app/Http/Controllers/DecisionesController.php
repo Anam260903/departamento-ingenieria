@@ -105,7 +105,7 @@ class DecisionesController extends Controller
             } elseif ($pendientes >= 5 && $pendientes <= 10) {
                 $noDisponibleCount++;
                 // Regla 3: Sobrecargado (más de 10)
-            } else { // $pendientes > 10
+            } else {
                 $sobrecargadoCount++;
             }
         }
@@ -123,7 +123,7 @@ class DecisionesController extends Controller
                 $noDisponibleCount,
                 $sobrecargadoCount
             ],
-            // Colores para Chart.js: Verde, Amarillo, Rojo
+            // Colores para Chart.js
             'backgroundColor' => ['#28a745', '#ffc107', '#dc3545'],
         ];
 
@@ -169,6 +169,21 @@ class DecisionesController extends Controller
                     'selected' => ($item->ano == $hoy->year && $item->mes == $hoy->month)
                 ];
             });
+
+        // =================================================================
+        // CÁLCULO DEL MES ACTUAL SELECCIONADO PARA MOSTRAR EN LA VISTA
+        // =================================================================
+        $mesSeleccionado = $request->input('mes', null); // Obtiene el valor del query param 'mes'
+
+        if ($mesSeleccionado) {
+            list($ano, $mes) = explode('-', $mesSeleccionado);
+            $fechaSeleccionada = Carbon::create($ano, $mes, 1);
+            $mesActualTopN = $fechaSeleccionada->isoFormat('MMMM YYYY');
+        } else {
+            // Si no hay mes seleccionado, usa el valor por defecto (mes actual)
+            $mesActualTopN = $hoy->isoFormat('MMMM YYYY');
+        }
+        // =================================================================
 
         return view('toma-decisiones.decision-recurso', [
             'usoRecursosPorInspector' => $usoRecursosPorInspector,
@@ -224,7 +239,9 @@ class DecisionesController extends Controller
     {
         // 1. Obtener todas las asignaciones que ya han sido devueltas o que están activas.
         // Contar cuántas veces se ha asignado un recurso por inspector.
-        $asignaciones = asignacion_recursos::with(['usuario', 'recurso'])
+        $asignaciones = asignacion_recursos::whereHas('recurso', function ($query) {
+            $query->whereNull('deleted_at');
+        })
             ->get()
             ->groupBy('id_user');
 
@@ -306,7 +323,10 @@ class DecisionesController extends Controller
             'recursos.nombre_rec',
             DB::raw('COUNT(asignacion_recursos.id_asignacion) as conteo')
         )
-            ->join('recursos', 'asignacion_recursos.id_recurso', '=', 'recursos.id_recurso')
+            ->join('recursos', function ($join) {
+                $join->on('asignacion_recursos.id_recurso', '=', 'recursos.id_recurso')
+                    ->whereNull('recursos.deleted_at'); // Excluir recursos eliminados
+            })
             ->whereBetween('fecha_asignacion', [$start, $end])
             ->groupBy('recursos.nombre_rec')
             ->orderBy('conteo', 'desc')

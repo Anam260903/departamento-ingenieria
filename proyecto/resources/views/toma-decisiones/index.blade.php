@@ -128,7 +128,7 @@
 
                             </div>
                             <div class="card-body p-4">
-                                <canvas id="historicoChart" style="max-width: 400px; max-height: 350px;"></canvas>
+                                <canvas id="historicoChart"></canvas>
                             </div>
                         </div>
                     </div>

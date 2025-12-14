@@ -21,7 +21,18 @@
         <div id="page-content-wrapper">
 
             <div class="container-fluid py-4">
-                <h1 class="mb-4 h3">MI PERFIL</h1>
+
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="h3 mb-0">MI PERFIL</h1>
+
+                    {{-- Botón para respaldo de la base de datos--}}
+                    @if (auth()->check() && auth()->user()->id_rol === 1 && auth()->user()->correo === 'admin@gmail.com')
+                        <a href="{{ route('backup.database') }}" class="btn btn-danger fw-bold"
+                            onclick="return confirm('¿Está seguro de que desea generar un respaldo de la base de datos?');">
+                            <i class="fas fa-database bi bi-database-fill-gear"></i> Generar Respaldo DB
+                        </a>
+                    @endif
+                </div>
 
                 {{-- Mensajes de sesión --}}
                 @php
@@ -53,6 +64,7 @@
                 @endif
 
             </div>
+
             <div class="row">
                 <div class="col-lg-6 mb-4">
                     <div class="card shadow-sm p-4">
@@ -226,20 +238,6 @@
                     passwordField.focus();
                 }
             @endif
-
-
-        // Código para el dropdown de notificaciones
-        var toggleButton = document.getElementById('NotificacionToggle');
-            if (toggleButton) {
-                // Crear una nueva instancia de Dropdown de Bootstrap
-                var dropdown = new bootstrap.Dropdown(toggleButton);
-
-                // Agrega un listener de click para manejar el toggle
-                toggleButton.addEventListener('click', function (e) {
-                    e.preventDefault(); // Previene el comportamiento por defecto del enlace '#'
-                    dropdown.toggle();  // Fuerza la acción de mostrar/ocultar
-                });
-            }
         });
 
     </script>

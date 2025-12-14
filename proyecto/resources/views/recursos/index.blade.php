@@ -189,6 +189,9 @@
                             </tbody>
                         </table>
                     </div>
+                    <div class="d-flex justify-content-center mt-4">
+                        {{ $personal->appends(request()->input())->links() }}
+                    </div>
                 </div>
             </div>
         </div>

@@ -67,8 +67,8 @@ class InspeccionesController extends Controller
             $query->whereDate('fecha_insp', '>=', $request->fecha_inicio);
         }
 
-        // 5. Ejecutar la consulta y ordenar (las más recientes primero)
-        $inspecciones = $query->orderBy('fecha_insp', 'desc')->get();
+        // 5. Ejecutar la consulta, ordenar y aplicar paginación
+        $inspecciones = $query->orderBy('fecha_insp', 'desc')->paginate(10);
 
         // 6. Pasar los resultados a la vista
         return view('inspecciones.index', compact('inspecciones'));

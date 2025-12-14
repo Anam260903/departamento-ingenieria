@@ -91,9 +91,9 @@
     <script src="{{ asset('js/dashboard.js') }}"></script>
 
     <script>
-        // JSON de cálculos pasado desde el controlador
         const calculosData = {!! $calculosJson !!};
     </script>
+    
     <script src="{{ asset('js/estimaciones.js') }}"></script>
     
 

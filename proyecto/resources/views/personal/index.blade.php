@@ -47,7 +47,7 @@
                         <div class="col-lg-4 col-md-6 mb-3 mb-lg-0">
                             <a href="{{ route('personal.exportar.pdf') }}" class="btn btn-danger text-nowrap w-auto"
                                 title="Descargar PDF General del Personal">
-                            <i class="bi bi-file-earmark-pdf me-2"></i>Descargar 
+                                <i class="bi bi-file-earmark-pdf me-2"></i>Descargar
                             </a>
                         </div>
 
@@ -152,12 +152,12 @@
                                         {{-- Estado (Activo/Inactivo) --}}
                                         <td class="align-middle text-center text-sm">
                                             @php
-    $estado_numerico = $user->estado_user;
+                                                $estado_numerico = $user->estado_user;
 
-    $estado = ($estado_numerico == 1) ? 'ACIVO' : 'INACTIVO';
+                                                $estado = ($estado_numerico == 1) ? 'ACIVO' : 'INACTIVO';
 
-    $esActivo = ($estado_numerico === '1');
-    $badgeClass = $esActivo ? 'bg-success' : 'bg-secondary';
+                                                $esActivo = ($estado_numerico === '1');
+                                                $badgeClass = $esActivo ? 'bg-success' : 'bg-secondary';
                                             @endphp
                                             <span class="badge {{ $badgeClass }} text-white text-uppercase">
                                                 {{ $estado }}
@@ -175,7 +175,7 @@
                                                     @method('PATCH')
                                                     <button type="submit"
                                                         class="btn btn-sm btn-icon-only 
-                                                                                                                                                                                                                {{ $esActivo ? 'btn-warning' : 'btn-success' }}"
+                                                                                                                                                                                                                        {{ $esActivo ? 'btn-warning' : 'btn-success' }}"
                                                         data-bs-toggle="tooltip" data-bs-placement="top"
                                                         title="{{ $esActivo ? 'Desactivar Personal' : 'Activar Personal' }}">
                                                         <i class="bi {{ $esActivo ? 'bi-lock' : 'bi-unlock' }}"></i>
@@ -214,6 +214,9 @@
                                 @endforeach
                             </tbody>
                         </table>
+                    </div>
+                    <div class="d-flex justify-content-center mt-4">
+                        {{ $personal->appends(request()->input())->links() }}
                     </div>
                 </div>
             </div>
@@ -300,49 +303,14 @@
         <script src="{{ asset('js/dashboard.js') }}"></script>
         <script>
             const API_ROUTES = {
-                fetchInspections: '/personal/:userId/get-inspecciones', // Usar placeholder
+                fetchInspections: '/personal/:userId/get-inspecciones',
                 postInspection: '/personal/:userId/asignar-inspeccion',
-                fetchResources: '{{ route('personal.getRecursosDisponibles') }}', // Ruta sin parámetros
+                fetchResources: '{{ route('personal.getRecursosDisponibles') }}',
                 postResource: '/personal/:userId/asignar-recurso',
+                pdfFilterBase: '{{ route('personal.exportar.pdf.filtro', ['profesion' => '__PROFESION__']) }}'
             };
         </script>
         <script src="{{ asset('js/personal.js') }}"></script>
-
-        @push('scripts')
-            <script>
-                document.addEventListener('DOMContentLoaded', function () {
-                    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-                    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-                        return new bootstrap.Tooltip(tooltipTriggerEl)
-                    })
-                });
-            </script>
-        @endpush
-
-        {{-- Script para manejar la URL dinámica --}}
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const selectElement = document.getElementById('profesion-select');
-                const formElement = document.getElementById('form-pdf-filtro');
-                const downloadButton = document.getElementById('btn-descargar-filtro');
-
-                // Función que se ejecuta al cambiar la selección
-                selectElement.addEventListener('change', function () {
-                    const selectedProfesion = this.value;
-
-                    if (selectedProfesion) {
-                        const url = '{{ route('personal.exportar.pdf.filtro', ['profesion' => '__PROFESION__']) }}';
-
-                        // Reemplazar el placeholder por la profesión seleccionada en la acción del formulario
-                        formElement.action = url.replace('__PROFESION__', selectedProfesion);
-                        downloadButton.disabled = false; // Habilita el botón de descarga
-
-                    } else {
-                        downloadButton.disabled = true; // Deshabilita si no hay selección
-                    }
-                });
-            });
-        </script>
 
         @include('components._session-timeout')
 </body>
