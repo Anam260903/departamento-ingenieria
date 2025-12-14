@@ -54,7 +54,7 @@ class InformesController extends BaseController
             });
         }
 
-         // Ejecutar consulta y aplicar paginación
+        // Ejecutar consulta y aplicar paginación
         $informes = $query
             ->orderBy('fecha_inf', 'desc')
             ->paginate(10);
@@ -122,18 +122,26 @@ class InformesController extends BaseController
      */
     public function storeStep1(Request $request)
     {
-        // 1. Validación de los datos del Paso 1
-        $validatedData = $request->validate([
+        // 1. Obtener la inspección antes de la validación
+        $request->validate([
             'id_insp' => [
                 'required',
                 'integer',
-                // Asegurar que la inspección exista
                 Rule::exists('inspecciones', 'id_insp'),
-                // Asegurar que NO haya ya un informe asociado (Creación inicial)
                 Rule::unique('informes', 'id_insp')
             ],
+        ]);
+
+        // Obtener la inspección para acceder a su fecha
+        $inspeccion = Inspeccion::findOrFail($request->id_insp);
+        $fechaInspeccion = $inspeccion->fecha_insp; // Obtener la fecha de la inspección
+
+
+        // 2. Validación de los datos del Paso 1
+        $validatedData = $request->validate([
+
             // Datos del Informe
-            'fecha_inf' => 'required|date',
+            'fecha_inf' => 'required|date|after_or_equal:' . $fechaInspeccion,
             'comunidad' => 'required|string|max:50',
 
             // Datos del Propietario - Se actualizarán si cambian
@@ -150,22 +158,27 @@ class InformesController extends BaseController
 
             // Datos de la Vivienda - Se actualizarán si cambian
             'direccion' => 'required|string|max:100',
+        ], [
+            // Mensaje personalizado para la regla after_or_equal
+            'fecha_inf.after_or_equal' => 'La fecha del informe debe ser igual o posterior a la fecha de la inspección (' . $fechaInspeccion . ').',
+            // Mensaje personalizado para la Regex
+            'propietario_cedula.regex' => 'La cédula ingresada no cumple con el formato válido. Por favor, ingrese un número de cédula real.',
         ]);
 
-        // 2. Inicializar la variable informe
+        // 3. Inicializar la variable informe
         $informe = null;
 
-        // 3. Usar una transacción para crear el informe y actualizar las tablas relacionadas
+        // 4. Usar una transacción para crear el informe y actualizar las tablas relacionadas
         try {
             // Usamos una transacción para asegurar que todas las operaciones se completen
             $informe = DB::transaction(function () use ($validatedData) {
 
-                // 2. Obtener la inspección y sus relaciones para obtener IDs
+                // 1. Obtener la inspección y sus relaciones para obtener IDs
                 $inspeccion = Inspeccion::with('vivienda.propietario')->findOrFail($validatedData['id_insp']);
                 $vivienda = $inspeccion->vivienda;
                 $propietario = $vivienda->propietario;
 
-                // 3. Buscar o crear/actualizar el propietario
+                // 2. Buscar o crear/actualizar el propietario
                 $propietario = Propietario::updateOrCreate([
                     'cedula_propie' => $validatedData['propietario_cedula'],
                     'nombre_propie' => $validatedData['propietario_nombre'],
@@ -173,15 +186,24 @@ class InformesController extends BaseController
                     'telefono' => $validatedData['propietario_telefono'],
                 ]);
 
-                // 4. Buscar o crear la vivienda
-                $vivienda = Vivienda::firstOrCreate([
-                    'direccion' => $validatedData['direccion'],
-                    'id_propie' => $propietario->id_propie,
-                ]);
+                // 3. Actualizar la vivienda existente
+                if ($vivienda) {
+                    // Si la vivienda ya existe, la actualizamos
+                    $vivienda->update([
+                        'direccion' => $validatedData['direccion'],
+                        'id_propie' => $propietario->id_propie, // Asegurar que apunte al propietario actualizado
+                    ]);
+                } else {
+                    // FALLBACK: Si por alguna razón la inspección no tiene vivienda, la creamos
+                    $vivienda = Vivienda::create([
+                        'direccion' => $validatedData['direccion'],
+                        'id_propie' => $propietario->id_propie,
+                    ]);
+                }
 
                 $inspeccion->update(['id_viv' => $vivienda->id_viv]);
 
-                // 5. Crear el registro inicial del informe
+                // 4. Crear el registro inicial del informe
                 return Informe::create([
                     'id_insp' => $validatedData['id_insp'],
                     'fecha_inf' => $validatedData['fecha_inf'],
@@ -189,7 +211,7 @@ class InformesController extends BaseController
                 ]);
             });
 
-            // 6. Redirigir al siguiente paso
+            // 5. Redirigir al siguiente paso
             if ($informe) {
 
                 $redirectUrl = route('informes.edit.step2', ['id_inf' => $informe->id_inf]);
@@ -229,6 +251,15 @@ class InformesController extends BaseController
      */
     public function updateStep1(Request $request, $id_inf)
     {
+        // A. Buscar el informe, inspección, vivienda y propietario
+        $informe = Informe::with('inspeccion.vivienda.propietario')->findOrFail($id_inf);
+
+        // Autorización: Verifica si el usuario puede actualizar los datos
+        $this->authorize('update', $informe);
+
+        // B. Obtener la fecha de la inspección asociada para la validación
+        $fechaInspeccion = $informe->inspeccion->fecha_insp;
+
         // 1. Validación de datos
         $validatedData = $request->validate([
             'id_insp' => [
@@ -237,7 +268,7 @@ class InformesController extends BaseController
                 Rule::exists('inspecciones', 'id_insp') // Solo verificar que existe
             ],
             // Datos del Informe
-            'fecha_inf' => 'required|date',
+            'fecha_inf' => 'required|date|after_or_equal:' . $fechaInspeccion,
             'comunidad' => 'required|string|max:100',
 
             // Datos del Propietario - Se actualizarán
@@ -254,49 +285,62 @@ class InformesController extends BaseController
 
             // Datos de la Vivienda - Se actualizarán
             'direccion' => 'required|string|max:100',
+        ], [
+            // Mensaje personalizado para la fecha
+            'fecha_inf.after_or_equal' => 'La fecha del informe debe ser igual o posterior a la fecha de la inspección (' . $fechaInspeccion . ').',
+            'propietario_cedula.regex' => 'La cédula ingresada no cumple con el formato válido. Por favor, ingrese un número de cédula real.',
         ]);
 
         try {
             // 2. Usar una transacción para actualizar múltiples tablas
-            DB::transaction(function () use ($id_inf, $validatedData) {
+            DB::transaction(function () use ($informe, $validatedData) {
 
-                // A. Buscar el informe existente y sus relaciones
-                $informe = Informe::with('inspeccion.vivienda.propietario')->findOrFail($id_inf);
-                // Autorización: Verifica si el usuario puede actualizar los datos
-                $this->authorize('update', $informe); // Pasa el modelo para la verificación de pertenencia
-                $vivienda = $informe->inspeccion->vivienda;
-                $propietario = $vivienda->propietario;
+                // C. Obtener referencias de relaciones
+                $inspeccion = $informe->inspeccion;
+                $vivienda = $inspeccion->vivienda;
 
-                // B. Buscar o crear/actualizar el propietario
-                $propietario = Propietario::updateOrCreate([
-                    'cedula_propie' => $validatedData['propietario_cedula'],
-                    'nombre_propie' => $validatedData['propietario_nombre'],
-                    'apellido_propie' => $validatedData['propietario_apellido'],
-                    'telefono' => $validatedData['propietario_telefono'],
-                ]);
+                // D. Actualizar o crear el Propietario
+                $propietario = Propietario::updateOrCreate(
+                    ['cedula_propie' => $validatedData['propietario_cedula']],
+                    [
+                        'nombre_propie' => $validatedData['propietario_nombre'],
+                        'apellido_propie' => $validatedData['propietario_apellido'],
+                        'telefono' => $validatedData['propietario_telefono'],
+                    ]
+                );
 
-                // C. Buscar o crear/actualizar la Vivienda
-                $vivienda = Vivienda::firstOrCreate([
-                    'direccion' => $validatedData['direccion'],
-                ]);
+                // E. Actualizar la vivienda existente
+                if ($vivienda) {
+                    $vivienda->update([
+                        'direccion' => $validatedData['direccion'],
+                        'id_propie' => $propietario->id_propie, // Aseguramos que apunte al propietario actualizado
+                    ]);
+                } else {
+                    // Fallback: Si no hay vivienda asociada, la creamos
+                    $vivienda = Vivienda::create([
+                        'direccion' => $validatedData['direccion'],
+                        'id_propie' => $propietario->id_propie,
+                    ]);
+                }
 
-                $informe->inspeccion->update(['id_viv' => $vivienda->id_viv]);
+                // F. Asegurar que la inspección apunte a la vivienda correcta
+                $inspeccion->update(['id_viv' => $vivienda->id_viv]);
 
-                // D. Actualizar el registro del Informe
+                // G. Actualizar el registro del Informe
                 $informe->update([
                     'fecha_inf' => $validatedData['fecha_inf'],
                     'comunidad' => $validatedData['comunidad'],
-                    // El id_insp ya no se actualiza, solo se modifica la fecha y comunidad
                 ]);
             });
 
             // 3. Redirigir al siguiente paso (Paso 2)
-            return redirect()->route('informes.edit.step2', $id_inf)
+            return redirect()->route('informes.edit.step2', $informe->id_inf)
                 ->with('success', 'Paso 1: Datos generales actualizados. Continúe con el paso 2.');
 
             // En caso de error
         } catch (\Exception $e) {
-            return back()->withInput()->with('error', 'Error al actualizar los datos generales: ' . $e->getMessage());
+            // Manejo de errores
+            return back()->withInput()->with('error', 'Error al actualizar los datos generales. Intente de nuevo. Detalle: ' . $e->getMessage());
         }
     }
 

@@ -77,7 +77,7 @@
                     <div class="col-auto">
                         {{-- Verifica si el usuario autenticado tiene id_rol igual a 1 (Administrador) --}}
                         @if (auth()->check() && auth()->user()->id_rol === 1)
-                            <a href="{{ route('recursos.assignments.history') }}" class="btn btn-primary text-nowrap">
+                            <a href="{{ route('recursos.assignments.history') }}" class="btn btn-success text-nowrap">
                                 <i class="bi bi-bookmark-check me-2"></i>Asignaciones
                             </a>
                         @endif
@@ -204,7 +204,7 @@
                         </table>
                     </div>
                     <div class="d-flex justify-content-center mt-4">
-                        {{ $personal->appends(request()->input())->links() }}
+                        {{ $recursos->appends(request()->input())->links() }}
                     </div>
                 </div>
             </div>

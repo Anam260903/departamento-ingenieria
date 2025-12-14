@@ -82,7 +82,7 @@ $formAction = $isEditing
                                 <div class="row mb-6">
                                     {{-- Campo: Fecha --}}
                                     <div class="col-md-6 mb-4">
-                                        <label for="fecha_inf" class="form-label">Fecha de la Inspección</label>
+                                        <label for="fecha_inf" class="form-label">Fecha del Informe</label>
                                         <input type="date" class="form-control @error('fecha_inf') is-invalid @enderror"
                                             id="fecha_inf" name="fecha_inf"
                                             value="{{ old('fecha_inf', $informe->fecha_inf ?? \Carbon\Carbon::now()->format('Y-m-d')) }}"

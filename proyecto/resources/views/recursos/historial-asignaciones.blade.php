@@ -51,7 +51,7 @@
                             @endforeach
                         </ul>
                     </div>
-                @endif 
+                @endif
 
                 <div class="d-flex justify-content-end mb-3 gap-2">
                     <div class="col-auto">
@@ -72,13 +72,14 @@
 
                 {{-- Filtros --}}
                 <div class=" card shadow-sm p-4 mb-4">
-                    <form action="{{ route('recursos.assignments.history') }}" method="GET">
+                    <form action="{{ route('recursos.assignments.history') }}" method="GET" id="filtroForm">
                         <div class="row g-3">
 
                             {{-- Filtro por palabra clave --}}
                             <div class="col-md-6 col-lg-3">
                                 <input type="text" class="form-control" name="keyword"
-                                    placeholder="Nombre Recurso o Usuario" value="{{ request('keyword') }}">
+                                    title="Buscar por recurso o usuario" placeholder="Nombre Recurso o Usuario"
+                                    value="{{ request('keyword') }}">
                             </div>
 
                             {{-- Filtro por fecha de asignación (Inicio) --}}
@@ -91,6 +92,13 @@
                             <div class="col-md-6 col-lg-2">
                                 <input type="date" class="form-control" name="fecha_devolucion_end"
                                     title="Fecha de Devolución (Hasta)" value="{{ request('fecha_devolucion_end') }}">
+
+                                {{-- Muestra el error de validación del servidor --}}
+                                @error('fecha_devolucion_end')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
                             </div>
 
                             {{-- Filtro por estado (Pendiente/Devuelto) --}}
@@ -204,32 +212,121 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="modalFiltroAsignacionesLabel">Filtrar Historial de Asignaciones</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
-                <form action="{{ route('recursos.asignaciones.exportar.pdf.fecha') }}" method="GET">
+                <form action="{{ route('recursos.asignaciones.exportar.pdf.fecha') }}" method="GET"
+                    id="exportarPDFForm">
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="fecha_desde" class="form-label">Fecha Desde:</label>
-                            <input type="date" class="form-control" id="fecha_desde" name="fecha_desde" required>
+                            {{-- APLICACIÓN DEL ERROR Y CLASE is-invalid --}}
+                            <input type="date" class="form-control @error('fecha_desde') is-invalid @enderror"
+                                id="fecha_desde" name="fecha_desde" required value="{{ old('fecha_desde') }}">
+                            @error('fecha_desde')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="mb-3">
                             <label for="fecha_hasta" class="form-label">Fecha Hasta:</label>
-                            <input type="date" class="form-control" id="fecha_hasta" name="fecha_hasta" required>
+                            {{-- APLICACIÓN DEL ERROR Y CLASE is-invalid con after_or_equal --}}
+                            <input type="date" class="form-control @error('fecha_hasta') is-invalid @enderror"
+                                id="fecha_hasta" name="fecha_hasta" required value="{{ old('fecha_hasta') }}">
+                            @error('fecha_hasta')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-primary">Descargar PDF Filtrado</button>
                     </div>
                 </form>
-                </div> </div>
             </div>
+        </div>
+    </div>
 
-            <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
-            <script src="{{ asset('js/dashboard.js') }}"></script>
-            <script src="{{ asset('js/recursos.js') }}"></script>
+    <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('js/dashboard.js') }}"></script>
+    <script src="{{ asset('js/recursos.js') }}"></script>
 
-            @include('components._session-timeout')
+    <script>
+        $(document).ready(function () {
+            // Escucha el evento de envío del formulario de filtros
+            $('#filtroForm').on('submit', function (e) {
+                var fechaAsignacion = $('input[name="fecha_asignacion_start"]').val();
+                var fechaDevolucion = $('input[name="fecha_devolucion_end"]').val();
+
+                // Solo validamos si ambas fechas tienen un valor
+                if (fechaAsignacion && fechaDevolucion) {
+                    // Convertir las fechas a objetos Date para comparación
+                    var start = new Date(fechaAsignacion);
+                    var end = new Date(fechaDevolucion);
+
+                    // Comparar. Si la fecha de devolución es menor que la de asignación, cancela el envío.
+                    if (end < start) {
+                        e.preventDefault(); // Detiene el envío del formulario
+
+                        // Muestra un mensaje de error al usuario (puedes usar alertas, tooltips de Bootstrap, etc.)
+                        alert('⚠️ Error: La Fecha de Devolución no puede ser anterior a la Fecha de Asignación.');
+
+                        // Enfoca el campo de error
+                        $('input[name="fecha_devolucion_end"]').focus();
+
+                        return false;
+                    }
+                }
+            });
+
+            $('input[name="fecha_asignacion_start"]').on('change', function () {
+                var minDate = $(this).val();
+                $('input[name="fecha_devolucion_end"]').attr('min', minDate);
+            });
+
+            var currentStartDate = $('input[name="fecha_asignacion_start"]').val();
+            if (currentStartDate) {
+                $('input[name="fecha_devolucion_end"]').attr('min', currentStartDate);
+            }
+
+            // Verifica si hay algún error de validación para los campos del modal
+            @if ($errors->has('fecha_desde') || $errors->has('fecha_hasta'))
+                var modal = new bootstrap.Modal(document.getElementById('modalFiltroAsignaciones'));
+                modal.show();
+            @endif
+
+           
+            // Validación de rango de fechas para el modal
+            $('#exportarPDFForm').on('submit', function (e) {
+                var fechaDesde = $('#fecha_desde').val();
+                var fechaHasta = $('#fecha_hasta').val();
+
+                if (fechaDesde && fechaHasta) {
+                    var start = new Date(fechaDesde);
+                    var end = new Date(fechaHasta);
+
+                    if (end < start) {
+                        e.preventDefault(); // Detiene el envío
+
+                        alert('⚠️ La "Fecha Hasta" no puede ser anterior a la "Fecha Desde".');
+
+                        $('#fecha_hasta').focus();
+                        return false;
+                    }
+                }
+            });
+            
+            $('#fecha_desde').on('change', function () {
+                var minDate = $(this).val();
+                $('#fecha_hasta').attr('min', minDate);
+            });
+
+            var currentStartDate = $('#fecha_desde').val();
+            if (currentStartDate) {
+                $('#fecha_hasta').attr('min', currentStartDate);
+            }
+        });
+    </script>
+
+    @include('components._session-timeout')
 </body>
 
 </html>

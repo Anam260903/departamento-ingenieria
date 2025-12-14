@@ -45,7 +45,7 @@
                             @endforeach
                         </ul>
                     </div>
-                @endif 
+                @endif
 
                 <div class="card shadow-sm p-4">
                     <form action="{{ route('inspecciones.store') }}" method="POST">
@@ -57,8 +57,11 @@
                             {{-- Fecha --}}
                             <div class="col-md-6 mb-3">
                                 <label for="fecha" class="form-label">Fecha</label>
+                                @php
+                                    $minDate = \Carbon\Carbon::now()->subDays(30)->toDateString();
+                                @endphp
                                 <input type="date" class="form-control @error('fecha') is-invalid @enderror" id="fecha"
-                                    name="fecha" value="{{ old('fecha') }}" required>
+                                    name="fecha" min="{{ $minDate }}" value="{{ old('fecha') }}" required>
                                 @error('fecha')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -114,8 +117,8 @@
                                     class="form-control @error('propietario_cedula') is-invalid @enderror"
                                     id="propietario_cedula" name="propietario_cedula"
                                     placeholder="Cédula del propietario"
-                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57" minlength="7" maxlength="8"
-                                    value="{{ old('propietario_cedula') }}" required>
+                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57" minlength="7"
+                                    maxlength="8" value="{{ old('propietario_cedula') }}" required>
                                 @error('propietario_cedula')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -127,8 +130,8 @@
                                     class="form-control @error('propietario_telefono') is-invalid @enderror"
                                     id="propietario_telefono" name="propietario_telefono"
                                     placeholder="Teléfono del propietario"
-                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57" minlength="11" maxlength="11"
-                                    value="{{ old('propietario_telefono') }}" required>
+                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57" minlength="11"
+                                    maxlength="11" value="{{ old('propietario_telefono') }}" required>
                                 @error('propietario_telefono')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -160,7 +163,7 @@
                         <div class="d-flex justify-content-end gap-2">
                             {{-- Botón Cancelar: Vuelve al listado de inspecciones --}}
                             <a href="{{ route('inspecciones.index') }}" class="btn btn-secondary">Cancelar</a>
-                        
+
                             {{-- Botón Guardar --}}
                             <button type="submit" class="btn btn-primary w-auto">Registrar Inspección</button>
                         </div>

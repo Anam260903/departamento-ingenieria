@@ -29,14 +29,14 @@
                 @php
                     $mensaje = session('status') ?? session('success');
                 @endphp
-                
+
                 @if($mensaje)
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         {{ $mensaje }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
-                
+
                 @if ($errors->any())
                     <div class="alert alert-danger">
                         <ul>
@@ -58,9 +58,13 @@
                         <div class="row mb-4">
                             <div class="col-md-6 mb-3">
                                 <label for="fecha" class="form-label">Fecha</label>
+                                @php
+                                    $minDate = \Carbon\Carbon::now()->subDays(30)->toDateString();
+                                @endphp
                                 {{-- Prellenar con la fecha actual o el valor anterior si falló la validación --}}
                                 <input type="date" class="form-control @error('fecha') is-invalid @enderror" id="fecha"
-                                    name="fecha" value="{{ old('fecha', $inspeccion->fecha_insp) }}" required>
+                                    name="fecha" min="{{ $minDate }}"
+                                    value="{{ old('fecha', $inspeccion->fecha_insp) }}" required>
                                 @error('fecha')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -119,7 +123,8 @@
                                     class="form-control @error('propietario_cedula') is-invalid @enderror"
                                     id="propietario_cedula" name="propietario_cedula"
                                     placeholder="Cédula del propietario"
-                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57" minlength="7" maxlength="8"
+                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57" minlength="7"
+                                    maxlength="8"
                                     value="{{ old('propietario_cedula', $inspeccion->vivienda->propietario->cedula_propie ?? '') }}"
                                     required>
                                 @error('propietario_cedula')
@@ -133,7 +138,8 @@
                                     class="form-control @error('propietario_telefono') is-invalid @enderror"
                                     id="propietario_telefono" name="propietario_telefono"
                                     placeholder="Teléfono del propietario"
-                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57" minlength="11" maxlength="11"
+                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57" minlength="11"
+                                    maxlength="11"
                                     value="{{ old('propietario_telefono', $inspeccion->vivienda->propietario->telefono ?? '') }}"
                                     required>
                                 @error('propietario_telefono')

@@ -25,14 +25,18 @@ class NotificacionController extends Controller
     }
 
     /**
-     * Muestra la lista completa de notificaciones
+     * Muestra la lista completa de notificaciones, limitada a los últimos 50 registros.
      */
     public function index()
     {
         $notificaciones = Notificacion::where('id_user', Auth::id())
+            // 1. Ordena los registros: no leídas primero, luego por fecha descendente
             ->orderBy('leida', 'asc')
             ->orderBy('created_at', 'desc')
-            ->paginate(10); // Paginación para ver todas
+            // 2. Limita la consulta a los primeros 50 registros de ese resultado
+            ->take(50)
+            // 3. Aplicar paginación
+            ->paginate(10);
 
         return view('notificaciones', compact('notificaciones'));
     }

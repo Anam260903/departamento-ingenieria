@@ -69,6 +69,15 @@ class RecursosController extends Controller
         // AUTORIZACIÓN: Ambos roles tienen acceso a este método.
         $this->authorize('viewHistory', Recursos::class);
 
+        // Validación de filtros
+        $request->validate([
+            'fecha_asignacion_start' => 'nullable|date',
+            'fecha_devolucion_end' => 'nullable|date|after_or_equal:fecha_asignacion_start',
+        ], [
+            // Mensaje de error personalizado
+            'fecha_devolucion_end.after_or_equal' => 'La Fecha de Devolución no puede ser anterior a la Fecha de Asignación.',
+        ]);
+
         $user = Auth::user();
 
         // 1. Inicializar la consulta con las relaciones necesarias

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 use App\Models\Inspeccion;
 use App\Models\Propietario;
 use App\Models\Vivienda;
@@ -26,7 +27,7 @@ class InspeccionesController extends Controller
         $user = Auth::user();
 
         // 1. Inicializar la consulta con las relaciones necesarias
-        $query = Inspeccion::with('usuario','vivienda.propietario');
+        $query = Inspeccion::with('usuario', 'vivienda.propietario');
 
         // Lógica de autorización (Filtro en listado)
 
@@ -97,9 +98,12 @@ class InspeccionesController extends Controller
      */
     public function store(Request $request)
     {
+        // Calcula la fecha mínima permitida
+        $minDate = Carbon::now()->subDays(30)->toDateString();
+
         // 1. Validar los datos del formulario
         $request->validate([
-            'fecha' => 'required|date',
+            'fecha' => 'required|date|after_or_equal:' . $minDate,
             'propietario_nombre' => ['required', 'string', 'max:30', 'regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/'],
             'propietario_apellido' => ['required', 'string', 'max:30', 'regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/'],
             'propietario_cedula' => [
@@ -115,6 +119,7 @@ class InspeccionesController extends Controller
             'observacion' => 'nullable|string|max:250',
         ], [
             // Mensaje personalizado para la Regex
+            'fecha.after_or_equal' => 'La fecha de la inspección no puede ser anterior al ' . Carbon::parse($minDate)->format('d/m/Y') . '. Solo se permiten fechas de hace 30 días como máximo.',
             'propietario_cedula.regex' => 'La cédula ingresada no cumple con el formato válido. Por favor, ingrese un número de cédula real.',
         ]);
 
@@ -184,11 +189,14 @@ class InspeccionesController extends Controller
         // Autorización: Verifica si el usuario puede actualizar la inspección
         $this->authorize('update', $inspeccion);
 
+        // Lógica para la validación de la fecha (hace 30 días)
+        $minDate = Carbon::now()->subDays(30)->toDateString();
+
         $vivienda = $inspeccion->vivienda;
         $propietario = $vivienda->propietario;
 
         $request->validate([
-            'fecha' => 'required|date',
+            'fecha' => 'required|date|after_or_equal:' . $minDate,
             'propietario_nombre' => ['required', 'string', 'max:30', 'regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/'],
             'propietario_apellido' => ['required', 'string', 'max:30', 'regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/'],
             // Validar unique excluyendo el propio propietario
@@ -206,6 +214,7 @@ class InspeccionesController extends Controller
             'observacion' => 'nullable|string|max:250',
         ], [
             // Mensaje personalizado para la Regex
+            'fecha.after_or_equal' => 'La fecha de la inspección no puede ser anterior al ' . Carbon::parse($minDate)->format('d/m/Y') . '. Solo se permiten fechas de hace 30 días como máximo.',
             'propietario_cedula.regex' => 'La cédula ingresada no cumple con el formato válido. Por favor, ingrese un número de cédula real.',
         ]);
 
@@ -219,11 +228,22 @@ class InspeccionesController extends Controller
                 'telefono' => $request->propietario_telefono,
             ]);
 
-            // 3. Buscar o crear la vivienda
-            $vivienda = Vivienda::firstOrCreate([
-                'direccion' => $request->direccion,
-                'id_propie' => $propietario->id_propie,
-            ]);
+            // 3. Accedemos a la vivienda que está asociada actualmente a la inspección
+            $vivienda = $inspeccion->vivienda;
+
+            if ($vivienda) {
+                // Actualizamos la dirección y el ID del propietario (si el propietario cambió)
+                $vivienda->update([
+                    'direccion' => $request->direccion,
+                    'id_propie' => $propietario->id_propie, // Aseguramos que la FK apunte al propietario correcto
+                ]);
+            } else {
+                // En un caso de error extremo donde no haya vivienda, la creamos (fallback)
+                $vivienda = Vivienda::create([
+                    'direccion' => $request->direccion,
+                    'id_propie' => $propietario->id_propie,
+                ]);
+            }
 
             // 4. Actualizar la Inspección
             $inspeccion->update([

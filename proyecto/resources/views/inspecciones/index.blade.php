@@ -114,9 +114,9 @@
 
                             {{-- Filtro por fecha --}}
                             <div class="col-md-3">
-                                <label for="fecha_inicio" class="form-label visually-hidden">Fecha Desde</label>
+                                <label for="fecha_inicio" class="form-label visually-hidden">Fecha</label>
                                 <input type="date" class="form-control" id="fecha_inicio" name="fecha_inicio"
-                                    title="Fecha Desde" value="{{ request('fecha_inicio') }}">
+                                    title="Fecha" value="{{ request('fecha_inicio') }}">
                             </div>
 
                             {{-- Botones de acción --}}
