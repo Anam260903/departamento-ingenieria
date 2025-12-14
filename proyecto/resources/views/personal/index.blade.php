@@ -31,12 +31,26 @@
                     </div>
                 @endif
 
-                {{-- Mensajes de éxito o error --}}
-                @if (session('success'))
-                    <div class="alert alert-success">{{ session('success') }}</div>
+                {{-- Mensajes de sesión --}}
+                @php
+                    $mensaje = session('status') ?? session('success');
+                @endphp
+
+                @if($mensaje)
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ $mensaje }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
                 @endif
-                @if (session('error'))
-                    <div class="alert alert-danger">{{ session('error') }}</div>
+
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
                 @endif
 
                 <div class="card p-3 mb-4">
@@ -301,6 +315,7 @@
 
         <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
         <script src="{{ asset('js/dashboard.js') }}"></script>
+        <script src="{{ asset('js/app.js') }}"></script>
         <script>
             const API_ROUTES = {
                 fetchInspections: '/personal/:userId/get-inspecciones',

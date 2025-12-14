@@ -18,7 +18,7 @@
 
             <div class="col-md-5 left-panel-register d-none d-md-flex">
                 <div class="logo-container">
-                    <img src="{{ asset('images/logo-corvisucre.png') }}"
+                    <img src="{{ asset('images/logo3.jpg') }}"
                         alt="Logo Departamento de Ingeniería CORVISUCRE">
                 </div>
             </div>
@@ -26,6 +26,7 @@
             <div class="col-md-7 right-panel-register">
                 <div class="register-card">
                     <h2 class="text-center mb-3">¡Bienvenido!</h2>
+                    <h5 class="text-center mb-3">DEPARTAMENTO DE INGENIERÍA</h5>
                     <h5 class="text-center mb-4 text-secondary">REGISTRO DE USUARIO</h5>
 
                     @if ($errors->any())

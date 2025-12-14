@@ -26,7 +26,7 @@ class InspeccionesController extends Controller
         $user = Auth::user();
 
         // 1. Inicializar la consulta con las relaciones necesarias
-        $query = Inspeccion::with('vivienda.propietario');
+        $query = Inspeccion::with('usuario','vivienda.propietario');
 
         // Lógica de autorización (Filtro en listado)
 
@@ -51,6 +51,12 @@ class InspeccionesController extends Controller
                 $q->orWhereHas('vivienda.propietario', function ($q_prop) use ($keyword) {
                     $q_prop->where('nombre_propie', 'like', '%' . $keyword . '%')
                         ->orWhere('apellido_propie', 'like', '%' . $keyword . '%');
+                });
+
+                // Buscar en la relación usuario (inspector)
+                $q->orWhereHas('usuario', function ($q_user) use ($keyword) {
+                    $q_user->where('nombre', 'like', '%' . $keyword . '%')
+                        ->orWhere('apellido', 'like', '%' . $keyword . '%');
                 });
             });
         }

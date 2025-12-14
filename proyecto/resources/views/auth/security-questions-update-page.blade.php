@@ -41,7 +41,7 @@
                             @endforeach
                         </ul>
                     </div>
-                @endif
+                @endif 
                 
                 {{-- Formulario para actualizar preguntas --}}
                 <div class="card shadow-sm p-4 mt-4">
@@ -72,7 +72,7 @@
                         @endfor
 
                         <div class="d-flex justify-content-end gap-2">
-                            {{-- Botón para vuelve al perfil --}}
+                            {{-- Botón para volver al perfil --}}
                             <a href="{{ route('perfil') }}" class="btn btn-secondary">Cancelar</a>
                         
                             {{-- Botón Guardar --}}

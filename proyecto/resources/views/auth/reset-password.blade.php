@@ -59,7 +59,7 @@
             </div>
             <div class="col-md-6 right-panel d-none d-md-flex">
                 <div class="logo-container">
-                    <img src="{{ asset('images/logo-corvisucre.png') }}"
+                    <img src="{{ asset('images/logo3.jpg') }}"
                         alt="Logo Departamento de Ingeniería CORVISUCRE">
                 </div>
             </div>

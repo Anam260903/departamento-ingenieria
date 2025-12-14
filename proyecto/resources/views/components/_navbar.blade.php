@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Nav</title>
     <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ asset('css/bootstrap-icons/bootstrap-icons.min.css') }}" rel="stylesheet">
@@ -50,17 +51,38 @@
 
                     @if (isset($notificaciones) && $notificaciones->count() > 0)
                         @foreach ($notificaciones as $notificacion)
-                            <a href="{{ route('notifications.markAsRead', $notificacion->id_notificacion) }}"
-                                class="dropdown-item d-flex align-items-start {{ $notificacion->leida ? 'text-muted' : 'fw-bold' }}"
+                            {{-- Contenedor principal --}}
+                            <div class="dropdown-item d-flex align-items-start {{ $notificacion->leida ? 'text-muted' : 'fw-bold' }}"
                                 style="white-space: normal; line-height: 1.4;">
-                                <i
-                                    class="bi {{ $notificacion->tipo == 'inspeccion_asignada' ? 'bi-clipboard-check-fill text-primary' : 'bi-tools text-warning' }} me-2 mt-1"></i>
-                                <div>
-                                    {{ $notificacion->mensaje }}
-                                    <small
-                                        class="d-block text-muted fw-normal">{{ $notificacion->created_at->diffForHumans() }}</small>
-                                </div>
-                            </a>
+
+                                @if (!$notificacion->leida)
+                                    <form action="{{ route('notifications.markAsRead', $notificacion->id_notificacion) }}"
+                                        method="POST" class="w-100" id="mark-read-{{ $notificacion->id_notificacion }}">
+                                        @csrf
+                                        <button type="submit"
+                                            class="btn btn-link dropdown-item text-start w-100 d-flex align-items-start {{ $notificacion->leida ? 'text-muted' : 'fw-bold' }}"
+                                            style="white-space: normal; line-height: 1.4; text-decoration: none; padding: 0.5rem 1rem;">
+                                            <i
+                                                class="bi {{ $notificacion->tipo == 'inspeccion_asignada' ? 'bi-clipboard-check-fill text-primary' : 'bi-tools text-warning' }} me-2 mt-1"></i>
+                                            <div>
+                                                {{ $notificacion->mensaje }}
+                                                <small
+                                                    class="d-block text-muted fw-normal">{{ $notificacion->created_at->diffForHumans() }}</small>
+                                            </div>
+                                        </button>
+                                    </form>
+                                @else
+                                    <div class="d-flex w-100 align-items-start" style="padding: 0.5rem 1rem;">
+                                        <i
+                                            class="bi {{ $notificacion->tipo == 'inspeccion_asignada' ? 'bi-clipboard-check-fill text-primary' : 'bi-tools text-warning' }} me-2 mt-1"></i>
+                                        <div>
+                                            {{ $notificacion->mensaje }}
+                                            <small
+                                                class="d-block text-muted fw-normal">{{ $notificacion->created_at->diffForHumans() }}</small>
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
                         @endforeach
                     @else
                         <li class="dropdown-item text-center text-muted">No tienes notificaciones recientes.</li>
@@ -82,12 +104,15 @@
                 <small class="text-white d-inline-block">{{ Auth::user()->correo }}</small>
             </div>
 
-            <div class="me-2 d-none d-lg-block">
-                <a class="navbar-brand d-flex align-items-center" href="{{ route('logout') }}" title="Cerrar sesión">
-                    <img src="{{ asset('images/logo1.png') }}" alt="Logo" width="50" height="40">
-                </a>
-            </div>
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                @csrf
+            </form>
 
+            <a class="navbar-brand d-flex align-items-center" href="{{ route('logout') }}" title="Cerrar sesión"
+                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+
+                <img src="{{ asset('images/logo1.png') }}" alt="Logo" width="50" height="40">
+            </a>
 
             <div class="col-auto d-md-none">
                 <button class="btn btn-primary" id="sidebarToggle">

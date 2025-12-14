@@ -32,9 +32,7 @@ class NotificacionController extends Controller
         $notificaciones = Notificacion::where('id_user', Auth::id())
             ->orderBy('leida', 'asc')
             ->orderBy('created_at', 'desc')
-            ->paginate(20); // Paginación para ver todas
-
-        Notificacion::where('id_user', Auth::id())->update(['leida' => true]);
+            ->paginate(10); // Paginación para ver todas
 
         return view('notificaciones', compact('notificaciones'));
     }

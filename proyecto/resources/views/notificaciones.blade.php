@@ -24,13 +24,17 @@
                 <h1 class="mb-4 h3">CENTRO DE NOTIFICACIONES</h1>
 
                 {{-- Mensajes de sesión --}}
-                @if(session('success'))
+                @php
+                    $mensaje = session('status') ?? session('success');
+                @endphp
+                
+                @if($mensaje)
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        {{ session('success') }}
+                        {{ $mensaje }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
-
+                
                 @if ($errors->any())
                     <div class="alert alert-danger">
                         <ul>
@@ -69,10 +73,11 @@
 
                                                                 <div class="d-flex align-items-center">
                                                                     {{-- Ícono según el tipo --}}
-                                                                    <i class="bi {{ 
-                                                                                            $notificacion->tipo == 'inspeccion_asignada' ? 'bi-clipboard-check-fill text-success' :
+                                                                    <i
+                                                                        class="bi {{ 
+                                                                                                                                                                                                                                                                    $notificacion->tipo == 'inspeccion_asignada' ? 'bi-clipboard-check-fill text-success' :
         ($notificacion->tipo == 'recurso_asignado' ? 'bi-tools text-warning' : 'bi-info-circle-fill text-primary') 
-                                                                                        }} me-3 fs-5"></i>
+                                                                                                                                                                                                                                                                }} me-3 fs-5"></i>
 
                                                                     <div>
                                                                         <span class="d-block">{{ $notificacion->mensaje }}</span>
@@ -87,10 +92,15 @@
 
                                                                 {{-- Botón para marcar individualmente --}}
                                                                 @if (!$notificacion->leida)
-                                                                    <a href="{{ route('notifications.markAsRead', $notificacion->id_notificacion) }}"
-                                                                        class="btn btn-sm btn-outline-primary ms-3" title="Marcar como leída">
-                                                                        <i class="bi bi-check-lg"></i>
-                                                                    </a>
+                                                                    <form
+                                                                        action="{{ route('notifications.markAsRead', $notificacion->id_notificacion) }}"
+                                                                        method="POST" class="d-inline-block">
+                                                                        @csrf
+                                                                        <button type="submit" class="btn btn-sm btn-outline-primary ms-3"
+                                                                            title="Marcar como leída">
+                                                                            <i class="bi bi-check-lg"></i>
+                                                                        </button>
+                                                                    </form>
                                                                 @endif
                                                             </div>
                                 @empty
@@ -103,7 +113,7 @@
 
                         {{-- Enlaces de Paginación --}}
                         <div class="mt-4 d-flex justify-content-center">
-                            {{ $notificaciones->links('pagination::bootstrap-5') }}
+                            {{ $notificaciones->links() }}
                         </div>
 
                     </div>
@@ -113,8 +123,10 @@
         </div>
 
     </div>
-    <script src="{{ asset('js/dashboard.js') }}"></script>
+
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('js/app.js') }}"></script>
+    <script src="{{ asset('js/dashboard.js') }}"></script>
 
 
     @include('components._session-timeout')

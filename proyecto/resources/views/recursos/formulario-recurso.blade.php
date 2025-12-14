@@ -25,13 +25,27 @@
                 <h1 class="mb-4 h3">RECURSOS</h1>
                 <h2 class="h4 mb-4">Nuevo Recurso</h2>
 
-                {{-- Muestra mensajes de éxito o error --}}
-                @if (session('success'))
-                    <div class="alert alert-success">{{ session('success') }}</div>
+                {{-- Mensajes de sesión --}}
+                @php
+                    $mensaje = session('status') ?? session('success');
+                @endphp
+
+                @if($mensaje)
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ $mensaje }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
                 @endif
-                @if (session('error'))
-                    <div class="alert alert-danger">{{ session('error') }}</div>
-                @endif
+
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif 
 
                 <div class="card shadow-sm p-4">
                     <form action="{{ route('recursos.store') }}" method="POST">

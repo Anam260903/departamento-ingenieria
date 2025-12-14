@@ -21,18 +21,25 @@
             @include('components._navbar')
             <div class="container-fluid py-4">
 
-                {{-- Bloque para mostrar mensajes de éxito o error de sesión --}}
-                @if (session('success'))
+                {{-- Mensajes de sesión --}}
+                @php
+                    $mensaje = session('status') ?? session('success');
+                @endphp
+                
+                @if($mensaje)
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        {{ session('success') }}
+                        {{ $mensaje }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
-
-                @if (session('error'))
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        {{ session('error') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
                     </div>
                 @endif
 

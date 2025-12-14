@@ -29,7 +29,18 @@
                     <div class="alert alert-danger">{{ session('error') }}</div>
                 @endif
 
-                {{-- Manejo de errores de validación de Laravel --}}
+                {{-- Mensajes de sesión --}}
+                @php
+                    $mensaje = session('status') ?? session('success');
+                @endphp
+                
+                @if($mensaje)
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ $mensaje }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
+                
                 @if ($errors->any())
                     <div class="alert alert-danger">
                         <ul>

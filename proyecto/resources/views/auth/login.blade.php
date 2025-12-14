@@ -18,7 +18,7 @@
         <div class="row login-row">
             <div class="col-md-7 left-panel">
                 <div class="login-card">
-                    <h2 class="text-center mb-3">¡Bienvenido!</h2>
+                    <h2 class="text-center mb-3">¡Bienvenido!</h2><h5 class="text-center mb-3">DEPARTAMENTO DE INGENIERÍA</h5>
                     <h5 class="text-center mb-4 text-secondary">INGRESO AL SISTEMA</h5>
 
                     @if ($errors->any())
@@ -74,7 +74,7 @@ $mensaje = session('status') ?? session('success');
 
             <div class="col-md-5 right-panel d-none d-md-flex">
                 <div class="logo-container">
-                    <img src="{{ asset('images/logo-corvisucre.png') }}"
+                    <img src="{{ asset('images/logo3.jpg') }}"
                         alt="Logo Departamento de Ingeniería CORVISUCRE">
                 </div>
             </div>

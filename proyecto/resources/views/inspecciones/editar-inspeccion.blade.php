@@ -25,8 +25,26 @@
                 <h1 class="mb-4 h3">GESTIÓN DE INSPECCIONES</h1>
                 <h2 class="h4 mb-4">Editar Inspección #{{ $inspeccion->id_insp }}</h2>
 
-                @if (session('error'))
-                    <div class="alert alert-danger">{{ session('error') }}</div>
+                {{-- Mensajes de sesión --}}
+                @php
+                    $mensaje = session('status') ?? session('success');
+                @endphp
+                
+                @if($mensaje)
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ $mensaje }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
+                
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
                 @endif
 
                 <div class="card shadow-sm p-4">

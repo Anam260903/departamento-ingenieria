@@ -41,17 +41,26 @@
                     </div>
                 @endif
 
-                {{-- Mensajes de éxito o error --}}
-                @if (session('success'))
-                    <div class="alert alert-success">{{ session('success') }}
+                {{-- Mensajes de sesión --}}
+                @php
+                    $mensaje = session('status') ?? session('success');
+                @endphp
+                
+                @if($mensaje)
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ $mensaje }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
-                @if (session('error'))
-                    <div class="alert alert-danger">{{ session('error') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
                     </div>
-
                 @endif
 
                 <div class="row justify-content-end mb-3">
@@ -134,6 +143,7 @@
                                     <th scope="col">Fecha</th>
                                     <th scope="col">Propietario</th>
                                     <th scope="col">Dirección</th>
+                                    <th scope="col">Inspector</th>
                                     <th scope="col">Estado</th>
                                     <th scope="col">Acciones</th>
                                 </tr>
@@ -158,8 +168,11 @@
                                             @endif
                                         </td>
                                         <td>
-                                            @php $usuario = $informe->inspeccion->usuario ?? null; @endphp
-                                            {{ $usuario ? ($usuario->nombre . ' ' . $usuario->apellido) : 'N/A' }}
+                                            @if ($inspeccion->usuario)
+                                                {{ $inspeccion->usuario->nombre }} {{ $inspeccion->usuario->apellido }}
+                                            @else
+                                                No Asignado
+                                            @endif
                                         </td>
                                         <td>
                                             @if($inspeccion->estado_insp == 0)
@@ -240,7 +253,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="5" class="text-center py-4">No hay inspecciones registradas.</td>
+                                        <td colspan="6" class="text-center py-4">No hay inspecciones registradas.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -295,7 +308,7 @@
                                 <select id="mes_modal" name="mes" class="form-select" required>
                                     <option value="">Seleccione Mes</option>
                                     @php
-                                        \Carbon\Carbon::setLocale('es');
+\Carbon\Carbon::setLocale('es');
                                     @endphp
                                     {{-- Listar los 12 meses --}}
                                     @for ($m = 1; $m <= 12; $m++)

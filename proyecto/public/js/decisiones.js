@@ -488,4 +488,5 @@ document.addEventListener('DOMContentLoaded', function () {
                 resumenContenido.style.display = 'none';
             });
     });
+
 });
