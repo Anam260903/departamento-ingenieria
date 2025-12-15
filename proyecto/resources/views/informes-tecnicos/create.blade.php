@@ -7,7 +7,7 @@
     <title> Informe Técnico - Paso 1</title>
     <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/bootstrap-icons/bootstrap-icons.min.css') }}" >
+    <link rel="stylesheet" href="{{ asset('css/bootstrap-icons/bootstrap-icons.min.css') }}">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
     <link rel="stylesheet" href="{{ asset('css/informes.css') }}">
@@ -25,14 +25,14 @@
                 @php
                     $mensaje = session('status') ?? session('success');
                 @endphp
-                
+
                 @if($mensaje)
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         {{ $mensaje }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
-                
+
                 @if ($errors->any())
                     <div class="alert alert-danger">
                         <ul>
@@ -57,13 +57,13 @@
 
                     <div class="card shadow-sm p-4">
                         @php
-// Detectamos si es una edición o una creación
-$isEditing = isset($informe) && $informe->id_inf;
+                            // Detectamos si es una edición o una creación
+                            $isEditing = isset($informe) && $informe->id_inf;
 
-// Si es edición, apuntamos a la ruta de edición
-$formAction = $isEditing
-    ? route('informes.update.step1', $informe->id_inf)
-    : route('informes.store.step1');
+                            // Si es edición, apuntamos a la ruta de edición
+                            $formAction = $isEditing
+                                ? route('informes.update.step1', $informe->id_inf)
+                                : route('informes.store.step1');
                         @endphp
                         <form action="{{ $formAction }}" method="POST">
                             @csrf
@@ -213,7 +213,6 @@ $formAction = $isEditing
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('js/app.js') }}"></script>
     <script src="{{ asset('js/informes.js') }}"></script>
-    <script src="{{ asset('js/dashboard.js') }}"></script>
 
     @include('components._session-timeout')
 </body>

@@ -174,8 +174,8 @@
     </div>
 
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('js/app.js') }}"></script>
     <script src="{{ asset('js/inspecciones.js') }}"></script>
-    <script src="{{ asset('js/dashboard.js') }}"></script>
 
     @include('components._session-timeout')
 </body>

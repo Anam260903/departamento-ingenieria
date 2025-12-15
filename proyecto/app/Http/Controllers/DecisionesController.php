@@ -23,6 +23,7 @@ class DecisionesController extends Controller
 
         // Obtener todos los usuarios, contando sus inspecciones pendientes (estado_insp = 0)
         $inspectores = Usuario::withCount('inspeccionesPendientes')
+            ->where('correo', '!=', 'admin@gmail.com')
             ->get()
             ->sortByDesc('inspecciones_pendientes_count'); // Ordenar por carga de trabajo
 
@@ -170,9 +171,7 @@ class DecisionesController extends Controller
                 ];
             });
 
-        // =================================================================
-        // CÁLCULO DEL MES ACTUAL SELECCIONADO PARA MOSTRAR EN LA VISTA
-        // =================================================================
+        // Cálculo del mes actual seleccionado para mostrar en la vista
         $mesSeleccionado = $request->input('mes', null); // Obtiene el valor del query param 'mes'
 
         if ($mesSeleccionado) {
@@ -183,7 +182,6 @@ class DecisionesController extends Controller
             // Si no hay mes seleccionado, usa el valor por defecto (mes actual)
             $mesActualTopN = $hoy->isoFormat('MMMM YYYY');
         }
-        // =================================================================
 
         return view('toma-decisiones.decision-recurso', [
             'usoRecursosPorInspector' => $usoRecursosPorInspector,

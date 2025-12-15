@@ -22,12 +22,9 @@ class RespaldoController extends Controller
         $storagePath = 'backups/' . $filename;
 
         // 4. Construir el comando mysqldump
-        // Nota: En XAMPP, mysqldump se encuentra típicamente en 'C:\xampp\mysql\bin\mysqldump.exe'
-        // Asegúrate de que esta ruta sea correcta para tu instalación de XAMPP.
         $dumpPath = env('MYSQLDUMP_PATH', 'C:\xampp\mysql\bin\mysqldump.exe');
 
-        // Comando mysqldump: 
-        // -u [usuario] -p[contraseña] [nombre_db] > [ruta_archivo]
+        // Comando mysqldump
         $command = $dumpPath . ' -u' . $username .
             ' ' . (empty($password) ? '' : '-p' . $password) .
             ' ' . $database;
@@ -38,18 +35,18 @@ class RespaldoController extends Controller
             $result = Process::run($command);
 
             if ($result->successful()) {
-                // Guarda el contenido (el SQL dump) en el disco de Laravel
+                // Guarda el contenido en el disco de Laravel
                 Storage::put($storagePath, $result->output());
 
                 // Devuelve el archivo para su descarga inmediata
                 return Storage::download($storagePath, $filename);
             } else {
-                // Si el comando falló (ej. mysqldump no encontrado o credenciales incorrectas)
+                // Si el comando falló, maneja el errror
                 return back()->with('error', 'El respaldo de la base de datos falló. Mensaje: ' . $result->errorOutput());
             }
 
         } catch (\Exception $e) {
-            // Manejo de otras excepciones (ej. si Process no existe)
+            // Manejo de otras excepciones
             return back()->with('error', 'Ocurrió un error en el proceso de respaldo: ' . $e->getMessage());
         }
     }

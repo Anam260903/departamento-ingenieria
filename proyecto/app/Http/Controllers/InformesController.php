@@ -75,24 +75,13 @@ class InformesController extends BaseController
         // 2. Obtener el usuario autenticado
         $user = Auth::user();
 
-        // 3. Inicializar la consulta base:
-        //    Inspecciones 'Completadas' (estado_insp = 1) y sin informe.
-        $query = Inspeccion::where('estado_insp', 1)
+        // 3. Inicializar la consulta base
+        $inspecciones = Inspeccion::where('estado_insp', 1)
             ->whereNotIn('id_insp', $inspeccionesConInforme)
-            ->with('vivienda.propietario');
+            ->where('id_user', $user->id_user)
+            ->with('vivienda.propietario')
+            ->get();
 
-        // 4. Aplicar la lógica de filtrado basada en el rol
-        if ($user->id_rol === 2) {
-            // Lógica para usuarios normales (Rol 2)
-            // Solo ven las inspecciones que les están asignadas.
-            $query->where('id_user', $user->id_user);
-        } elseif ($user->id_rol === 1) {
-            // Lógica para administradores (Rol 1)
-            // Solo ven las inspecciones que tienen un usuario asignado
-            $query->whereNotNull('id_user');
-        }
-
-        $inspecciones = $query->get();
         return $inspecciones;
     }
 
@@ -122,7 +111,7 @@ class InformesController extends BaseController
      */
     public function storeStep1(Request $request)
     {
-        // 1. Obtener la inspección antes de la validación
+        // 1. Validación inicial para obtener la fecha de la inspección
         $request->validate([
             'id_insp' => [
                 'required',
@@ -134,17 +123,16 @@ class InformesController extends BaseController
 
         // Obtener la inspección para acceder a su fecha
         $inspeccion = Inspeccion::findOrFail($request->id_insp);
-        $fechaInspeccion = $inspeccion->fecha_insp; // Obtener la fecha de la inspección
+        $fechaInspeccion = $inspeccion->fecha_insp;
 
-
-        // 2. Validación de los datos del Paso 1
+        // 2. Validación de datos
         $validatedData = $request->validate([
 
             // Datos del Informe
             'fecha_inf' => 'required|date|after_or_equal:' . $fechaInspeccion,
             'comunidad' => 'required|string|max:50',
 
-            // Datos del Propietario - Se actualizarán si cambian
+            // Datos del Propietario
             'propietario_cedula' => [
                 'required',
                 'string',
@@ -156,7 +144,7 @@ class InformesController extends BaseController
             'propietario_apellido' => 'required|string|max:30|regex:/^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$/',
             'propietario_telefono' => 'required|string|max:11|regex:/^[0-9]+$/',
 
-            // Datos de la Vivienda - Se actualizarán si cambian
+            // Datos de la Vivienda
             'direccion' => 'required|string|max:100',
         ], [
             // Mensaje personalizado para la regla after_or_equal
@@ -164,6 +152,9 @@ class InformesController extends BaseController
             // Mensaje personalizado para la Regex
             'propietario_cedula.regex' => 'La cédula ingresada no cumple con el formato válido. Por favor, ingrese un número de cédula real.',
         ]);
+
+        $validatedData['id_insp'] = $request->id_insp;
+
 
         // 3. Inicializar la variable informe
         $informe = null;
@@ -176,15 +167,16 @@ class InformesController extends BaseController
                 // 1. Obtener la inspección y sus relaciones para obtener IDs
                 $inspeccion = Inspeccion::with('vivienda.propietario')->findOrFail($validatedData['id_insp']);
                 $vivienda = $inspeccion->vivienda;
-                $propietario = $vivienda->propietario;
 
                 // 2. Buscar o crear/actualizar el propietario
-                $propietario = Propietario::updateOrCreate([
-                    'cedula_propie' => $validatedData['propietario_cedula'],
-                    'nombre_propie' => $validatedData['propietario_nombre'],
-                    'apellido_propie' => $validatedData['propietario_apellido'],
-                    'telefono' => $validatedData['propietario_telefono'],
-                ]);
+                $propietario = Propietario::updateOrCreate(
+                    ['cedula_propie' => $validatedData['propietario_cedula']],
+                    [
+                        'nombre_propie' => $validatedData['propietario_nombre'],
+                        'apellido_propie' => $validatedData['propietario_apellido'],
+                        'telefono' => $validatedData['propietario_telefono'],
+                    ]
+                );
 
                 // 3. Actualizar la vivienda existente
                 if ($vivienda) {
@@ -194,7 +186,7 @@ class InformesController extends BaseController
                         'id_propie' => $propietario->id_propie, // Asegurar que apunte al propietario actualizado
                     ]);
                 } else {
-                    // FALLBACK: Si por alguna razón la inspección no tiene vivienda, la creamos
+                    // Creación de vivienda si no existe
                     $vivienda = Vivienda::create([
                         'direccion' => $validatedData['direccion'],
                         'id_propie' => $propietario->id_propie,
@@ -213,17 +205,18 @@ class InformesController extends BaseController
 
             // 5. Redirigir al siguiente paso
             if ($informe) {
-
                 $redirectUrl = route('informes.edit.step2', ['id_inf' => $informe->id_inf]);
 
                 return redirect($redirectUrl)
                     ->with('success', 'Paso 1: Datos generales guardados. Continúe con el paso 2.');
             }
 
-            // En caso de error en la transacción
-        } catch (\Exception $e) {
+            // Si la transacción no retornó un informe
+            return back()->withInput()->with('error', 'Error inesperado al crear el informe.');
 
-            return back()->withInput()->with('error', 'Error de Transacción. Detalles: ' . $e->getMessage());
+        } catch (\Exception $e) {
+            // Puedes agregar Log::error($e) aquí para un mejor debugging
+            return back()->withInput()->with('error', 'Error de Transacción. No se pudo guardar el informe. Detalles: ' . $e->getMessage());
         }
     }
 

@@ -27,7 +27,7 @@
 
                 {{-- Mensajes de sesión --}}
                 @php
-                    $mensaje = session('status') ?? session('success');
+$mensaje = session('status') ?? session('success');
                 @endphp
 
                 @if($mensaje)
@@ -59,7 +59,7 @@
                             <div class="col-md-6 mb-3">
                                 <label for="fecha" class="form-label">Fecha</label>
                                 @php
-                                    $minDate = \Carbon\Carbon::now()->subDays(30)->toDateString();
+$minDate = \Carbon\Carbon::now()->subDays(30)->toDateString();
                                 @endphp
                                 {{-- Prellenar con la fecha actual o el valor anterior si falló la validación --}}
                                 <input type="date" class="form-control @error('fecha') is-invalid @enderror" id="fecha"
@@ -186,8 +186,8 @@
     </div>
 
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('js/app.js') }}"></script>
     <script src="{{ asset('js/inspecciones.js') }}"></script>
-    <script src="{{ asset('js/dashboard.js') }}"></script>
 
     @include('components._session-timeout')
 </body>
