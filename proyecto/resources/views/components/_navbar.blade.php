@@ -84,6 +84,16 @@
                                 @endif
                             </div>
                         @endforeach
+
+                        {{-- Aviso si hay más notificaciones de las que se muestran --}}
+                        @if($unreadCount > $notificaciones->where('leida', false)->count() && $unreadCount > 4)
+                            <li>
+                                <div class="dropdown-item text-center small text-muted italic">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    Hay {{ $unreadCount - $notificaciones->where('leida', false)->count() }} más sin leer
+                                </div>
+                            </li>
+                        @endif
                     @else
                         <li class="dropdown-item text-center text-muted">No tienes notificaciones recientes.</li>
                     @endif

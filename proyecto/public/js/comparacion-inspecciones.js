@@ -185,15 +185,4 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Código para el dropdown de notificaciones (se mantiene fuera de la lógica principal)
-    var toggleButton = document.getElementById('NotificacionToggle');
-    if (toggleButton) {
-        // Asumiendo que `bootstrap` está cargado globalmente (como se ve en el Blade)
-        var dropdown = new bootstrap.Dropdown(toggleButton);
-
-        toggleButton.addEventListener('click', function (e) {
-            e.preventDefault();
-            dropdown.toggle();
-        });
-    }
 });

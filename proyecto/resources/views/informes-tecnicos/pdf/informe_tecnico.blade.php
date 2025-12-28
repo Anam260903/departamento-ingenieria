@@ -82,14 +82,16 @@
         {{-- Fila 5: CÉDULA DE IDENTIDAD --}}
         <span style="font-weight: bold;">CÉDULA DE IDENTIDAD:</span>
         <span style="display: inline-block; width: 10px;"></span>
-        <span
-            style="font-weight: normal;">{{ $informe->inspeccion->vivienda->propietario->cedula_propie ?? 'N/A' }}</span>
+        <span style="font-weight: normal;">
+            {{ number_format($informe->inspeccion->vivienda->propietario->cedula_propie ?? 0, 0, ',', '.') }}
+        </span>
         <br />
 
         {{-- Fila 6: TELÉFONO --}}
         <span style="font-weight: bold;">TELÉFONO:</span>
         <span style="display: inline-block; width: 10px;"></span>
         <span style="font-weight: normal;">{{ $informe->inspeccion->vivienda->propietario->telefono ?? 'N/A' }}</span>
+
         <br />
 
         {{-- Fila 7: DIRECCIÓN --}}
@@ -130,6 +132,15 @@
     <div class="section-title">6. MATERIALES</div>
     <div class="content-box">
         {!! nl2br(e($informe->materials_info ?? 'No se proporcionaron materiales.')) !!}
+    </div>
+
+    {{-- ESPACIO PARA FIRMA DEL INSPECTOR --}}
+    <div class="footer-signature">
+        <div style="height: 150px;"></div> {{-- Crea un espacio elástico --}}
+        <div class="signature-box">
+            <p>Ing. {{ $informe->inspeccion->usuario->nombre ?? '' }} {{ $informe->inspeccion->usuario->apellido ?? '' }}</p>
+            <p>C.I: {{ number_format($informe->inspeccion->usuario->cedula_user ?? 0, 0, ',', '.') }}</p>
+        </div>
     </div>
 
     {{-- NÚMERO DE PÁGINA --}}

@@ -353,9 +353,6 @@ document.addEventListener('DOMContentLoaded', function () {
         initializeDropdown('descargarUsoRecursosToggle');
         initializeDropdown('descargarTopRecursosToggle');
 
-        // Inicializar el dropdown de Notificaciones
-        initializeDropdown('NotificacionToggle');
-
         // Delega el evento de clic a todos los elementos del dropdown de descarga
         document.querySelectorAll('[data-chart-id]').forEach(link => {
             link.addEventListener('click', function (e) {

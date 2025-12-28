@@ -17,14 +17,17 @@ class NotificacionServiceProvider extends ServiceProvider
             if (Auth::check()) {
                 $user = Auth::user();
 
-                // Obtener las 7 notificaciones más recientes (no leídas primero)
+                // 1. Obtener solo las 4 que se mostrarán en el dropdown
                 $notificaciones = Notificacion::where('id_user', $user->id_user)
-                    ->orderBy('leida', 'asc') // Las no leídas primero
+                    ->orderBy('leida', 'asc')
                     ->orderBy('created_at', 'desc')
-                    ->limit(4)
+                    ->limit(3)
                     ->get();
 
-                $unreadCount = $notificaciones->where('leida', false)->count();
+                // 2. Contar el total de no leídas en la DB
+                $unreadCount = Notificacion::where('id_user', $user->id_user)
+                    ->where('leida', false)
+                    ->count();
 
                 $view->with('notificaciones', $notificaciones);
                 $view->with('unreadCount', $unreadCount);

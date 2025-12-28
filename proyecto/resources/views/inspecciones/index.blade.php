@@ -11,12 +11,22 @@
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
     <style>
         /* Estilos específicos para los badges de estado */
-        .badge-pendiente {
-            background-color: #ffc107;
+        /* Rojo: Aún no se ha realizado la inspección */
+        .badge-rojo {
+            background-color: #dc3545;
+            color: white;
         }
 
-        .badge-completada {
+        /* Amarillo: Se completó la inspección pero falta el informe */
+        .badge-amarillo {
+            background-color: #ffc107;
+            color: #212529;
+        }
+
+        /* Verde: Proceso finalizado totalmente, inspección completada e informe realizado */
+        .badge-verde {
             background-color: #28a745;
+            color: white;
         }
     </style>
 </head>
@@ -43,16 +53,16 @@
 
                 {{-- Mensajes de sesión --}}
                 @php
-                    $mensaje = session('status') ?? session('success');
+$mensaje = session('status') ?? session('success');
                 @endphp
-                
+
                 @if($mensaje)
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         {{ $mensaje }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
-                
+
                 @if ($errors->any())
                     <div class="alert alert-danger">
                         <ul>
@@ -176,9 +186,16 @@
                                         </td>
                                         <td>
                                             @if($inspeccion->estado_insp == 0)
-                                                <span class="badge badge-pendiente">Pendiente</span>
+                                                {{-- Estado 1: Pendiente (ROJO) --}}
+                                                <span class="badge badge-rojo">Pendiente</span>
+                                            @elseif($inspeccion->estado_insp == 1 && !$inspeccion->informe)
+                                                {{-- Estado 2: Completada sin informe (AMARILLO) --}}
+                                                <span class="badge badge-amarillo text-dark"
+                                                    title="Falta informe técnico">Completada</span>
                                             @else
-                                                <span class="badge badge-completada">Completada</span>
+                                                {{-- Estado 3: Completada con informe (VERDE) --}}
+                                                <span class="badge badge-verde"
+                                                    title="Informe técnico ya realizado">Completada</span>
                                             @endif
                                         </td>
                                         <td>
@@ -192,13 +209,22 @@
                                                 </a>
 
                                                 {{-- 2. Botón de editar --}}
-                                                <a href="{{ route('inspecciones.edit', $inspeccion->id_insp) }}"
-                                                    class="btn btn-warning btn-sm" title="Editar inspección">
-                                                    <i class="bi bi-pencil"></i>
-                                                </a>
+                                                @if(!$inspeccion->informe)
+                                                    <a href="{{ route('inspecciones.edit', $inspeccion->id_insp) }}"
+                                                        class="btn btn-warning btn-sm" title="Editar inspección">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </a>
+                                                @else
+                                                    <span class="d-inline-block" tabindex="0" data-bs-toggle="tooltip"
+                                                        title="Edición bloqueada: Informe ya realizado">
+                                                        <button class="btn btn-warning btn-sm" style="pointer-events: none;"
+                                                            type="button" disabled>
+                                                            <i class="bi bi-pencil"></i>
+                                                        </button>
+                                                    </span>
+                                                @endif
 
                                                 @if($inspeccion->estado_insp == 0)
-
                                                     {{-- Formulario para marcar como completada --}}
                                                     <form action="{{ route('inspecciones.complete', $inspeccion->id_insp) }}"
                                                         method="POST" class="d-inline">
@@ -237,16 +263,29 @@
                                                     @endif
 
                                                     {{-- 6. Botón de eliminar --}}
-                                                    <form action="{{ route('inspecciones.destroy', $inspeccion->id_insp) }}"
-                                                        method="POST" class="d-inline">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="btn btn-danger btn-sm"
-                                                            title="Eliminar inspección"
-                                                            onclick="return confirm('¿Estás seguro de que quieres eliminar esta inspección?')">
-                                                            <i class="bi bi-trash"></i>
-                                                        </button>
-                                                    </form>
+                                                    @if (!$inspeccion->informe)
+                                                        {{-- Solo se muestra si NO tiene informe --}}
+                                                        @if (auth()->check() && auth()->user()->id_rol === 1)
+                                                            <form action="{{ route('inspecciones.destroy', $inspeccion->id_insp) }}"
+                                                                method="POST" class="d-inline">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit" class="btn btn-danger btn-sm"
+                                                                    title="Eliminar inspección"
+                                                                    onclick="return confirm('¿Estás seguro de que quieres eliminar esta inspección?')">
+                                                                    <i class="bi bi-trash"></i>
+                                                                </button>
+                                                            </form>
+                                                        @endif
+                                                    @else
+                                                        <span class="d-inline-block" tabindex="0" data-bs-toggle="tooltip"
+                                                            title="No se puede eliminar: Posee un informe asociado">
+                                                            <button class="btn btn-danger btn-sm" style="pointer-events: none;"
+                                                                type="button" disabled>
+                                                                <i class="bi bi-trash-fill"></i>
+                                                            </button>
+                                                        </span>
+                                                    @endif
                                                 @endif
                                             </div>
                                         </td>

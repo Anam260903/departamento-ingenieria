@@ -59,8 +59,7 @@
                         <input type="hidden" name="id_inf" value="{{ $informe->id_inf }}">
 
                         <div class="mb-4">
-                            <label for="calculos_codes" class="form-label fw-bold">Seleccionar Códigos de
-                                Estimaciones
+                            <label for="calculos_codes" class="form-label fw-bold">Seleccionar Estimación de Materiales
                             </label>
 
                             <?php $selectedId = old('calculos_codes', $informe->id_calculo);?>

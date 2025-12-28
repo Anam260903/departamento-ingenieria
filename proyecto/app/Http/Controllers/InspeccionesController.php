@@ -27,7 +27,7 @@ class InspeccionesController extends Controller
         $user = Auth::user();
 
         // 1. Inicializar la consulta con las relaciones necesarias
-        $query = Inspeccion::with('usuario', 'vivienda.propietario');
+        $query = Inspeccion::with('usuario', 'vivienda.propietario', 'informe');
 
         // Lógica de autorización (Filtro en listado)
 
@@ -341,23 +341,31 @@ class InspeccionesController extends Controller
     public function destroy($id_insp)
     {
         try {
-            $inspeccion = Inspeccion::findOrFail($id_insp);
+            // 1. Cargar la inspección con sus relaciones antes de eliminarla
+            $inspeccion = Inspeccion::with('vivienda.propietario', 'informe')->findOrFail($id_insp);
 
-            // Autorización: Verifica si el usuario puede eliminar esta inspección
+            // 2. Verificar si tiene informe
+            if ($inspeccion->informe) {
+                return redirect()->route('inspecciones.index')
+                    ->with('warning', 'No se puede eliminar la inspección #' . $id_insp . ' porque ya tiene un informe realizado.');
+            }
+
+            // 3. Autorización
             $this->authorize('delete', $inspeccion);
 
-            // Al usar el Trait SoftDeletes, el método delete() establece deleted_at.
+            // 4. Eliminar (Soft Delete)
             $inspeccion->delete();
 
-            // Llamada a la notificación
-            $inspeccion = Inspeccion::with('vivienda.propietario')->findOrFail($id_insp);
+            // 5. Enviar notificación (usando los datos que ya tenemos en memoria)
             $this->sendAdminNotification('deleted', $inspeccion);
 
-            return redirect()->route('inspecciones.index')->with('success', '¡Inspección #' . $id_insp . ' eliminada correctamente!');
+            return redirect()->route('inspecciones.index')
+                ->with('success', '¡Inspección #' . $id_insp . ' eliminada correctamente!');
 
         } catch (\Exception $e) {
             \Log::error("Error al eliminar inspección: " . $e->getMessage());
-            return back()->with('error', 'Ocurrió un error al eliminar la inspección. Intente nuevamente.');
+            return redirect()->route('inspecciones.index')
+                ->with('error', 'Ocurrió un error al eliminar la inspección o no tiene permisos.');
         }
     }
 
@@ -386,7 +394,7 @@ class InspeccionesController extends Controller
         $pdf->setOptions(['isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true, 'isPhpEnabled' => true]);
 
         // 3. Devolver el archivo PDF para descargar
-        $fecha = \Carbon\Carbon::now()->format('Ymd');
+        $fecha = Carbon::now()->format('Ymd');
         $nombreArchivo = "Reporte_Inspecciones_{$fecha}.pdf";
 
         return $pdf->download($nombreArchivo);
@@ -426,8 +434,8 @@ class InspeccionesController extends Controller
                 ->get();
         }
         // 3. Preparar datos para el PDF
-        \Carbon\Carbon::setLocale('es');
-        $nombreMes = \Carbon\Carbon::createFromDate($ano, $mes)->monthName;
+        Carbon::setLocale('es');
+        $nombreMes = Carbon::createFromDate($ano, $mes)->monthName;
         $fechaReporte = "{$nombreMes} de {$ano}";
 
         // Si no hay inspecciones se envia un mensaje
