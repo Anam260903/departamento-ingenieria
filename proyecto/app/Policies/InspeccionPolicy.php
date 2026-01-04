@@ -80,7 +80,7 @@ class InspeccionPolicy
     }
 
     /**
-     * Determine whether the user can create inspections.
+     * Determina si el usuario puede crear inspecciones.
      */
     public function create(Usuario $user): Response
     {
