@@ -5,10 +5,10 @@ document.addEventListener('DOMContentLoaded', function () {
         // Verificamos si el clic fue en el botón #btnContinuarInforme o en un descendiente
         const btnContinuar = e.target.closest('#btnContinuarInforme');
 
-        // Si el clic no fue en nuestro botón, salimos
+        // Si el clic no fue en el botón necesario, salimos
         if (!btnContinuar) return;
 
-        // Si llegamos aquí, el botón fue encontrado y pulsado
+        // Aquí, el botón fue encontrado y pulsado
         e.preventDefault();
 
         const selectElement = document.getElementById('id_insp_select');
@@ -62,14 +62,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // Función auxiliar para obtener el token CSRF de un input oculto
 function getCsrfToken() {
-    // Busca el token CSRF en la página (usando la convención de Laravel)
+    // Busca el token CSRF en la página
     const tokenElement = document.querySelector('input[name="_token"]');
     return tokenElement ? tokenElement.value : null;
 }
 
-/**
- * Encapsulación de la lógica del mapa
- */
+// ENCAPSULACIÓN DE LA LÓGICA DEL MAPA
+
 (function() {
 
     // 1. Variables y referencias globales del módulo
@@ -89,7 +88,7 @@ function getCsrfToken() {
     // 2. Funciones de utilidad
 
     /**
-     * Sincroniza las coordenadas entre el marcador/mapa y los campos de entrada HTML.
+     * Sincroniza las coordenadas entre el marcador y los campos de entrada HTML
      */
     const updateCoordinates = (lat, lng) => {
         // Validación para asegurar que los elementos existen antes de intentar actualizarlos
@@ -102,7 +101,7 @@ function getCsrfToken() {
     };
 
     /**
-     * Mueve el marcador y el mapa basándose en las coordenadas ingresadas manualmente.
+     * Mueve el marcador y el mapa basándose en las coordenadas ingresadas manualmente
      */
     const updateMapFromManualInput = () => {
         if (!map || !marker || !latInput|| !lonInput) return;
@@ -127,7 +126,7 @@ function getCsrfToken() {
     // 3. Función de inicialización principal
 
     /**
-     * Inicializa el mapa y todos sus controles.
+     * Inicializa el mapa y todos sus controles
      */
     function initMap() {
         if (!document.getElementById('map') || !latInput || !lonInput) {
@@ -203,7 +202,7 @@ function getCsrfToken() {
     }
 
 
-    // 4. Ejecución / Punto de Entrada (Asegura la inicialización)
+    // 4. Ejecución / Punto de Entrada
 
     // Inicializa el mapa cuando el DOM esté listo
     document.addEventListener('DOMContentLoaded', initMap);
@@ -214,13 +213,13 @@ function getCsrfToken() {
  * Lógica de eventos para el paso 4 de informes técnicos
  */
 
-// Función Única para la Carga del Contenido 
+// Función Única para la carga del contenido 
 function loadCalculoContent(id, materialsTextarea) {
     
-    // Obtenemos los datos inyectados por Blade.
+    // Obtenemos los datos inyectados por Blade
     const calculosData = window.CALCULOS_DATA || {}; 
 
-    // Si el ID es nulo, vacío o no hay textarea, limpiar y salir.
+    // Si el ID es nulo, vacío o no hay textarea, limpiar y salir
     if (!id || id === "" || !materialsTextarea) {
         if (materialsTextarea) materialsTextarea.value = '';
         return;
@@ -230,12 +229,12 @@ function loadCalculoContent(id, materialsTextarea) {
     const calculo = calculosData[id];
 
     if (calculo && calculo.contenido) {
-        // 2. Si se encuentra el cálculo y tiene contenido, lo insertamos directamente.
+        // 2. Si se encuentra el cálculo y tiene contenido, lo insertamos directamente
         const contenido = calculo.contenido;
         materialsTextarea.value = contenido;
         console.log(`[INFO] Contenido del cálculo ID ${id} cargado exitosamente desde el caché de la página.`);
     } else {
-        // 3. Si no se encuentra (o no tiene contenido), limpiamos.
+        // 3. Si no se encuentra (o no tiene contenido), limpiamos
         materialsTextarea.value = '';
         console.warn(`[INFO] Cálculo ID ${id} no encontrado en los datos locales o el contenido está vacío.`);
     }
@@ -257,15 +256,14 @@ document.addEventListener('DOMContentLoaded', function () {
         materialsTextarea.value = initialContent; 
         const initialId = calculosSelect.value;
         
-        // Solo cargamos el contenido del cálculo por defecto si el campo de texto está completamente vacío.
-        // Si el usuario ya había agregado o editado información, la mantenemos.
+        // Solo cargamos el contenido del cálculo por defecto si el campo de texto está completamente vacío
+        // Si el usuario ya había agregado o editado información, la mantenemos
         if (initialContent === '' && initialId) {
             console.log("[INFO] Contenido inicial vacío. Cargando cálculo por defecto.");
             loadCalculoContent(initialId, materialsTextarea);
         } else if (initialContent !== '') {
             console.log("[INFO] Contenido editado del informe cargado. Se mantiene la edición.");
         }
-
 
         // 2. Escuchar el evento de cambio
         calculosSelect.addEventListener('change', function () {
@@ -311,7 +309,7 @@ function initStep5PhotoUpload() {
     let filesArray = [];
 
     /**
-     * Procesa una nueva lista de archivos, los añade al array principal y actualiza la vista.
+     * Procesa una nueva lista de archivos, los añade al array principal y actualiza la vista
      */
     function handleFiles(newFiles) {
         // Al seleccionar o arrastrar nuevos archivos, los agregamos al array existente.
@@ -364,7 +362,7 @@ function initStep5PhotoUpload() {
     function handleDelete(event) {
         // Busca el elemento más cercano con la clase .btn-close
         const button = event.target.closest('.btn-close');
-        if (!button) return; // No fue un clic en el botón de cierre
+        if (!button) return;
 
         const indexToRemove = parseInt(button.dataset.fileIndex);
 
@@ -384,7 +382,7 @@ function initStep5PhotoUpload() {
     previewContainer.addEventListener('click', handleDelete);
 
     /**
-     * Crea un nuevo objeto y lo asigna al input de archivos.
+     * Crea un nuevo objeto y lo asigna al input de archivos
      */
     function updateFileInput() {
         const dataTransfer = new DataTransfer();
@@ -397,7 +395,7 @@ function initStep5PhotoUpload() {
     }
 
     photosInput.addEventListener('change', (e) => {
-        // Llama a la función principal de manejo de archivos
+        // Llamar a la función principal de manejo de archivos
         handleFiles(e.target.files);
     });
 
@@ -429,12 +427,11 @@ function initStep5PhotoUpload() {
         const dt = e.dataTransfer;
         const files = dt.files;
 
-        // 1. Asignar los archivos arrastrados al input file  evento change
+        // Asignar los archivos arrastrados al input file  evento change
         photosInput.files = files;
 
-        // 2. Ejecutar la función principal de manejo de archivos
+        // Ejecutar la función principal de manejo de archivos
         handleFiles(files);
     }
 
-    
 }

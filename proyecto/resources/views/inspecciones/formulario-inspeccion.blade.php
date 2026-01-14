@@ -160,11 +160,9 @@
                             @enderror
                         </div>
 
+                        {{-- Botones de navegación --}}
                         <div class="d-flex justify-content-end gap-2">
-                            {{-- Botón Cancelar: Vuelve al listado de inspecciones --}}
                             <a href="{{ route('inspecciones.index') }}" class="btn btn-secondary">Cancelar</a>
-
-                            {{-- Botón Guardar --}}
                             <button type="submit" class="btn btn-primary w-auto">Registrar Inspección</button>
                         </div>
                     </form>

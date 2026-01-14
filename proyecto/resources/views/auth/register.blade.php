@@ -12,7 +12,6 @@
 </head>
 
 <body>
-    {{-- Vista de registro de usuario --}}
     <div class="container-fluid register-container">
         <div class="row register-row">
 
@@ -25,6 +24,8 @@
 
             <div class="col-md-7 right-panel-register">
                 <div class="register-card">
+                    
+                    {{-- Registro de nuevo usuario --}}
                     <h2 class="text-center mb-3">¡Bienvenido!</h2>
                     <h5 class="text-center mb-3">DEPARTAMENTO DE INGENIERÍA</h5>
                     <h5 class="text-center mb-4 text-secondary">REGISTRO DE USUARIO</h5>
@@ -96,8 +97,19 @@
                         <button type="submit" class="btn btn-primary">Registrarse</button>
                     </form>
 
-                    <div class="text-center mt-3">
-                        <p>¿Ya tienes una cuenta? <a href="{{ route('login') }}">Accede</a></p>
+                    {{-- Enlaces de navegación --}}
+
+                    <div class="row mt-3">
+                        <div class="col-6 text-start">
+                            <a href="{{ asset('documentos/manual-usuario.pdf') }}" download="Manual_de_Usuario.pdf" class="text-decoration-none" title="Descarga el manual de usuario del sistema">
+                            ¿Cómo usar el sistema?
+                            </a>
+                        </div>
+                        <div class="col-6 text-end">
+                            <p class="mb-0">    
+                            ¿Ya tienes una cuenta? <a href="{{ route('login') }}" class="text-decoration-none">Accede</a>
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>

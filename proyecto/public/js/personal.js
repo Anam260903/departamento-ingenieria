@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', function () {
 
-    // --- 1. Inicialización de Tooltips de Bootstrap ---
+    // 1. Inicialización de tooltips de bootstrap
     
-    // Verificamos si la clase Tooltip de Bootstrap está definida
+    // Verificamos si la clase tooltip de bootstrap está definida
     if (typeof bootstrap !== 'undefined' && typeof bootstrap.Tooltip !== 'undefined') {
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
         var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 
-    // --- 2. Lógica para Asignar Inspecciones (assignInspectionModal) ---
+    // 2. Lógica para asignar inspecciones
 
     const modal = document.getElementById('assignInspectionModal');
     const select = document.getElementById('id_insp');
@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const assignButton = document.getElementById('assign-btn');
 
     if (modal) { // Verificación de existencia del modal de inspecciones
-        // Escucha el evento de Bootstrap
+        
         modal.addEventListener('show.bs.modal', function (event) {
             const button = event.relatedTarget;
             const userId = button.getAttribute('data-user-id');
@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 
-    // --- 3. Lógica para Asignar Recursos (assignResourceModal) ---
+    // 3. Lógica para asignar recursos
 
     const resourceModal = document.getElementById('assignResourceModal');
     const resourceSelect = document.getElementById('id_recurso');
@@ -161,7 +161,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // --- 4. Lógica para filtrar por profesión y descargar PDF ---
+    // 4. Lógica para filtrar por profesión y descargar PDF
 
     const selectElement = document.getElementById('profesion-select');
     const formElement = document.getElementById('form-pdf-filtro');
@@ -190,7 +190,6 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!selectElement.value) {
              downloadButton.disabled = true;
         } else {
-             // Si por alguna razón hay un valor seleccionado por 'old', ajustamos la acción y lo habilitamos
              formElement.action = API_ROUTES.pdfFilterBase.replace('__PROFESION__', selectElement.value);
              downloadButton.disabled = false;
         }

@@ -51,12 +51,13 @@
                     <form action="{{ route('recursos.store') }}" method="POST">
                         @csrf
 
-                        {{-- Sección Datos del Recurso --}}
+                        {{-- Sección datos del recurso --}}
                         <h5 class="mb-3">Datos del Recurso</h5>
                         
                         <div>
                         <div class="row mb-4">
-                            {{-- Código del Recurso --}}
+                            
+                            {{-- Código del recurso --}}
                             <div class="col-md-6 mb-3">
                                 <label for="codigo" class="form-label">Código</label>
                                 <input type="text" class="form-control @error('codigo') is-invalid @enderror"
@@ -67,7 +68,7 @@
                                 @enderror
                             </div>
                         
-                            {{-- Nombre del Recurso --}}
+                            {{-- Nombre del recurso --}}
                             <div class="col-md-6 mb-3">
                                 <label for="nombre_rec" class="form-label">Nombre</label>
                                 <input type="text" class="form-control @error('nombre_rec') is-invalid @enderror"
@@ -105,8 +106,7 @@
                             </div>
                         </div>
 
-                        {{-- Botones de acción --}}
-                        
+                        {{-- Botones de navegación --}}
                         <div class="d-flex justify-content-end gap-2">
                             
                         <a href="{{ route('recursos.index') }}" class="btn btn-secondary">

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('nombre', 30);
             $table->string('apellido', 30);
             $table->string('correo', 40)->unique();
-            $table->string('password'); // Contraseña hasheada, VARCHAR(255)
+            $table->string('password'); // Contraseña hasheada
             $table->string('profesion', 30)->nullable();
             $table->string('estado_user', 1);
             $table->unsignedBigInteger('id_rol');

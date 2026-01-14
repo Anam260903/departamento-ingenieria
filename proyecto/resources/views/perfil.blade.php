@@ -115,7 +115,6 @@
                                 </div>
                             </div>
 
-
                             {{-- Contraseña nueva --}}
                             <div class="mb-3">
                                 <label for="password_nueva" class="form-label">Nueva contraseña</label>
@@ -207,18 +206,18 @@
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('js/app.js') }}"></script>
     <script>
-        // Inicializar Tooltips y Popovers
+        // Inicializar tooltips y popovers
         document.addEventListener('DOMContentLoaded', function () {
-            // Inicializa Tooltips
+            // Inicializa tooltips
             var toggleButton = document.getElementById('NotificacionToggle');
             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
             var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
                 return new bootstrap.Tooltip(tooltipTriggerEl)
             })
 
-            // Verificamos si hay cualquier error dentro de Error Bag.
+            // Verificamos si hay cualquier error
             @if ($errors->confirmQuestions->any())
-                // 1. Crear una nueva instancia del Modal de Bootstrap
+                // 1. Crear una nueva instancia del modal de bootstrap
                 var confirmModal = new bootstrap.Modal(document.getElementById('confirmPasswordModal'));
 
                 // 2. Mostrar el modal

@@ -27,14 +27,14 @@
                 @php
                     $mensaje = session('status') ?? session('success');
                 @endphp
-                
+
                 @if($mensaje)
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         {{ $mensaje }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
-                
+
                 @if ($errors->any())
                     <div class="alert alert-danger">
                         <ul>
@@ -48,7 +48,7 @@
                 <div class="row">
                     <div class="col-lg-8 mx-auto">
 
-                        {{-- Botón Marcar todas como leídas --}}
+                        {{-- Botón marcar todas como leídas --}}
                         @if ($notificaciones->where('leida', false)->count() > 0)
                             <div class="alert alert-info d-flex justify-content-between align-items-center">
                                 Tienes {{ $notificaciones->where('leida', false)->count() }} notificaciones sin leer.
@@ -75,9 +75,9 @@
                                                                     {{-- Ícono según el tipo --}}
                                                                     <i
                                                                         class="bi {{ 
-                                                                                                                                                                                                                                                                    $notificacion->tipo == 'inspeccion_asignada' ? 'bi-clipboard-check-fill text-success' :
-        ($notificacion->tipo == 'recurso_asignado' ? 'bi-tools text-warning' : 'bi-info-circle-fill text-primary') 
-                                                                                                                                                                                                                                                                }} me-3 fs-5"></i>
+                                                                                                                                                                                                                                                                                                $notificacion->tipo == 'inspeccion_asignada' ? 'bi-clipboard-check-fill text-success' :
+                                    ($notificacion->tipo == 'recurso_asignado' ? 'bi-tools text-warning' : 'bi-info-circle-fill text-primary') 
+                                                                                                                                                                                                                                                                                            }} me-3 fs-5"></i>
 
                                                                     <div>
                                                                         <span class="d-block">{{ $notificacion->mensaje }}</span>
@@ -111,7 +111,7 @@
                             </div>
                         </div>
 
-                        {{-- Enlaces de Paginación --}}
+                        {{-- Enlaces de paginación --}}
                         <div class="mt-4 d-flex justify-content-center">
                             {{ $notificaciones->links() }}
                         </div>

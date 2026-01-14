@@ -26,7 +26,6 @@ class InformesController extends BaseController
     use AuthorizesRequests;
     public function __construct()
     {
-        // Esto asegura que todos los métodos del controlador requieran autenticación
         $this->middleware('auth');
     }
 
@@ -44,12 +43,11 @@ class InformesController extends BaseController
             'inspeccion.usuario'
         ]);
 
-        // 3. Filtrado de informes para usuarios normales (id_rol === 2)
+        // 3. Filtrado de informes para usuarios inspectores (id_rol === 2)
         $user = Auth::user();
         if ($user->id_rol === 2) {
-            // Si es usuario normal, filtra los informes por su id_user
+            // Si es usuario inspector, filtra los informes por su id_user
             $query->whereHas('inspeccion', function ($q) use ($user) {
-                // Se une a la relación 'inspeccion' y se filtra por el ID del usuario logueado
                 $q->where('id_user', $user->id_user);
             });
         }
@@ -86,7 +84,7 @@ class InformesController extends BaseController
     }
 
     /**
-     * Muestra el formulario de creación del informe técnico.
+     * Muestra el formulario de creación del informe técnico (Paso 1).
      */
     public function create($id_insp)
     {
@@ -348,7 +346,7 @@ class InformesController extends BaseController
         // Autorización: Verifica si el usuario puede acceder
         $this->authorize('update', $informe); // Pasa el modelo para la verificación de pertenencia
 
-        // La vista accede a $informe->inspeccion->vivienda->caracteristicas
+        // Redirigir a la vista del Paso 2
         return view('informes-tecnicos.edit-step2', compact('informe'));
     }
 
@@ -392,7 +390,7 @@ class InformesController extends BaseController
             return redirect()->route('informes.edit.step3', ['id_inf' => $informe->id_inf])
                 ->with('success', 'Paso 2: Diagnóstico y observaciones guardados correctamente. Continúe con el paso 3.');
 
-            // En caso de error
+        // En caso de error
         } catch (\Exception $e) {
             return back()->withInput()->with('error', 'Error al guardar los datos del Paso 2: ' . $e->getMessage());
         }
@@ -423,7 +421,7 @@ class InformesController extends BaseController
             'recomendaciones' => 'required|string',
             'latitud' => 'nullable|numeric',
             'longitud' => 'nullable|numeric',
-            // Validamos la subida del archivo: debe ser una imagen, máx 2MB, opcional si ya existe una (en una edición)
+            // Validamos la subida del archivo
             'map_screenshot' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
@@ -433,7 +431,7 @@ class InformesController extends BaseController
             // 2. Manejo de la subida del archivo (Imagen del mapa)
             if ($request->hasFile('map_screenshot')) {
                 $file = $request->file('map_screenshot');
-                // Generar un nombre único y guardar en el mismo disco que las fotos
+                // Generar un nombre único para el archivo
                 $fileBaseName = 'map_' . $id_inf . '-' . time() . '.' . $file->getClientOriginalExtension();
                 // Guardar la imagen y obtener la ruta relativa en el disco 'public'
                 $ruta = $file->storeAs('informes/' . $id_inf, $fileBaseName, 'public');
@@ -475,7 +473,7 @@ class InformesController extends BaseController
             return redirect()->route('informes.edit.step4', $id_inf)
                 ->with('success', 'Paso 3: Recomendaciones y ubicación guardados. Continúe con el paso 4.');
 
-            // En caso de error
+        // En caso de error
         } catch (\Exception $e) {
             return back()->withInput()->with('error', 'Error al guardar el Paso 3: ' . $e->getMessage());
         }
@@ -668,7 +666,7 @@ class InformesController extends BaseController
         $informe = Informe::with([
             'inspeccion.vivienda.propietario',
             'inspeccion.usuario',
-            'imagenes', // Para la Memoria Fotográfica
+            'imagenes',
             'inspeccion',
         ])->findOrFail($id_inf);
 
@@ -694,10 +692,6 @@ class InformesController extends BaseController
 
     /**
      * Crea y envía una notificación a todos los administradores (id_rol = 1) del módulo de Informes.
-     *
-     * @param string $action 'updated' o 'deleted'.
-     * @param \App\Models\Informe $informe Instancia del informe cargado con relaciones.
-     * @return void
      */
     private function sendAdminNotification(string $action, Informe $informe): void
     {

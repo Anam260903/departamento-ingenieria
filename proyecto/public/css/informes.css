@@ -37,7 +37,7 @@ body {
     line-height: 1.3;
 }
 
-/* Estilos del Encabezado */
+/* Estilos del encabezado */
 .header-container {
     width: 100%;
     display: table;
@@ -76,7 +76,7 @@ body {
     margin: 10px 0 15px 0;
 }
 
-/* Títulos del Informe */
+/* Títulos del informe */
 .report-title {
     text-align: center;
     font-size: 14px;
@@ -136,7 +136,7 @@ span[style*="width: 10px;"] {
     display: block;
 }
 
-/* --- Memoria fotográfica --- */
+/* Memoria fotográfica */
 .photo-table {
     width: 100%;
     border-collapse: collapse;
@@ -165,7 +165,7 @@ span[style*="width: 10px;"] {
     padding-bottom: 10px;
 }
 
-/* --- Firma --- */
+/* Firma */
 .footer-signature {
     position: relative;
     width: 100%;

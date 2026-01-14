@@ -73,7 +73,7 @@
         </tbody>
     </table>
 
-    {{-- NÚMERO DE PÁGINA --}}
+    {{-- Número de página --}}
     <script type="text/php">
         if (isset($pdf)) {
             $font = $fontMetrics->get_font("Arial");

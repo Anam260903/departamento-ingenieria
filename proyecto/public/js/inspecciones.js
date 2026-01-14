@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     verBotones.forEach(function (button) {
         button.addEventListener("click", function () {
-            // 1. Obtener el valor del atributo y decodificarlo como JSON.
+            // 1. Obtener el valor del atributo y decodificarlo como JSON
             var observacionEncoded = this.getAttribute("data-observacion");
             var observacion = JSON.parse(observacionEncoded);
 

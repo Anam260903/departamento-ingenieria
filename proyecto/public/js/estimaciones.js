@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function () {
     selectCalculo.addEventListener('change', function () {
         const selectedId = this.value; // Obtener el ID del cálculo seleccionado
 
-        // Mostrar Mensaje de Carga Temporal
+        // Mostrar mensaje de carga temporal
         textareaContenido.value = 'Cargando contenido. Por favor, espere...';
 
         setTimeout(() => {
@@ -68,7 +68,5 @@ document.addEventListener('DOMContentLoaded', function () {
             alert('Fallo al copiar el texto. Su navegador no soporta el comando "copy".');
         }
     });
-
-    
 
 });

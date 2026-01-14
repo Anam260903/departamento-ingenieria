@@ -1,5 +1,3 @@
-// public/js/decisiones.js
-
 document.addEventListener('DOMContentLoaded', function () {
     const select1 = document.getElementById('inspeccion1_id');
     const select2 = document.getElementById('inspeccion2_id');
@@ -19,12 +17,10 @@ document.addEventListener('DOMContentLoaded', function () {
     // Calcular la prioridad actual y actualizar el display
     function calculatePriorityScore(panelNumber) {
         let score = 0;
-        // Se usa querySelectorAll para obtener los elementos con el prefijo de clase
         const checkboxes = document.querySelectorAll(`.check-inspeccion-${panelNumber}`);
 
         checkboxes.forEach(checkbox => {
             if (checkbox.checked) {
-                // El peso se toma del atributo data-weight
                 const weight = parseInt(checkbox.dataset.weight);
                 score += weight;
             }
@@ -39,9 +35,9 @@ document.addEventListener('DOMContentLoaded', function () {
         resetResults();
     }
 
-    /**
-     * Validar que no se seleccione la misma inspección en ambos selects.
-     */
+    
+    // Validar que no se seleccione la misma inspección en ambos selects.
+     
     function validateSelection(changedSelect, otherSelect, panelNumber) {
         const changedValue = changedSelect.value;
         const otherValue = otherSelect.value;
@@ -52,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // Restablecer la selección y la UI del panel que se acaba de modificar
             changedSelect.value = '';
             document.getElementById(`vivienda_info_${panelNumber}`).style.display = 'none';
-            // Restablece el estado de los checkboxes
+            // Restablecer el estado de los checkboxes
             document.querySelectorAll(`.check-inspeccion-${panelNumber}`).forEach(cb => cb.checked = false);
             document.getElementById(`current_score_${panelNumber}`).textContent = '0';
 
@@ -80,8 +76,6 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById(`comunidad_${panelNumber}`).textContent = selectedOption.dataset.comunidad;
             infoDiv.style.display = 'block';
 
-            // El contenido del checklist NO debe limpiarse o reiniciarse aquí
-            // Simplemente se asegura de que el score se muestre si ya hay una selección
             calculatePriorityScore(panelNumber);
 
         } else {
@@ -106,7 +100,6 @@ document.addEventListener('DOMContentLoaded', function () {
         cb.addEventListener('change', () => recalculateOnCheck(2));
     });
 
-
     // Lógica de comparación al presionar el botón
     if (btnComparar) {
         btnComparar.addEventListener('click', function () {
@@ -124,14 +117,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            // 1. Obtener los puntajes de prioridad
+            // Obtener los puntajes de prioridad
             const score1 = calculatePriorityScore(1);
             const score2 = calculatePriorityScore(2);
 
             const propietario1 = document.getElementById('propietario_1').textContent;
             const propietario2 = document.getElementById('propietario_2').textContent;
 
-            // 2. Aplicar la lógica de comparación
+            // Aplicar la lógica de comparación
             let resultText = '';
             let recommendationText = '';
 
@@ -153,7 +146,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 resultSpan.classList.add('text-warning');
             }
 
-            // Lógica de Mayor/Menos prioridad
+            // Lógica de Mayor/Menor prioridad
             else {
                 let ganador = (score1 > score2) ? propietario1 : propietario2;
                 let perdedor = (score1 > score2) ? propietario2 : propietario1;
@@ -163,11 +156,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 resultText = `Prioridad Clara: El proyecto de ${ganador} (${puntuacionGanador} pts) tiene mayor prioridad sobre ${perdedor} (${puntuacionPerdedor} pts).`;
 
-                // Adaptando la lógica de recomendación a la escala de 15 puntos:
                 if (puntuacionGanador >= 8 && diferencia >= 3) { // Alta Puntuación general y diferencia notable
                     recommendationText = `La inspección de ${ganador} con ${puntuacionGanador} puntos se considera de **Alta Prioridad**. Existe una diferencia crítica de ${diferencia} puntos. Concentre los esfuerzos logísticos y de personal en esta ubicación.`;
                     resultSpan.classList.add('text-danger');
-                } else if (diferencia >= 5) { // Crítica: 5 puntos o más (33% del máximo)
+                } else if (diferencia >= 5) { // Crítica: 5 puntos o más
                     recommendationText = `Existe una diferencia crítica de ${diferencia} puntos. La inspección de ${ganador} debe ser ejecutada de inmediato. Concentre los esfuerzos logísticos y de personal en esta ubicación.`;
                     resultSpan.classList.add('text-danger');
                 } else if (diferencia >= 3) { // Moderada: 3 o 4 puntos

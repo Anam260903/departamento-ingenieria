@@ -32,19 +32,19 @@
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
-                
+
                 {{-- Mensajes de sesión --}}
                 @php
                     $mensaje = session('status') ?? session('success');
                 @endphp
-                
+
                 @if($mensaje)
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         {{ $mensaje }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
-                
+
                 @if ($errors->any())
                     <div class="alert alert-danger">
                         <ul>
@@ -183,7 +183,6 @@
                 </div>
 
             </div>
-
 
         </div>
     </div>

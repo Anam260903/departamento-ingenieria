@@ -1,4 +1,4 @@
-/* Estilos base para la Card clickable */
+/* Estilos base para la card */
 .card-insp-clickable {
     background-color: #ffffff;
     border: 1px solid #e0e0e0 !important;
@@ -13,7 +13,7 @@
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
 }
 
-/* Caabecera del Card */
+/* Caabecera del card */
 .card-insp-clickable .card-body {
     padding: 1.25rem;
 }

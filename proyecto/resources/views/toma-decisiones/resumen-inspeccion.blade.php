@@ -64,7 +64,7 @@
                                 data-bs-toggle="modal" data-bs-target="#resumenModal">
 
                                 <div class="card-body">
-                                    {{-- Cabecera con Estado y Fecha --}}
+                                    {{-- Cabecera con estado y fecha --}}
                                     <div class="d-flex justify-content-between align-items-center mb-3">
                                         <span
                                             class="badge {{ $inspeccion->estado_insp == 1 ? 'badge-insp-completada' : 'badge-insp-pendiente' }}">
@@ -134,7 +134,7 @@
                                     id="mensaje-error-texto"></span>
                             </div>
 
-                            {{-- Contenido del Informe (estado: completado) --}}
+                            {{-- Contenido del Informe (Estado: Completado) --}}
                             <div id="resumen-contenido" style="display:none;">
 
                                 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -178,8 +178,6 @@
                         </div>
                     </div>
                 </div>
-
-
 
             </div>
         </div>

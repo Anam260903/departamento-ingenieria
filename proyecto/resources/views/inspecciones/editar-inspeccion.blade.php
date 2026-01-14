@@ -27,7 +27,7 @@
 
                 {{-- Mensajes de sesión --}}
                 @php
-$mensaje = session('status') ?? session('success');
+                    $mensaje = session('status') ?? session('success');
                 @endphp
 
                 @if($mensaje)
@@ -59,7 +59,7 @@ $mensaje = session('status') ?? session('success');
                             <div class="col-md-6 mb-3">
                                 <label for="fecha" class="form-label">Fecha</label>
                                 @php
-$minDate = \Carbon\Carbon::now()->subDays(30)->toDateString();
+                                    $minDate = \Carbon\Carbon::now()->subDays(30)->toDateString();
                                 @endphp
                                 {{-- Prellenar con la fecha actual o el valor anterior si falló la validación --}}
                                 <input type="date" class="form-control @error('fecha') is-invalid @enderror" id="fecha"
@@ -172,11 +172,9 @@ $minDate = \Carbon\Carbon::now()->subDays(30)->toDateString();
                             @enderror
                         </div>
 
+                        {{-- Botones de navegación --}}
                         <div class="d-flex justify-content-end gap-2">
-                            {{-- Botón Cancelar: Vuelve al listado de inspecciones --}}
                             <a href="{{ route('inspecciones.index') }}" class="btn btn-secondary">Cancelar</a>
-
-                            {{-- Botón Guardar --}}
                             <button type="submit" class="btn btn-primary w-auto">Guardar Cambios</button>
                         </div>
                     </form>

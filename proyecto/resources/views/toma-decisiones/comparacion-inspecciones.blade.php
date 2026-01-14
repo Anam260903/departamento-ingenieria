@@ -102,7 +102,6 @@
                                         </p>
 
                                         {{-- Checklist para la inspección 1 --}}
-                                        {{-- Ponderaciones: 3+5+4+2+1 = Máx 15 --}}
                                         <div class="form-check mb-2">
                                             <input class="form-check-input check-inspeccion-1" type="checkbox" value="1"
                                                 id="q1_1" data-weight="3">
@@ -168,7 +167,6 @@
                                     </div>
 
                                     {{-- Información de la vivienda 2 --}}
-                                    {{-- Ponderaciones: 3+5+4+2+1 = Máx 15 --}}
                                     <div id="vivienda_info_2" class="mb-4" style="display: none;">
                                         <h6 class="text-secondary fw-bold">VIVIENDA DE: <span id="propietario_2"
                                                 class="text-dark"></span></h6>

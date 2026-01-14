@@ -67,12 +67,12 @@
                 <i class="bi bi-card-checklist me-2"></i> Gestión de inspecciones
             </a>
 
-
             <a href="{{ route('informes.index') }}"
                 class="list-group-item list-group-item-action bg-white d-flex align-items-center @if(request()->routeIs('informes.index') || request()->routeIs('informes.seleccionar' || request()->routeIs('informes.create'))) active @endif">
                 <i class="bi bi-file-earmark-text me-2"></i> Informes técnicos
             </a>
 
+            <a href="#" class="list-group-item list-group-item-action bg-white d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#helpCenterModal">    <i class="bi bi-question-octagon me-2"></i> Centro de ayuda</a>
 
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
@@ -83,6 +83,50 @@
             </form>
         </div>
     </div>
+
+    {{-- Modal para el centro de ayuda --}}
+    <div class="modal fade" id="helpCenterModal" tabindex="-1" aria-labelledby="helpCenterModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="helpCenterModalLabel">
+                        <i class="bi bi-info-circle me-2"></i> Información del Sistema
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+            <div class="modal-body">
+                <div class="text-center mb-4">
+                    <img src="{{ asset('images/logo3.jpg') }}" alt="Logo" style="width: 100px;"> 
+                    <h4 class="mt-2">Departamento de Ingeniería</h4>
+                    <h5 class="mt-2">CORVISUCRE - Circuito II</h5>
+                    <p class="text-muted">Versión 1.0.0</p>
+                </div>
+
+                <ul class="list-group list-group-flush mb-4">
+                    <li class="list-group-item"><strong>Elaborado Por:</strong> Ana Marcano</li>
+                    <li class="list-group-item"><strong>Desarrollado con:</strong> Laravel 12.26.3 & Bootstrap 5.3.8</li>
+                    <li class="list-group-item"><strong>Base de Datos:</strong> MariaDB 10.4.32</li>
+                    <li class="list-group-item"><strong>Última actualización:</strong> Enero 2026 </li>
+                </ul>
+
+                <div class="alert alert-light border">
+                    <h6>¿Necesitas ayuda adicional?</h6>
+                    <p class="small text-muted">Consulta el manual de usuario detallado para aprender a utilizar todas las funciones del sistema.</p>
+                    
+                    {{-- Botón para descargar manual de usuario--}}
+                    <div class="d-grid gap-2">
+                        <a href="{{ asset('documentos/manual-usuario.pdf') }}" 
+                           download="Manual_de_Usuario.pdf" 
+                           class="btn btn-outline-primary">
+                            <i class="bi bi-file-earmark-pdf me-2"></i> Descargar Manual de Usuario (PDF)
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="{{ asset('js/dashboard.js') }}"></script>

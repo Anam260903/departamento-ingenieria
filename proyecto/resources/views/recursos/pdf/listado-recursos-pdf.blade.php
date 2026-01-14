@@ -3,7 +3,6 @@
 
 <head>
     <title>Reporte de Recursos</title>
-    {{-- Reutiliza el mismo CSS --}}
     <link href="{{ asset('css/reportes-pdf.css') }}" rel="stylesheet">
 </head>
 
@@ -56,7 +55,7 @@
         </tbody>
     </table>
 
-    {{-- NÚMERO DE PÁGINA --}}
+    {{-- Número de página --}}
     <script type="text/php">
         if (isset($pdf)) {
             $font = $fontMetrics->get_font("Arial");

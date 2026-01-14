@@ -2,7 +2,7 @@
 
 namespace App\Policies;
 
-use App\Models\Usuario; // Su modelo de usuario
+use App\Models\Usuario;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class PersonalPolicy
@@ -14,7 +14,6 @@ class PersonalPolicy
      */
     public function before(Usuario $user, $ability)
     {
-        // El administrador (id_rol=1) siempre tiene permiso.
         if ($user->id_rol === 1) {
             return true;
         }
@@ -26,7 +25,7 @@ class PersonalPolicy
      */
     public function viewAny(Usuario $user)
     {
-        // El Rol 2 es denegado
+        // El Rol 2 Inspector es denegado
         return false;
     }
 
@@ -35,7 +34,7 @@ class PersonalPolicy
      */
     public function update(Usuario $user, Usuario $targetUser)
     {
-        // El Rol 2 es denegado
+        // El Rol 2 Inspector es denegado
         return false;
     }
 
@@ -44,7 +43,7 @@ class PersonalPolicy
      */
     public function viewAvailableRecursos(Usuario $user)
     {
-        // Denegado para id_rol=2
+        // El Rol 2 Inspector es denegado
         return false;
     }
 
@@ -53,7 +52,7 @@ class PersonalPolicy
      */
     public function assignRecurso(Usuario $user, Usuario $targetUser)
     {
-        // Denegado para id_rol=2
+        // El Rol 2 Inspector es denegado
         return false;
     }
 }

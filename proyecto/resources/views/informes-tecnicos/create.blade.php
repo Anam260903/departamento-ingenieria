@@ -193,23 +193,21 @@
                                 </div>
                             </div>
 
+                            {{-- Botones de Navegación --}}
+                            <div class="d-flex justify-content-between mt-4">
+                                <a href="{{ route('informes.index') }}" class="btn btn-secondary">Cancelar</a>
+                                <button type="submit" class="btn btn-primary w-auto me-2">Guardar y Continuar
+                                </button>
+                            </div>
 
+                        </form>
                     </div>
 
-                    {{-- Botones de Navegación --}}
-                    <div class="d-flex justify-content-between mt-4">
-                        <a href="{{ route('informes.index') }}" class="btn btn-secondary">Cancelar</a>
-                        <button type="submit" class="btn btn-primary w-auto me-2">Guardar y Continuar
-                        </button>
-                    </div>
-
-                    </form>
                 </div>
             </div>
         </div>
     </div>
 
-    {{-- SCRIPTS --}}
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('js/app.js') }}"></script>
     <script src="{{ asset('js/informes.js') }}"></script>

@@ -11,15 +11,13 @@ class AdminMiddleware
 {
     /**
      * Maneja una solicitud entrante.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {
         // 1. Verificar si el usuario está autenticado
         if (Auth::check()) {
 
-            // 2. Verificar si el id_rol es igual a 1 (ADMINISTRADOR)
+            // 2. Verificar si el id_rol es igual a 1 (Administrador)
             if (Auth::user()->id_rol == 1) {
                 // Si es administrador, permitir la solicitud
                 return $next($request);

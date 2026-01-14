@@ -33,7 +33,7 @@ class Informe extends Model
         return $this->belongsTo(Inspeccion::class, 'id_insp', 'id_insp');
     }
 
-    // Relación: Un informe pertenece a un cálculo (Uno a Muchos)
+    // Relación: Un informe pertenece a unos cálculos
     public function calculos()
     {
         return $this->belongsTo(Calculos::class, 'id_calculo', 'id_calculo');

@@ -28,6 +28,7 @@
                 </div>
             </div>
 
+            {{-- Notificaciones --}}
             <div class="nav-item dropdown me-4">
                 <a class="nav-link" href="#" id="NotificacionToggle" role="button" data-bs-toggle="dropdown"
                     aria-expanded="false" data-bs-auto-close="outside" title="Notificaciones">

@@ -10,7 +10,7 @@ class DashboardPolicy
     use HandlesAuthorization;
 
     /**
-     * Otorga acceso total al Administrador (id_rol === 1) antes de cualquier otra verificación.
+     * Otorga acceso total al Administrador antes de cualquier otra verificación.
      */
     public function before(Usuario $user, $ability)
     {
@@ -23,8 +23,7 @@ class DashboardPolicy
     }
 
     /**
-     * Determina si el usuario puede ver la página del Dashboard.
-     * Dado que el Admin pasa por 'before', esta verificación es para otros roles (id_rol=2).
+     * Determina si el usuario puede ver la página del Dashboard
      */
     public function viewDashboard(Usuario $user)
     {

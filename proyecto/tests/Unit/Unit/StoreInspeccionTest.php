@@ -33,7 +33,7 @@ class StoreInspeccionTest extends TestCase
             'fecha' => Carbon::now()->format('Y-m-d'),
             'propietario_nombre' => 'Juan',
             'propietario_apellido' => 'Perez',
-            'propietario_cedula' => '25126458', 
+            'propietario_cedula' => '25126458',
             'propietario_telefono' => '04121274597',
             'direccion' => 'Calle Sucre 123',
             'estado' => 1,

@@ -11,19 +11,18 @@ use Illuminate\Support\Facades\Hash;
 class PerfilController extends Controller
 {
     /**
-     * Muestra la vista del perfil del usuario autenticado
+     * Muestra la vista del perfil del usuario autenticado.
      */
     public function index()
     {
         // Obtener la información del usuario autenticado
         $usuario = Auth::user();
 
-        // Pasar el objeto de usuario a la vista
         return view('perfil', compact('usuario'));
     }
 
     /**
-     * Actualiza la información del perfil del usuario autenticado
+     * Actualiza la información del perfil del usuario autenticado.
      */
     public function update(Request $request)
     {
@@ -59,7 +58,7 @@ class PerfilController extends Controller
     }
 
     /**
-     * Actualiza la contraseña del usuario autenticado
+     * Actualiza la contraseña del usuario autenticado.
      */
     public function changePassword(Request $request)
     {

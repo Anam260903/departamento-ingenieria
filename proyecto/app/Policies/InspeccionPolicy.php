@@ -12,12 +12,10 @@ class InspeccionPolicy
     use HandlesAuthorization;
 
     /**
-     * Determina si el usuario puede ver las inspecciones (Alcance antes de la consulta).
+     * Determina si el usuario puede ver las inspecciones.
      */
     public function viewAny(Usuario $user): bool
     {
-        // Todos los usuarios autenticados pueden ver la lista, 
-        // pero la restricción de datos se aplica en el controlador.
         return true;
     }
 
@@ -32,7 +30,7 @@ class InspeccionPolicy
             return Response::allow();
         }
 
-        // Un usuario normal (id_rol = 2) solo puede ver si el id_user coincide
+        // Un usuario inspector (id_rol = 2) solo puede ver si el id_user coincide
         return $user->id_user === $inspeccion->id_user
             ? Response::allow()
             : Response::deny('No tienes permiso para ver esta inspección.');
@@ -48,10 +46,10 @@ class InspeccionPolicy
             return Response::allow();
         }
 
-        // Un usuario normal (id_rol = 2) solo puede actualizar si el id_user coincide
+        // Un usuario inspector (id_rol = 2) solo puede actualizar si el id_user coincide
         return $user->id_user === $inspeccion->id_user
             ? Response::allow()
-            : Response::deny('No tienes permiso para editar esta inspección, no fuiste el responsable de su registro.');
+            : Response::deny('No tienes permiso para editar esta inspección.');
     }
 
     /**
@@ -68,7 +66,7 @@ class InspeccionPolicy
     }
 
     /**
-     * Determinar si el cancelar la asignación la inspección.
+     * Determinar si el usuario puede cancelar la asignación la inspección.
      */
     public function reassign(Usuario $user, Inspeccion $inspeccion): Response
     {

@@ -53,9 +53,10 @@
                         @csrf
                         @method('PUT')
 
-                        {{-- Sección Datos del Recurso --}}
+                        {{-- Sección datos del Rerurso --}}
                         <h5 class="mb-3">Datos del Recurso</h5>
                         <div class="row mb-4">
+                            
                             {{-- Campo código --}}
                             <div class="col-md-6 mb-3">
                                 <label for="codigo" class="form-label">Código</label>
@@ -105,11 +106,9 @@
                             </div>
                         </div>
 
-                        {{-- Botones de acción --}}
+                        {{-- Botones de navegación --}}
                         <div class="d-flex justify-content-end gap-2">
-                            {{-- Botón cancelar: Vuelve al listado de recursos --}}
                             <a href="{{ route('recursos.index') }}" class="btn btn-secondary">Cancelar</a>
-                            {{-- Botón guardar --}}
                             <button type="submit" class="btn btn-primary w-auto">Guardar Cambios</button>
                         </div>
                     </form>

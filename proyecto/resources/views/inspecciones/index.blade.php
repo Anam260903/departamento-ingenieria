@@ -53,7 +53,7 @@
 
                 {{-- Mensajes de sesión --}}
                 @php
-$mensaje = session('status') ?? session('success');
+                    $mensaje = session('status') ?? session('success');
                 @endphp
 
                 @if($mensaje)
@@ -89,7 +89,6 @@ $mensaje = session('status') ?? session('success');
                             <i class="bi bi-calendar-check"></i> Descargar PDF Mensual
                         </button>
                     </div>
-
 
                     {{-- Botón nueva inspección --}}
                     <div class="col-auto">
@@ -245,7 +244,7 @@ $mensaje = session('status') ?? session('success');
                                                 @if (auth()->check() && auth()->user()->id_rol === 1)
 
 
-                                                    {{-- 5. Botón: Cancelar Asignación / Reasignar --}}
+                                                    {{-- 5. Botón: Cancelar asignación --}}
                                                     @if ($inspeccion->id_user !== null && $inspeccion->informe === null)
 
                                                         <form
@@ -264,7 +263,7 @@ $mensaje = session('status') ?? session('success');
 
                                                     {{-- 6. Botón de eliminar --}}
                                                     @if (!$inspeccion->informe)
-                                                        {{-- Solo se muestra si NO tiene informe --}}
+                                                        {{-- Solo se muestra si no tiene informe --}}
                                                         @if (auth()->check() && auth()->user()->id_rol === 1)
                                                             <form action="{{ route('inspecciones.destroy', $inspeccion->id_insp) }}"
                                                                 method="POST" class="d-inline">
@@ -347,7 +346,7 @@ $mensaje = session('status') ?? session('success');
                                 <select id="mes_modal" name="mes" class="form-select" required>
                                     <option value="">Seleccione Mes</option>
                                     @php
-\Carbon\Carbon::setLocale('es');
+                                        \Carbon\Carbon::setLocale('es');
                                     @endphp
                                     {{-- Listar los 12 meses --}}
                                     @for ($m = 1; $m <= 12; $m++)

@@ -213,7 +213,7 @@
                             <select id="id_insp_select" name="id_insp" class="form-select" required>
                                 <option value="">Seleccione una inspección...</option>
 
-                                {{-- Llenar el Dropdown con inspecciones disponibles --}}
+                                {{-- Llenar el dropdown con inspecciones disponibles --}}
                                 @php
 
                                     $informesController = new App\Http\Controllers\InformesController();

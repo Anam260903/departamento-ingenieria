@@ -93,7 +93,6 @@
                                 <input type="date" class="form-control" name="fecha_devolucion_end"
                                     title="Fecha de Devolución (Hasta)" value="{{ request('fecha_devolucion_end') }}">
 
-                                {{-- Muestra el error de validación del servidor --}}
                                 @error('fecha_devolucion_end')
                                     <div class="invalid-feedback">
                                         {{ $message }}
@@ -197,7 +196,6 @@
 
 
                     <div class="mt-4 d-flex justify-content-center">
-                        {{-- Aplicamos appends() para mantener todos los filtros en la paginación --}}
                         {{ $asignaciones->appends(request()->input())->links() }}
                     </div>
                 </div>
@@ -220,7 +218,6 @@
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="fecha_desde" class="form-label">Fecha Desde:</label>
-                            {{-- APLICACIÓN DEL ERROR Y CLASE is-invalid --}}
                             <input type="date" class="form-control @error('fecha_desde') is-invalid @enderror"
                                 id="fecha_desde" name="fecha_desde" required value="{{ old('fecha_desde') }}">
                             @error('fecha_desde')
@@ -229,7 +226,6 @@
                         </div>
                         <div class="mb-3">
                             <label for="fecha_hasta" class="form-label">Fecha Hasta:</label>
-                            {{-- APLICACIÓN DEL ERROR Y CLASE is-invalid con after_or_equal --}}
                             <input type="date" class="form-control @error('fecha_hasta') is-invalid @enderror"
                                 id="fecha_hasta" name="fecha_hasta" required value="{{ old('fecha_hasta') }}">
                             @error('fecha_hasta')
@@ -293,7 +289,6 @@
                 modal.show();
             @endif
 
-           
             // Validación de rango de fechas para el modal
             $('#exportarPDFForm').on('submit', function (e) {
                 var fechaDesde = $('#fecha_desde').val();
@@ -313,7 +308,7 @@
                     }
                 }
             });
-            
+
             $('#fecha_desde').on('change', function () {
                 var minDate = $(this).val();
                 $('#fecha_hasta').attr('min', minDate);

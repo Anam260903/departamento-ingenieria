@@ -72,11 +72,11 @@
                         {{ $asignacion->usuario->apellido ?? '' }} 
                     </td>
                     <td>
-                        {{-- Fecha de Asignación --}}
+                        {{-- Fecha de asignación --}}
                         {{ $asignacion->fecha_asignacion->format('d-m-Y') }}
                     </td>
                     <td>
-                        {{-- Fecha de Devolución --}}
+                        {{-- Fecha de devolución --}}
                         @if ($asignacion->fecha_devolucion)
                             {{ $asignacion->fecha_devolucion->format('d-m-Y') }}
                         @else
@@ -88,7 +88,7 @@
         </tbody>
     </table>
 
-    {{-- NÚMERO DE PÁGINA --}}
+    {{-- Número de página --}}
     <script type="text/php">
         if (isset($pdf)) {
             $font = $fontMetrics->get_font("Arial");

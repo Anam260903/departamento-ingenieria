@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let countdownTimer;
     let sessionModalInstance = null;
 
-    // --- Funciones de Control ---
+    // Funciones de control
 
     function resetTimers() {
 
@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
         clearTimeout(timeoutTimer);
         clearInterval(countdownTimer);
 
-        // Configura el temporizador para mostrar la advertencia
+        // Configurar el temporizador para mostrar la advertencia
         warningTimer = setTimeout(showWarningModal, SHOW_WARNING_AT_MS);
     }
 
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-        fetch('/logout', { // Ruta de Laravel para cerrar sesión
+        fetch('/logout', { // Ruta para cerrar sesión
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     }
 
-    // --- Funciones del Modal ---
+    // Funciones del modal
 
     function getModalInstance() {
         const modalElement = document.getElementById('sessionWarningModal');
@@ -143,7 +143,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }, 1000);
     }
 
-    // --- Inicialización y Event Listeners ---
+    // Inicialización y event listeners
 
     // Reiniciar temporizadores con la actividad del usuario
     ['mousemove', 'mousedown', 'keypress', 'scroll', 'touchstart'].forEach(eventName => {

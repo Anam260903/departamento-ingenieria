@@ -15,7 +15,7 @@ class vivienda extends Model
 
     protected $fillable = [
         'direccion', 
-        'id_propie', 
+        'id_propie', // Clave foránea a propietario
         'caracteristicas', 
         'latitud',
         'longitud',

@@ -12,10 +12,13 @@
         <div class="row login-row">
             <div class="col-md-6 left-panel">
                 <div class="login-card">
+
+                    {{-- Recuperación de contraseña --}}
                     <h2 class="text-center mb-4">Recuperar Contraseña</h2>
                     <p class="text-center">Ingresa tu correo electrónico para verificar tu identidad mediante una
-                        pregunta de seguridad.</p>
+                        pregunta de seguridad.</p>ç
 
+                    {{-- Mensajes de sesión --}}
                     @if (session('errors'))
                         <div class="alert alert-danger" role="alert">
                             @foreach (session('errors')->all() as $error)
@@ -26,10 +29,13 @@
 
                     <form method="POST" action="{{ route('identify.olvideContraeña')}}">
                         @csrf
+                        {{-- Campo: Correo --}}
                         <div class="mb-3">
                             <input type="email" class="form-control" name="correo"
                                 value="{{ old('correo')}}" required placeholder="Correo electrónico">
                         </div>
+                        
+                        {{-- Botón de acción --}}
                         <button type="submit" class="btn btn-primary">Continuar</button>
                     </form>
                 </div>

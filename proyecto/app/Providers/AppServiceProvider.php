@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-// Importar los modelos y la nueva política
 use App\Models\Informe;
 use App\Models\Inspeccion;
 use App\Models\Dashboard;
@@ -22,7 +21,6 @@ class AppServiceProvider extends ServiceProvider
      * Correspondencia entre el modelo y las políticas de la aplicación.
      */
     protected $policies = [
-        // Mapeo de la política al modelo de inspección
         Inspeccion::class => InspeccionPolicy::class,
         Informe::class => InformePolicy::class,
         Dashboard::class => DashboardPolicy::class,

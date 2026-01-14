@@ -21,7 +21,7 @@ class Usuario extends Authenticatable
         'password',
         'profesion',
         'estado_user',
-        'id_rol', // FK para de rol
+        'id_rol', // Clave foránea a rol
     ];
 
     // Relación: Un usuario pertenece a un rol
@@ -48,6 +48,7 @@ class Usuario extends Authenticatable
     ];
 
     // Mutadores para formatear los datos antes de guardarlos en la base de datos
+    
     // 1. CORREO: Guardar siempre en minúsculas
     public function setCorreoAttribute($value)
     {

@@ -27,14 +27,14 @@
                 @php
                     $mensaje = session('status') ?? session('success');
                 @endphp
-                
+
                 @if($mensaje)
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         {{ $mensaje }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
-                
+
                 @if ($errors->any())
                     <div class="alert alert-danger">
                         <ul>
@@ -57,6 +57,8 @@
 
                 <div class="card shadow-sm p-4 mt-3">
                     <div class="row">
+
+                        {{-- Selección de cálculo --}}
                         <div class="col-md-6 mb-4">
                             <label for="nombre_calculo" class="form-label fw-bold">
                                 Seleccione una construcción para ver su estimación
@@ -69,49 +71,51 @@
                                     <option value="{{ $calculo->id_calculo }}">
                                         {{ $calculo->nombre_calculo }}
                                     </option>
-                                    @empty
+                                @empty
                                     <option value="" disabled>No hay cálculos disponibles</option>
                                 @endforelse
                             </select>
 
-                            <small class="form-text text-muted">El contenido del cálculo se mostrará en el cuadro de texto de abajo.</small>
+                            <small class="form-text text-muted">El contenido del cálculo se mostrará en el cuadro de
+                                texto de abajo.</small>
                         </div>
                     </div>
 
                     <div class="mb-4">
+
+                        {{-- Contenido del cálculo --}}
                         <label for="contenido" class="form-label fw-bold">
                             Contenido del cálculo
                         </label>
 
+                        {{-- Botón: Copiar--}}
                         <button type="button" class="btn btn-sm btn-outline-secondary mb-2" id="copyButton">
                             <i class="bi bi-clipboard"></i>
                         </button>
                         <span id="copyMessage" class="ms-2 text-success fw-bold d-none">¡Copiado!</span>
-      
-                        <textarea class="form-control" id="contenido" name="contenido" 
-                        rows="15" readonly 
-                        style="background-color: #f8f9fa; resize: none;" 
-                        placeholder="Seleccione una construcción para ver su contenido aquí."></textarea>
-            
+
+                        <textarea class="form-control" id="contenido" name="contenido" rows="15" readonly
+                            style="background-color: #f8f9fa; resize: none;"
+                            placeholder="Seleccione una construcción para ver su contenido aquí."></textarea>
+
                         <small class="form-text text-danger">Este campo es de solo lectura.</small>
                     </div>
                 </div>
             </div>
-            
+
         </div>
 
     </div>
+    
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('js/app.js') }}"></script>
 
     <script>
         const calculosData = {!! $calculosJson !!};
     </script>
-    
-    <script src="{{ asset('js/estimaciones.js') }}"></script>
-    
 
-    
+    <script src="{{ asset('js/estimaciones.js') }}"></script>
+
     @include('components._session-timeout')
 </body>
 

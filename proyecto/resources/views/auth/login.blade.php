@@ -13,12 +13,12 @@
 </head>
 
 <body>
-    {{-- Vista de inicio de sesión --}}
     <div class="container-fluid">
         <div class="row login-row">
             <div class="col-md-7 left-panel">
                 <div class="login-card">
-                    <h2 class="text-center mb-3">¡Bienvenido!</h2><h5 class="text-center mb-3">DEPARTAMENTO DE INGENIERÍA</h5>
+                    <h2 class="text-center mb-3">¡Bienvenido!</h2>
+                    <h5 class="text-center mb-3">DEPARTAMENTO DE INGENIERÍA</h5>
                     <h5 class="text-center mb-4 text-secondary">INGRESO AL SISTEMA</h5>
 
                     @if ($errors->any())
@@ -32,7 +32,7 @@
                     @endif
 
                     @php
-$mensaje = session('status') ?? session('success');
+                        $mensaje = session('status') ?? session('success');
                     @endphp
 
                     @if($mensaje)
@@ -65,17 +65,18 @@ $mensaje = session('status') ?? session('success');
 
                     {{-- Enlaces de navegación --}}
                     <div class="d-flex justify-content-between mt-3">
-                        <a href="{{ route('form.olvideContraseña') }}" class="text-decoration-none">¿Has olvidado tu
-                            contraseña?</a>
-                        <p class="mb-0">¿No tienes cuenta? <a href="{{ route('register') }}">Regístrate</a></p>
+                        <a href="{{ route('form.olvideContraseña') }}" class="text-decoration-none">¿Has olvidado tu contraseña?</a>
+                        <p class="mb-0">¿No tienes cuenta? <a href="{{ route('register') }}" class="text-decoration-none">Regístrate</a></p>
+                    </div>
+                    <div class="mt-3">
+                        <a href="{{ asset('documentos/manual-usuario.pdf') }}" download="Manual_de_Usuario.pdf" class="text-decoration-none" title="Descarga el manual de usuario del sistema">¿Cómo usar el sistema?</a>
                     </div>
                 </div>
             </div>
 
             <div class="col-md-5 right-panel d-none d-md-flex">
                 <div class="logo-container">
-                    <img src="{{ asset('images/logo3.jpg') }}"
-                        alt="Logo Departamento de Ingeniería CORVISUCRE">
+                    <img src="{{ asset('images/logo3.jpg') }}" alt="Logo Departamento de Ingeniería CORVISUCRE">
                 </div>
             </div>
         </div>

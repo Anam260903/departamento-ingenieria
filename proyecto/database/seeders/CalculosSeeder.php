@@ -13,7 +13,7 @@ class CalculosSeeder extends Seeder
      */
     public function run(): void
     {
-        
+
         // Primer cálculo predeterminado
         Calculos::create([
             'nombre_calculo' => 'Vivienda con 3 Cuartos, 2 Baños, Cocina, Sala.',

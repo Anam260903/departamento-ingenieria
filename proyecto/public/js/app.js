@@ -4,35 +4,33 @@ document.addEventListener("DOMContentLoaded", function () {
 
  // Código para el dropdown de notificaciones
     if (toggleButton) {
-        // Crear una nueva instancia de Dropdown de Bootstrap
+        // Crear una nueva instancia de dropdown de ootstrap
         var dropdown = new bootstrap.Dropdown(toggleButton);
 
-        // Agrega un listener de click para manejar el
+        // Listener de click
         toggleButton.addEventListener('click', function (e) {
-            e.preventDefault(); // Previene el comportamiento por defecto del enlace '#'
-            dropdown.toggle();  // Fuerza la acción de mostrar/ocultar
+            e.preventDefault();
+            dropdown.toggle(); 
         });
     }
     
-    // Lógica para mostrar/ocultar contraseñas
-    // Seleccionamos todos los botones que tienen la clase 'toggle-password'
+    // Lógica para mostrar/ocultar contraseña
     document.querySelectorAll(".toggle-password").forEach((button) => {
         button.addEventListener("click", function () {
             
-            // La contraseña es el elemento inmediatamente anterior (funciona con tu estructura de botón)
             const passwordInput = this.previousElementSibling;
             const icon = this.querySelector("i");
             
             if (passwordInput && passwordInput.tagName === 'INPUT') {
                 
-                // 1. Alternar el tipo de input
+                // Alternar el tipo de input
                 const type =
                     passwordInput.getAttribute("type") === "password"
                         ? "text"
                         : "password";
                 passwordInput.setAttribute("type", type);
 
-                // 2. Alternar el ícono
+                // Alternar el ícono
                 icon.classList.toggle("bi-eye");
                 icon.classList.toggle("bi-eye-slash");
             }

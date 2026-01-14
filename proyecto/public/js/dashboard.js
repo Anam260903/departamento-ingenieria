@@ -44,16 +44,15 @@ document.addEventListener("DOMContentLoaded", function () {
                         max: 20,
                     },
                 },
-                // Asegurar que el fondo blanco esté disponible para JPG/PNG
                 plugins: {
                     legend: {
                         display: true
                     },
-                    // Añadir un fondo blanco al exportar para evitar transparencia
+                    // Añadir un fondo blanco al exportar
                     beforeDraw: function (chart) {
                         if (chart.canvas.getContext) {
                             var ctx = chart.canvas.getContext('2d');
-                            ctx.fillStyle = 'white'; // Fondo blanco
+                            ctx.fillStyle = 'white';
                             ctx.fillRect(0, 0, chart.width, chart.height);
                         }
                     }
@@ -73,21 +72,21 @@ document.addEventListener("DOMContentLoaded", function () {
             const canvasOriginal = informesChartInstance.canvas;
             const margin = 20;
             
-            // Crear un nuevo canvas temporal, aumentando el tamaño para el margen
+            // Crear un nuevo canvas temporal
             const canvasTemporal = document.createElement('canvas');
             canvasTemporal.width = canvasOriginal.width + 2 * margin; // Añadir margen a izquierda y derecha
             canvasTemporal.height = canvasOriginal.height + 2 * margin; // Añadir margen arriba y abajo
             
             const ctxTemp = canvasTemporal.getContext('2d');
             
-            // 3. Dibujar el fondo blanco en el canvas temporal completo
+            // Dibujar el fondo blanco en el canvas temporal completo
             ctxTemp.fillStyle = 'white'; 
             ctxTemp.fillRect(0, 0, canvasTemporal.width, canvasTemporal.height);
 
-            // 4. Dibujar el contenido del gráfico original con el desfase del margen
+            // Dibujar el contenido del gráfico original con el desfase del margen
             ctxTemp.drawImage(canvasOriginal, margin, margin);
 
-            // 5. Obtener el Data URL de la imagen (PNG o JPEG/JPG)
+            // Obtener el Data URL de la imagen (PNG o JPEG/JPG)
             let dataURL;
             let mimeType;
             
@@ -96,18 +95,17 @@ document.addEventListener("DOMContentLoaded", function () {
                 dataURL = canvasTemporal.toDataURL(mimeType);
             } else if (formato === 'jpg') {
                 mimeType = 'image/jpeg';
-                // Usamos toDataURL para obtener la imagen JPEG
                 dataURL = canvasTemporal.toDataURL(mimeType, 1.0);
             } else {
                 return; // Formato no soportado
             }
             
-            // 6. Crear un enlace temporal para forzar la descarga
+            // Crear un enlace temporal para forzar la descarga
             const a = document.createElement('a');
             a.download = `informes_por_mes_${new Date().toISOString().split('T')[0]}.${formato}`;
             a.href = dataURL;
 
-            // 7. Simular el clic en el enlace
+            // Simular el clic en el enlace
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -130,29 +128,28 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    // Código para el dropdown de notificaciones
-    // Selecciona el botón por su ID
+    // Script para el dropdown de notificaciones
     var toggleButton = document.getElementById('NotificacionToggle');
 
     if (toggleButton) {
-        // Crear una nueva instancia de Dropdown de Bootstrap
+        // Crear una nueva instancia de dropdown de bootstrap
         var dropdown = new bootstrap.Dropdown(toggleButton);
 
-        // Agrega un listener de click para manejar el toggle
+        // Listener de click para manejar el toggle
         toggleButton.addEventListener('click', function (e) {
-            e.preventDefault(); // Previene el comportamiento por defecto del enlace '#'
-            dropdown.toggle();  // Fuerza la acción de mostrar/ocultar
+            e.preventDefault();
+            dropdown.toggle();
         });
     }
 
-    // Código para el dropdown de descarga de gráficos
+    // Script para el dropdown de descarga de gráficos
     var descargarToggle = document.getElementById('descargarGraficoDropdown');
 
     if (descargarToggle) {
-        // Crear una nueva instancia de Dropdown de Bootstrap para la descarga
+        // Crear una nueva instancia de dropdown de bootstrap para la descarga
         var descargaDropdown = new bootstrap.Dropdown(descargarToggle);
 
-        // Agrega un listener de click para manejar el toggle
+        // Listener de click para manejar el toggle
         descargarToggle.addEventListener('click', function (e) {
             descargaDropdown.toggle();  // Fuerza la acción de mostrar/ocultar
         });

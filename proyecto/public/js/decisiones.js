@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let chartInstances = {};
     const margin = 20; // Margen para la descarga de imagen
 
-    // Función para inicializar los Dropdowns de Bootstrap
+    // Función para inicializar los dropdowns de bootstrap
     const initializeDropdown = (toggleId) => {
         const toggleButton = document.getElementById(toggleId);
         if (toggleButton && window.bootstrap && window.bootstrap.Dropdown) {
@@ -37,26 +37,26 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const ctxTemp = canvasTemporal.getContext('2d');
 
-        // 1. Dibujar el fondo blanco en el canvas temporal completo
+        // Dibujar el fondo blanco en el canvas temporal completo
         ctxTemp.fillStyle = 'white';
         ctxTemp.fillRect(0, 0, canvasTemporal.width, canvasTemporal.height);
 
-        // 2. Dibujar el contenido del gráfico original con el desfase del margen
+        // Dibujar el contenido del gráfico original
         ctxTemp.drawImage(canvasOriginal, margin, margin);
 
-        // 3. Obtener el Data URL de la imagen (PNG o JPG)
+        // Obtener el Data URL de la imagen (PNG o JPG)
         let dataURL;
         let mimeType = (formato === 'png') ? 'image/png' : 'image/jpeg';
         let quality = (formato === 'jpg') ? 1.0 : undefined;
 
         dataURL = canvasTemporal.toDataURL(mimeType, quality);
 
-        // 4. Crear un enlace temporal para forzar la descarga
+        // Crear un enlace temporal para forzar la descarga
         const a = document.createElement('a');
         a.download = `${chartId}_${new Date().toISOString().split('T')[0]}.${formato}`;
         a.href = dataURL;
 
-        // 5. Simular el clic en el enlace
+        // Simular el clic en el enlace
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -160,7 +160,7 @@ document.addEventListener('DOMContentLoaded', function () {
             try {
                 const data = getChartData('disponibilidadData');
                 chartInstances['disponibilidadChart'] = new window.Chart(disponibilidadCtx, {
-                    type: 'doughnut', // Gráfico de Anillo
+                    type: 'doughnut',
                     data: {
                         labels: data.labels,
                         datasets: [{
@@ -182,7 +182,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // GRÁFICOS DE RECURSOS
+    // ---- GRÁFICOS DE RECURSOS ----
 
     let topRecursosChartInstance = null;
 
@@ -251,7 +251,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 
-    // GRÁFICO 5: Función de renderizado reusable (para AJAX)
+    // GRÁFICO 5: Función de renderizado reusable
     function renderTopRecursosChart(labels, data) {
         const topRecursosCtx = document.getElementById('topRecursosChart');
         if (!topRecursosCtx) return;
@@ -300,7 +300,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // --- LÓGICA DE EVENTOS DE RECURSOS ---
 
-    // Manejar el cambio de mes (AJAX)
+    // Manejar el cambio de mes
     const mesSelector = document.getElementById('mes-selector');
     const mesDisplayLabel = document.getElementById('mes-display-label'); // Nuevo elemento
     const recomendacionElement = document.getElementById('recomendacion-texto');
@@ -310,11 +310,11 @@ document.addEventListener('DOMContentLoaded', function () {
             const mesAno = this.value;
             const url = `/decisiones/recursos/top?mes=${mesAno}`;
 
-            // 1. Obtener el texto del mes selccionado
+            // Obtener el texto del mes selccionado
             const selectedOption = this.options[this.selectedIndex];
             const selectedMonthText = selectedOption.textContent.trim();
 
-            // 2. Actualizar inmediatamente la etiqueta de datos
+            // Actualizar inmediatamente la etiqueta de datos
             if (mesDisplayLabel) {
                 mesDisplayLabel.textContent = `Datos de: ${selectedMonthText}`;
             }
@@ -325,8 +325,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 .then(response => response.json())
                 .then(data => {
                     if (data.labels && data.data) {
-                        // Re-renderizar el gráfico con los nuevos datos
-                        // Asumiendo que la función renderTopRecursosChart está definida en otra parte
                         renderTopRecursosChart(data.labels, data.data);
 
                         // Actualizar la recomendación
@@ -346,7 +344,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // --- 4. FUNCIÓN DE INICIALIZACIÓN DE LISTENERS ---
     function initializeDropdownsAndDownloadListeners() {
-        // Inicializar los 3 dropdowns de descarga
+        // Inicializar los dropdowns de descarga
         initializeDropdown('descargarCargaToggle');
         initializeDropdown('descargarHistoricoToggle');
         initializeDropdown('descargarDisponibilidadToggle');
@@ -380,9 +378,9 @@ document.addEventListener('DOMContentLoaded', function () {
     initializeCharts();
 
     // Script para el modal de resumen de inspección
-    // 1. Obtener la URL Template del objeto global definido en Blade
+    // Obtener la URL Template del objeto global definido en Blade
     const url_template = window.AppConfig?.resumenUrlTemplate || '/api/inspeccion/resumen/PLACEHOLDER';
-    const ID_PLACEHOLDER = 'PLACEHOLDER'; // Definimos el marcador a reemplazar
+    const ID_PLACEHOLDER = 'PLACEHOLDER';
 
     // Elementos del modal
     const resumenModal = document.getElementById('resumenModal');
@@ -462,7 +460,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             })
             .catch(error => {
-                // Manejo de errores de red o errores 400/500 lanzados
+                // Manejo de errores
                 loadingSpinner.style.display = 'none';
                 let mensajeAMostrar = 'Ocurrió un error desconocido al cargar los datos. Por favor, inténtelo de nuevo.';
 

@@ -24,19 +24,19 @@ class DashboardController extends BaseController
     public function index()
     {
 
-        // 2. Obtener el usuario autenticado
+        // 1. Obtener el usuario autenticado
         $user = Auth::user();
 
-        // 3. Autorización: Usamos la política para verificar el acceso general
+        // 2. Autorización: Usamos la política para verificar el acceso general
         $this->authorize('viewDashboard', Dashboard::class);
 
 
-        // 4. Determinar si se debe filtrar por id_user
+        // 3. Determinar si se debe filtrar por id_user
         $isUserRole = ($user->id_rol === 2);
         $userId = $user->id_user;
 
 
-        // 5. Conteo de inspecciones
+        // 4. Conteo de inspecciones
         $inspeccionQuery = Inspeccion::query();
         if ($isUserRole) {
             // id_rol=2 solo ve las inspecciones que él creó.
@@ -47,7 +47,7 @@ class DashboardController extends BaseController
         $inspeccionesCompletadas = (clone $inspeccionQuery)->where('estado_insp', '1')->count();
 
 
-        // 6. Conteo de informes
+        // 5. Conteo de informes
         $informeQuery = Informe::query();
         if ($isUserRole) {
             // id_rol=2 solo ve los informes que él creó
@@ -58,7 +58,7 @@ class DashboardController extends BaseController
         $totalInformes = $informeQuery->count();
 
 
-        // 7. Recuento de informes por mes (GRÁFICO)
+        // 6. Recuento de informes por mes (GRÁFICO)
         $informesPorMes = $informeQuery->select(
             DB::raw('count(*) as total'), 
             DB::raw('MONTH(created_at) as mes')
@@ -68,7 +68,7 @@ class DashboardController extends BaseController
             ->get();
 
 
-        // 8. Lógica del gráfico
+        // 7 Lógica del gráfico
         $meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
         $datosGrafico = array_fill(0, 12, 0);
 
@@ -76,7 +76,7 @@ class DashboardController extends BaseController
             $datosGrafico[$informe->mes - 1] = $informe->total;
         }
 
-        // 9. Pasar todos los datos a la vista
+        // 8. Pasar todos los datos a la vista
         return view('dashboard', compact('inspeccionesPendientes', 'inspeccionesCompletadas', 'totalInformes', 'datosGrafico', 'meses'));
     }
 }

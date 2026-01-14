@@ -26,15 +26,15 @@
 </head>
 
 <body>
-    {{-- Contenedor principal--}}
     <div class="container-fluid register-container">
 
         <div class="row register-row justify-content-center align-items-center">
 
-            {{-- Columna principal --}}
             <div class="col-12 col-sm-10 col-md-8 col-lg-7 security-card-wrapper">
 
                 <div class="card shadow-sm p-4">
+
+                    {{-- Registro de preguntas de seguridad --}}
                     <h2 class="mb-4">🔒 Registro de Preguntas de Seguridad</h2>
                     <p class="mb-4">Por favor, registra {{ $num_questions }} preguntas y respuestas para la recuperación
                         de

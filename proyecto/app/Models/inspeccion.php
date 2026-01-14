@@ -19,8 +19,8 @@ class Inspeccion extends Model
         'fecha_insp',
         'estado_insp',
         'observacion',
-        'id_user', // FK de usuario
-        'id_viv',  // FK de vivienda
+        'id_user', // Clave foránea a usuario
+        'id_viv',  // Clave foránea a vivienda
     ];
 
     // Relación: Una inspección pertenece a un usuario

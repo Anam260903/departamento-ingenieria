@@ -75,7 +75,7 @@
                             {{-- Botón para volver al perfil --}}
                             <a href="{{ route('perfil') }}" class="btn btn-secondary">Cancelar</a>
                         
-                            {{-- Botón Guardar --}}
+                            {{-- Botón guardar --}}
                             <button type="submit" class="btn btn-primary w-auto">Guardar Nuevas Preguntas de Seguridad</button>
                         </div>
                     </form>

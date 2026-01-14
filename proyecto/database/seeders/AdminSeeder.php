@@ -16,11 +16,11 @@ class AdminSeeder extends Seeder
     {
         // Datos del usuario administrador
         Usuario::create([
-            'cedula_user' => '00000000', // Un valor único para la cédula
+            'cedula_user' => '00000000',
             'nombre' => 'Admin',
             'apellido' => 'Principal',
             'correo' => 'admin@gmail.com',
-            'password' => Hash::make('Admin1234'), // La contraseña debe ser encriptada
+            'password' => Hash::make('Admin1234'),
             'profesion' => null,
             'estado_user' => 1 ,
             'id_rol' => 1,

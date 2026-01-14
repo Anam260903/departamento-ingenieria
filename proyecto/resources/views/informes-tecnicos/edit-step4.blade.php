@@ -23,14 +23,14 @@
                 @php
                     $mensaje = session('status') ?? session('success');
                 @endphp
-                
+
                 @if($mensaje)
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         {{ $mensaje }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
-                
+
                 @if ($errors->any())
                     <div class="alert alert-danger">
                         <ul>
@@ -53,11 +53,13 @@
                 </div>
 
                 <div class="card shadow-sm p-4 mt-3">
+
                     <form action="{{ route('informes.update.step4', $informe->id_inf) }}" method="POST">
                         @csrf
 
                         <input type="hidden" name="id_inf" value="{{ $informe->id_inf }}">
 
+                        {{-- Selección de cálculos--}}
                         <div class="mb-4">
                             <label for="calculos_codes" class="form-label fw-bold">Seleccionar Estimación de Materiales
                             </label>
@@ -83,20 +85,20 @@
                             <?php endif; ?>
                         </div>
 
+                        {{-- Campo para materiales (Editable) --}}
                         <div class="mb-4">
                             <label for="materials_info" class="form-label fw-bold">Materiales obtenidos de la estimación
                                 (Editable)</label>
                             <textarea class="form-control" id="materials_info" name="materials_info"
-                                rows="12"><?php echo old('materials_info', $informe->materials_info ?? ''); ?></textarea>
-                            <small class="form-text text-muted">Este campo es editable. Puede modificar, agregar o
+                                rows="12"><?php echo old('materials_info', $informe->materials_info ?? '');?> </textarea>
+                            <small class="form-text text-muted"> Este campo es editable. Puede modificar, agregar o
                                 eliminar información manualmente.</small>
                             <?php if ($errors->has('materials_info')): ?>
                             <div class="text-danger"><?php    echo $errors->first('materials_info'); ?></div>
                             <?php endif; ?>
                         </div>
 
-
-                        {{-- Botonos de navegación --}}
+                        {{-- Botones de navegación --}}
                         <div class="d-flex justify-content-between mt-4">
                             <a href="{{ route('informes.edit.step3', $informe->id_inf) }}" class="btn btn-secondary">
                                 Volver
@@ -112,7 +114,6 @@
         </div>
     </div>
 
-    {{-- SCRIPTS --}}
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('js/app.js') }}"></script>
 

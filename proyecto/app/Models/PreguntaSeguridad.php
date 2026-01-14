@@ -13,7 +13,7 @@ class PreguntaSeguridad extends Model
     protected $primaryKey = 'id_preg';
 
     protected $fillable = [
-        'id_user',
+        'id_user', // Clave foránea a usuario
         'pregunta',
         'respuesta',
     ];

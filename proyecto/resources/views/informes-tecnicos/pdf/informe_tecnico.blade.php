@@ -52,34 +52,34 @@
 
     <div style="font-size: 10pt; line-height: 1.5; margin-bottom: 15px;">
 
-        {{-- Fila 1: PROFESIONAL ASIGNADO --}}
+        {{-- Fila 1: Profeisonla asignado --}}
         <span style="font-weight: bold;">PROFESIONAL ASIGNADO:</span>
         <span style="display: inline-block; width: 10px;"></span>
         <span style="font-weight: normal;">Ing. {{ $informe->inspeccion->usuario->nombre ?? 'N/A' }}
             {{ $informe->inspeccion->usuario->apellido ?? 'N/A' }}</span>
         <br />
 
-        {{-- Fila 2: FECHA DE LA INSPECCIÓN --}}
+        {{-- Fila 2: Fceha de la inspección --}}
         <span style="font-weight: bold;">FECHA DE LA INSPECCIÓN:</span>
         <span style="display: inline-block; width: 10px;"></span>
         <span
             style="font-weight: normal;">{{ \Carbon\Carbon::parse($informe->inspeccion->fecha_insp)->format('d/m/Y') }}</span>
         <br />
 
-        {{-- Fila 3: NOMBRE DE LA COMUNIDAD Y/O PROYECTO --}}
+        {{-- Fila 3: Nombre de la comunidad y/o proyecto --}}
         <span style="font-weight: bold;">NOMBRE DE LA COMUNIDAD Y/O PROYECTO:</span>
         <span style="display: inline-block; width: 10px;"></span>
         <span style="font-weight: normal;">{{ $informe->comunidad ?? 'N/A' }}</span>
         <br />
 
-        {{-- Fila 4 : RESPONSABLE --}}
+        {{-- Fila 4 : Responsable --}}
         <span style="font-weight: bold;">RESPONSABLE:</span>
         <span style="display: inline-block; width: 10px;"></span>
         <span style="font-weight: normal;">{{ $informe->inspeccion->vivienda->propietario->nombre_propie ?? 'N/A' }}
             {{ $informe->inspeccion->vivienda->propietario->apellido_propie ?? 'N/A' }}</span>
         <br />
 
-        {{-- Fila 5: CÉDULA DE IDENTIDAD --}}
+        {{-- Fila 5: Cédula de identidad --}}
         <span style="font-weight: bold;">CÉDULA DE IDENTIDAD:</span>
         <span style="display: inline-block; width: 10px;"></span>
         <span style="font-weight: normal;">
@@ -87,14 +87,14 @@
         </span>
         <br />
 
-        {{-- Fila 6: TELÉFONO --}}
+        {{-- Fila 6: Teléfono --}}
         <span style="font-weight: bold;">TELÉFONO:</span>
         <span style="display: inline-block; width: 10px;"></span>
         <span style="font-weight: normal;">{{ $informe->inspeccion->vivienda->propietario->telefono ?? 'N/A' }}</span>
 
         <br />
 
-        {{-- Fila 7: DIRECCIÓN --}}
+        {{-- Fila 7: Dirección --}}
         <span style="font-weight: bold;">DIRECCIÓN:</span>
         <span style="display: inline-block; width: 10px;"></span>
         <span style="font-weight: normal;">{{ $informe->inspeccion->vivienda->direccion ?? 'N/A' }}</span>
@@ -136,7 +136,7 @@
 
     {{-- ESPACIO PARA FIRMA DEL INSPECTOR --}}
     <div class="footer-signature">
-        <div style="height: 150px;"></div> {{-- Crea un espacio elástico --}}
+        <div style="height: 150px;"></div>
         <div class="signature-box">
             <p>Ing. {{ $informe->inspeccion->usuario->nombre ?? '' }} {{ $informe->inspeccion->usuario->apellido ?? '' }}</p>
             <p>C.I: {{ number_format($informe->inspeccion->usuario->cedula_user ?? 0, 0, ',', '.') }}</p>
@@ -190,7 +190,6 @@
             $imagenes_por_fila = 2;
             $imagenes_por_pagina = 6;
 
-            // Abrimos la primera tabla
             echo '<table class="photo-table">';
         @endphp
 
@@ -202,7 +201,7 @@
             @endif
 
                 @php
-                    // Lógica de Manejo de Archivos
+                    // Lógica de manejo de archivos
                     $storagePath = storage_path('app/public/' . $imagen->ruta_archivo);
                     $imageData = '';
                     if (file_exists($storagePath)) {

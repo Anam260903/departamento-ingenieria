@@ -27,13 +27,12 @@ class recursos extends Model
 
     /**
      * Determina si el recurso tiene una asignación activa (sin fecha de devolución).
-     * @return bool
      */
     public function estaAsignado(): bool
     {
-        // Busca en la colección de asignaciones si existe ALGUNA donde fecha_devolucion es NULL.
+        // Busca en la colección de asignaciones si existe alguna donde fecha_devolucion es NULL.
         return $this->asignaciones()
-                    ->whereNull('fecha_devolucion')
-                    ->exists(); 
+            ->whereNull('fecha_devolucion')
+            ->exists();
     }
 }

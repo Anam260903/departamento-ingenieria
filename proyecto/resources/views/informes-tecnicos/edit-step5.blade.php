@@ -89,7 +89,7 @@
                                     
                                     <div class="card h-100 shadow-sm border-success position-relative">
 
-                                        {{-- Botón de Eliminación --}}
+                                        {{-- Botón de eliminación --}}
                                         <form action="{{ route('informes.delete.image', $imagen->id_evid) }}" method="POST"
                                             class="position-absolute top-0 end-0 m-1" style="z-index: 10;">
                                             @csrf
@@ -110,6 +110,7 @@
                         </div>
                     @endif
 
+                    {{-- Botones de navegación --}}
                     <div class="d-flex justify-content-between mt-4">
                         <a href="{{ route('informes.edit.step4', $informe->id_inf) }}" class="btn btn-secondary">
                             Volver
@@ -119,14 +120,11 @@
                         </button>
                     </div>
 
-
-
                 </div>
             </div>
         </div>
     </div>
 
-    {{-- SCRIPTS --}}
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('js/app.js') }}"></script>
     <script src="{{ asset('js/informes.js') }}"></script>

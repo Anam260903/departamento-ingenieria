@@ -13,6 +13,8 @@
         <div class="row login-row">
             <div class="col-md-6 left-panel">
                 <div class="login-card">
+                    
+                    {{-- Retablecer contraseña de acceso --}}
                     <h2 class="text-center mb-4">Restablecer Contraseña</h2>
 
                     <form method="POST" action="{{ route('update.contraseña')}}">

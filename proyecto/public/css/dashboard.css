@@ -53,7 +53,7 @@ body.sb-sidenav-toggled #sidebar-wrapper {
     padding-top: 56px;
 }
 
-/* Estado de 'toggled' para mostrar el menú en móviles */
+/* Estado de toggled para mostrar el menú en móviles */
 #wrapper.toggled #sidebar-wrapper {
     margin-left: 0 !important;
 }

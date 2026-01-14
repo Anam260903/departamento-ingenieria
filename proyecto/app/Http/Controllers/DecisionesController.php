@@ -45,20 +45,20 @@ class DecisionesController extends Controller
 
         // 1. Definir los rangos de fechas
 
-        // Mes Actual (Diciembre 2025)
+        // Mes actual
         $fecha_actual_inicio = now()->startOfMonth();
         $fecha_actual_fin = now()->endOfMonth();
 
-        // Mes Anterior (Noviembre 2025)
+        // Mes anterior
         $fecha_mes1_anterior_inicio = now()->copy()->subMonth()->startOfMonth();
         $fecha_mes1_anterior_fin = now()->copy()->subMonth()->endOfMonth();
 
-        // Dos Meses Anteriores (Octubre 2025)
+        // Dos meses anteriores
         $fecha_mes2_anterior_inicio = now()->copy()->subMonths(2)->startOfMonth();
         $fecha_mes2_anterior_fin = now()->copy()->subMonths(2)->endOfMonth();
 
         // 2. Ejecutar las consultas de conteo
-        // Conteo del Mes Actual
+        // Conteo del aes actual
         $actual_count = Inspeccion::where('estado_insp', 1)
             ->whereBetween('fecha_insp', [$fecha_actual_inicio, $fecha_actual_fin])
             ->count();
@@ -102,7 +102,7 @@ class DecisionesController extends Controller
             // Regla 1: Disponible (menos de 5)
             if ($pendientes < 5) {
                 $disponibleCount++;
-                // Regla 2: No Disponible (de 5 a 10)
+                // Regla 2: No disponible (de 5 a 10)
             } elseif ($pendientes >= 5 && $pendientes <= 10) {
                 $noDisponibleCount++;
                 // Regla 3: Sobrecargado (más de 10)
@@ -146,7 +146,7 @@ class DecisionesController extends Controller
         // 1. Lógica para gráfico uso de recursos por inspector
         $usoRecursosPorInspector = $this->obtenerUsoRecursosPorInspector();
 
-        // 2. Lógica para gráfico de recursos más Solicitados (Top N)
+        // 2. Lógica para gráfico de recursos más solicitados (Top N)
         // Por defecto, calculamos el Top 10 para el mes actual
         $topRecursosData = $this->obtenerTopRecursosPorMes();
 
@@ -172,7 +172,7 @@ class DecisionesController extends Controller
             });
 
         // Cálculo del mes actual seleccionado para mostrar en la vista
-        $mesSeleccionado = $request->input('mes', null); // Obtiene el valor del query param 'mes'
+        $mesSeleccionado = $request->input('mes', null);
 
         if ($mesSeleccionado) {
             list($ano, $mes) = explode('-', $mesSeleccionado);
@@ -228,7 +228,7 @@ class DecisionesController extends Controller
         return $recomendacion;
     }
 
-    // MÉTODOS AUXILIARES PARA GRÁFICOS DE RECURSOS
+    // Método auxiliares para gráficos de recursos
 
     /**
      * Prepara los datos para el gráfico de uso de recursos por inspector.
@@ -270,7 +270,7 @@ class DecisionesController extends Controller
                         'label' => $nombreRecurso,
                         'data' => array_fill_keys(array_keys($inspectores), 0), // Inicializar con ceros para todos los inspectores
                         'id_recurso' => $id_recurso,
-                        'backgroundColor' => $this->generarColorAleatorio(count($recursosDataSet)), // Generar un color consistente
+                        'backgroundColor' => $this->generarColorAleatorio(count($recursosDataSet)),
                     ];
                 }
 
@@ -482,7 +482,5 @@ class DecisionesController extends Controller
             'inspecciones' => $dataInspecciones,
         ]);
     }
-
-
 
 }

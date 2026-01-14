@@ -2,6 +2,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 @endif
 
+{{-- Alerta de inactividad para cierre de sesión --}}
 <div class="modal fade" id="sessionWarningModal" tabindex="-1" aria-labelledby="sessionWarningLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">

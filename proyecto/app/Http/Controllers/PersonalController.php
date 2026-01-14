@@ -23,11 +23,11 @@ class PersonalController extends Controller
     use AuthorizesRequests;
 
     /**
-     * Muestra la lista de personal técnico (usuarios) y las profesiones únicas para filtros
+     * Muestra la lista de personal técnico (inspectores) y las profesiones únicas para filtros
      */
     public function index(Request $request)
     {
-        // AUTORIZACIÓN: Verifica si puede ver la lista general
+        // Autorización: Verifica si puede ver la lista general
         $this->authorize('viewAny', Usuario::class);
 
         // 1. Inicializar la consulta
@@ -54,12 +54,11 @@ class PersonalController extends Controller
         }
 
         // 3. Filtrar por estado
-
         if ($request->filled('estado')) {
             $query->where('estado_user', (int) $request->estado);
         }
 
-        // 4. Ejecutar la consulta ordenar y aplicar paginación
+        // 4. Ejecutar la consulta, ordenar y aplicar paginación
         $personal = $query->orderBy('nombre', 'asc')->paginate(10);
 
         // 5. Obtener las profesiones únicas para el filtro PDF
@@ -68,18 +67,18 @@ class PersonalController extends Controller
             ->where('correo', '!=', 'admin@gmail.com')
             ->distinct()
             ->orderBy('profesion', 'asc')
-            ->pluck('profesion'); // Obtiene solo los valores del campo 'profesion'
+            ->pluck('profesion');
 
         // 6. Pasar los resultados a la vista
         return view('personal.index', compact('personal', 'profesionesUnicas'));
     }
 
     /**
-     * Muestra el formulario de edición para un usuario específico
+     * Muestra el formulario de edición para un usuario específico.
      */
     public function edit(Usuario $personal)
     {
-        // AUTORIZACIÓN: Verifica si puede manipular al usuario
+        // Autorización: Verifica si puede manipular al usuario
         $this->authorize('update', $personal);
 
         // Cargar todos los roles disponibles para el selector
@@ -90,11 +89,11 @@ class PersonalController extends Controller
     }
 
     /**
-     * Actualiza la información de un usuario específico
+     * Actualiza la información de un usuario específico.
      */
     public function update(Request $request, Usuario $personal)
     {
-        // AUTORIZACIÓN: Verifica si puede manipular al usuario
+        // Autorización: Verifica si puede manipular al usuario
         $this->authorize('update', $personal);
 
         // 1. Validar los datos de entrada
@@ -166,7 +165,7 @@ class PersonalController extends Controller
      */
     public function toggleStatus(Usuario $personal)
     {
-        // AUTORIZACIÓN: Verifica si puede manipular al usuario
+        // Autorización: Verifica si puede manipular al usuario
         $this->authorize('update', $personal);
 
         // Determina el nuevo estado y su valor en la base de datos
@@ -180,24 +179,25 @@ class PersonalController extends Controller
 
         $personal->save();
 
+        // Redirigir con mensaje de éxito
         return back()->with('success', 'Estado de ' . $personal->nombre . ' ' . $personal->apellido . ' actualizado a ' . $nuevoEstadoTexto . '.');
     }
 
     /**
-     * Muestra la lista de inspecciones disponibles, incluyendo el nombre del propietario
+     * Muestra la lista de inspecciones disponibles.
      */
     public function getAvailableInspections(Usuario $personal)
     {
 
-        // AUTORIZACIÓN: Verifica si puede manipular al usuario
+        // Autorización: Verifica si puede manipular al usuario
         $this->authorize('update', $personal);
 
-        // Carga las inspecciones disponibles junto a sus relaciones anidadas
+        // Cargar las inspecciones disponibles junto a sus relaciones anidadas
         $inspecciones = Inspeccion::whereNull('id_user')
             ->with(['vivienda.propietario'])
             ->get();
 
-        // Mapear la colección para crear el texto que se mostrará en el select
+        // Formatear los datos para el select
         $inspecciones_disponibles = $inspecciones->map(function ($insp) {
 
             $nombre_propietario = 'Propietario Desconocido';
@@ -225,11 +225,11 @@ class PersonalController extends Controller
     }
 
     /**
-     * Procesa la solicitud y asigna una inspección seleccionada al usuario
+     * Procesa la solicitud y asigna una inspección seleccionada al usuario.
      */
     public function assignInspection(Request $request, Usuario $personal)
     {
-        // AUTORIZACIÓN: Verifica si puede manipular al usuario
+        // Autorización: Verifica si puede manipular al usuario
         $this->authorize('update', $personal);
 
         // 1. Validar la entrada
@@ -272,11 +272,11 @@ class PersonalController extends Controller
     }
 
     /**
-     * Devuelve una lista de recursos disponibles (no tienen asignación abierta).
+     * Devuelve una lista de recursos disponibles.
      */
     public function getRecursosDisponibles()
     {
-        // AUTORIZACIÓN: Solo el administrador puede ver los recursos disponibles.
+        // Autorización: Solo el administrador puede ver los recursos disponibles.
         $this->authorize('viewAvailableRecursos', Usuario::class);
 
         // 1. Obtener los IDs de recursos que tienen una asignación PENDIENTE (fecha_devolucion = null)
@@ -284,7 +284,7 @@ class PersonalController extends Controller
             ->pluck('id_recurso')
             ->toArray();
 
-        // 2. Obtener los recursos que NO están en esa lista
+        // 2. Obtener los recursos que no están en esa lista
         $recursosDisponibles = Recursos::whereNotIn('id_recurso', $recursosAsignadosIds)
             ->select('id_recurso', 'codigo', 'nombre_rec')
             ->get();
@@ -303,7 +303,7 @@ class PersonalController extends Controller
         // 1. Obtener el usuario al que se le va a asignar el recurso
         $personal = Usuario::findOrFail($id_user);
 
-        // AUTORIZACIÓN: Solo el administrador puede asignar un recurso a un usuario.
+        // Autorización: Solo el administrador puede asignar un recurso a un usuario.
         $this->authorize('assignRecurso', $personal);
 
         // 2. Validación
@@ -358,14 +358,11 @@ class PersonalController extends Controller
      */
     public function exportarPersonalPDF()
     {
-        // 1. Obtener todos los usuarios EXCLUYENDO el admin master
+        // 1. Obtener todos los usuarios excluyendo el admin master
         $usuarios = Usuario::where('correo', '!=', 'admin@gmail.com')->get();
 
         // 2. Cargar la vista que contiene el PDF
-        // Asegúrate que la ruta de la vista sea correcta (e.g., 'usuarios.pdf.reporte-personal-pdf')
         $pdf = PDF::loadView('personal.pdf.listado-personal-pdf', compact('usuarios'));
-
-        // Ajuste para mejorar la paginación en tablas grandes
         $pdf->setOptions(['isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true, 'isPhpEnabled' => true]);
 
         // 3. Devolver el archivo PDF para descargar
@@ -380,7 +377,7 @@ class PersonalController extends Controller
      */
     public function exportarPersonalPorProfesionPDF(Request $request, $profesion)
     {
-        // 1. Obtener los usuarios filtrados por la profesión, EXCLUYENDO el admin master
+        // 1. Obtener los usuarios filtrados por la profesión, excluyendo el admin master
         $usuarios = Usuario::where('profesion', $profesion)
             ->where('correo', '!=', 'admin@gmail.com')
             ->get();

@@ -3,9 +3,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const togglePassword = document.getElementById("toggle-password");
     const passwordConfirmField = document.getElementById("password-confirm-field");
     const togglePasswordConfirm = document.getElementById("toggle-password-confirm");
-    const cedulaField = document.getElementById("cedula-field"); // Nuevo ID para el campo de cédula
+    const cedulaField = document.getElementById("cedula-field");
 
-    // --- LÓGICA DE VISUALIZACIÓN DE CONTRASEÑAS (Toggle) ---
+    // Lógica de vizualización de contraseñas
     
     // Función para alternar visibilidad de contraseña
     function togglePasswordVisibility(toggleElement, fieldElement) {
@@ -25,21 +25,20 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Aplicar a Contraseña
+    // Aplicar a aontraseña
     togglePasswordVisibility(togglePassword, passwordField);
     
-    // Aplicar a Confirmación de Contraseña
+    // Aplicar a confirmación de contraseña
     togglePasswordVisibility(togglePasswordConfirm, passwordConfirmField);
 
 
-    // --- LÓGICA DE VALIDACIÓN DE ENTRADA (Input Filtering) ---
+    // Lógica de vañidación de entrada
 
     // Script para permitir solo letras en campos de texto (nombre, apellido)
     document
         .querySelectorAll('[name="nombre"], [name="apellido"]')
         .forEach((input) => {
             input.addEventListener("input", function () {
-                // Reemplaza cualquier caracter que NO sea letra (incluyendo Ñ/ñ, acentos y espacios)
                 this.value = this.value.replace(/[^A-Za-zñÑáéíóúÁÉÍÓÚ\s]/g, "");
             });
         });
@@ -53,9 +52,9 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // --- LÓGICA DEL TOOLTIP DE BOOTSTRAP ---
+    // Lógica del tooltip de bootstrap
 
-    // Inicialización del Tooltip
+    // Inicialización del tooltip
     if (typeof bootstrap !== 'undefined' && typeof bootstrap.Tooltip !== 'undefined') {
         const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
         const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
@@ -63,9 +62,9 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Ocultar el Tooltip al hacer focus en el campo de contraseña
+    // Ocultar el tooltip al hacer focus en el campo de contraseña
     if (passwordField && typeof bootstrap !== 'undefined' && typeof bootstrap.Tooltip !== 'undefined') {
-        // Buscamos el Tooltip asociado a passwordField
+        // Buscamos el tooltip asociado a passwordField
         const passwordTooltipInstance = bootstrap.Tooltip.getInstance(passwordField);
 
         if (passwordTooltipInstance) {

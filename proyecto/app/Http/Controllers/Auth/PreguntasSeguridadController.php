@@ -16,7 +16,7 @@ class PreguntasSeguridadController extends Controller
     // Número requerido de preguntas
     private const NUM_QUESTIONS_REQUIRED = 3;
 
-    // ETAPA 1: REGISTRO DE PREGUNTAS (Después del primer login)
+    // Etapa 1: Registro de preguntas (Después del primer login)
 
     /**
      * Muestra el formulario para registrar las preguntas de seguridad.
@@ -82,7 +82,7 @@ class PreguntasSeguridadController extends Controller
     }
 
 
-    // ETAPA 2: RECUPERACIÓN DE CONTRASEÑA
+    // Etapa 2: Recuperación de contraseña
 
     /**
      * Paso 1: Muestra el formulario para pedir el correo.
@@ -100,7 +100,7 @@ class PreguntasSeguridadController extends Controller
         // Estandarizar el correo a minúsculas antes de la validación
         $request->merge(['correo' => strtolower($request->input('correo'))]);
 
-        // 1. Definir las reglas de validación y los mensajes personalizados
+        // Definir las reglas de validación y los mensajes personalizados
         $rules = [
             'correo' => 'required|email|exists:usuarios,correo',
         ];
@@ -174,7 +174,7 @@ class PreguntasSeguridadController extends Controller
         $preguntaSeguridad = PreguntaSeguridad::find(session('password_reset_pregunta_id'));
         $usuarioId = session('password_reset_user_id');
 
-        // Verifiación del token de desafío
+        // Verificación del token de desafío
         if (!$sessionToken || $request->challenge_token !== $sessionToken) {
             return back()->withErrors(['global' => 'Token de desafío inválido o expirado. Por favor, reintente la respuesta.']);
         }
@@ -185,11 +185,11 @@ class PreguntasSeguridadController extends Controller
             return redirect()->route('form.olvideContraseña')->withErrors(['global' => 'Error de integridad en el flujo. Comience de nuevo.']);
         }
 
-        // 1. Obtener la respuesta del usuario y convertirla a minúsculas
+        // Obtener la respuesta del usuario y convertirla a minúsculas
         $respuestaIngresada = strtolower($request->respuesta);
 
 
-        // 2. Verificar la respuesta hasheada
+        // Verificar la respuesta hasheada
         if (Hash::check($respuestaIngresada, $preguntaSeguridad->respuesta)) {
 
             // Respuesta correcta
@@ -284,6 +284,8 @@ class PreguntasSeguridadController extends Controller
             'password_reset_token'
         ]);
     }
+
+    // Etapa 3: Actualización de preguntas de seguridad (desde el perfil)
 
     /**
      * Verifica la contraseña actual del usuario (POST desde el modal).

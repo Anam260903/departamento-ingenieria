@@ -43,7 +43,7 @@
 
                 <h1 class="mb-4 h3">INFORME TÉCNICO</h1>
 
-                {{-- Barra de Progreso --}}
+                {{-- Barra de progreso --}}
                 <div class="step-container">
                     <div class="step completed">1. Datos Generales</div>
                     <div class="step active">2. Diagnóstico y observaciones</div>
@@ -118,7 +118,6 @@
 
                         {{-- Botones de Navegación --}}
                         <div class="d-flex justify-content-between mt-4">
-                            {{-- Botón de retroceso al Paso 1 --}}
                             <a href="{{ route('informes.edit.step1', $informe->id_inf) }}" class="btn btn-secondary">
                                 Volver
                             </a>
@@ -132,7 +131,6 @@
         </div>
     </div>
 
-    {{-- SCRIPTS --}}
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('js/app.js') }}"></script>
     <script src="{{ asset('js/informes.js') }}"></script>

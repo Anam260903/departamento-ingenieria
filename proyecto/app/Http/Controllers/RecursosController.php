@@ -16,10 +16,14 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 class RecursosController extends Controller
 {
     use AuthorizesRequests;
+
+     /**
+     * Muestra la lista de recursos.
+     */
     public function index(Request $request)
     {
 
-        // AUTORIZACIÓN: Solo el Administrador (id_rol=1) tiene acceso al index.
+        // Autorización: Solo el Administrador tiene acceso al index.
         $this->authorize('viewAny', Recursos::class);
 
         // Obtener el usuario autenticado
@@ -28,8 +32,7 @@ class RecursosController extends Controller
         // 1. Inicializar la consulta con las relaciones necesarias
         $query = Recursos::with('asignaciones.usuario');
 
-        // 2. Filtrar por Palabra Clave
-        // Buscar por codigo, nombre
+        // 2. Filtrar por palabra clave
         if ($request->filled('keyword')) {
             $keyword = $request->keyword;
             $query->where(function ($q) use ($keyword) {
@@ -62,11 +65,11 @@ class RecursosController extends Controller
     }
 
     /**
-     * Muestra el historial completo de asignaciones
+     * Muestra el historial completo de asignaciones.
      */
     public function assignmentsHistory(Request $request)
     {
-        // AUTORIZACIÓN: Ambos roles tienen acceso a este método.
+        // Autorización: Ambos roles tienen acceso a este método
         $this->authorize('viewHistory', Recursos::class);
 
         // Validación de filtros
@@ -74,22 +77,22 @@ class RecursosController extends Controller
             'fecha_asignacion_start' => 'nullable|date',
             'fecha_devolucion_end' => 'nullable|date|after_or_equal:fecha_asignacion_start',
         ], [
-            // Mensaje de error personalizado
+            // Mensaje de error
             'fecha_devolucion_end.after_or_equal' => 'La Fecha de Devolución no puede ser anterior a la Fecha de Asignación.',
         ]);
 
         $user = Auth::user();
 
-        // 1. Inicializar la consulta con las relaciones necesarias
+        // 1. Inicializar la consulta con las relaciones
         $query = asignacion_recursos::with(['recurso', 'usuario'])->orderBy('fecha_asignacion', 'desc');
 
-        // LÓGICA DE FILTRO POR ROL:
-        // Si el usuario es de Rol ID 2, restringir a sus propias asignaciones.
+        // Lógica de filtro por rol:
+        // Si el usuario es de Rol ID 2, restringir a sus propias asignaciones
         if ($user->id_rol === 2) {
             $query->where('id_user', $user->id_user);
         }
 
-        // 2. Filtrar por Palabra Clave (Nombre del Recurso, Nombre o Apellido del Usuario)
+        // 2. Filtrar por palabra clave (Nombre del recurso, nombre o apellido del usuario)
         if ($request->filled('keyword')) {
             $keyword = $request->keyword;
             $query->where(function ($q) use ($keyword) {
@@ -105,17 +108,17 @@ class RecursosController extends Controller
             });
         }
 
-        // 3. Filtrar por Fecha de Asignación (Rango o exacta)
+        // 3. Filtrar por fecha de asignación
         if ($request->filled('fecha_asignacion_start')) {
             $query->whereDate('fecha_asignacion', '>=', $request->fecha_asignacion_start);
         }
 
-        // 4. Filtrar por Fecha de Devolución (Rango o exacta)
+        // 4. Filtrar por fecha de devolución
         if ($request->filled('fecha_devolucion_end')) {
             $query->whereDate('fecha_devolucion', '<=', $request->fecha_devolucion_end);
         }
 
-        // 5. Filtrar por Estado (Devuelto o Pendiente)
+        // 5. Filtrar por estado (Devuelto o Pendiente)
         if ($request->filled('estado')) {
             if ($request->estado === '1') {
                 $query->whereNull('fecha_devolucion'); // Pendiente de devolución
@@ -131,20 +134,20 @@ class RecursosController extends Controller
         return view('recursos.historial-asignaciones', compact('asignaciones'));
     }
 
-    // Muestra la vista de creación de recursos
+    // Muestra la vista de registro de recursos
     public function create()
     {
-        // AUTORIZACIÓN: Solo el administrador puede crear.
+        // Autorización: Solo el administrador puede registrar
         $this->authorize('manage', Recursos::class);
         return view('recursos.formulario-recurso');
     }
 
     /**
-     * Almacena un recurso recién creado en la base de datos
+     * Almacena un recurso en la base de datos.
      */
     public function store(Request $request)
     {
-        // AUTORIZACIÓN: Solo el administrador puede almacenar.
+        // Autorización: Solo el administrador puede almacenar
         $this->authorize('manage', Recursos::class);
 
         // 1. Validar los datos
@@ -185,7 +188,7 @@ class RecursosController extends Controller
     public function edit(Recursos $recurso)
     {
 
-        // AUTORIZACIÓN: Solo el administrador puede acceder a la edición.
+        // Autorización: Solo el administrador puede acceder a la edición
         $this->authorize('manage', $recurso);
         return view('recursos.editar-recurso', compact('recurso'));
     }
@@ -195,7 +198,7 @@ class RecursosController extends Controller
      */
     public function update(Request $request, Recursos $recurso)
     {
-        // AUTORIZACIÓN: Solo el administrador puede actualizar.
+        // Autorización: Solo el administrador puede actualizar
         $this->authorize('manage', $recurso);
 
         // 1. Validar los datos
@@ -234,7 +237,7 @@ class RecursosController extends Controller
                 'observacion' => $request->observacion,
             ]);
 
-            // LLamada a la notificación
+            // Llamada a la notificación
             $this->sendAdminNotification('updated', $recurso->id_recurso, $recurso->nombre_rec);
 
             // 3. Redireccionar con mensaje de éxito
@@ -247,19 +250,19 @@ class RecursosController extends Controller
     }
 
     /**
-     * Elimina un recurso (Soft Delete)
+     * Elimina un recurso (Soft Delete).
      */
     public function destroy($id_recurso)
     {
         try {
             $recurso = Recursos::findOrFail($id_recurso);
 
-            // AUTORIZACIÓN: Solo el administrador puede eliminar.
+            // Autorización: Solo el administrador puede eliminar
             $this->authorize('manage', $recurso);
 
             $recurso->delete();
 
-            // LLamada a la notificación
+            // Llamada a la notificación
             $this->sendAdminNotification('deleted', $recurso->id_recurso, $recurso->nombre_rec);
 
             return redirect()->route('recursos.index')->with('success', '¡Recurso #' . $id_recurso . ' eliminado correctamente!');
@@ -276,7 +279,7 @@ class RecursosController extends Controller
      */
     public function markAsReturned(Request $request, $id_asignacion)
     {
-        // AUTORIZACIÓN 1: Verifica que el rol sea el correcto.
+        // Autorización 1: Verifica que el rol sea el correcto.
         $this->authorize('canReturn', Recursos::class);
 
         try {
@@ -284,7 +287,7 @@ class RecursosController extends Controller
             $asignacion = asignacion_recursos::with(['recurso', 'usuario'])->findOrFail($id_asignacion);
             $user = Auth::user();
 
-            // 2. AUTORIZACIÓN 2 (Verificación de propiedad para Rol 2):
+            // 2. Autorización 2 (Verificación de propiedad para Rol 2):
             if ($user->id_rol === 2 && $asignacion->id_user !== $user->id_user) {
                 abort(403, 'No está autorizado para devolver un recurso que no le ha sido asignado.');
             }
@@ -302,7 +305,7 @@ class RecursosController extends Controller
             $recursoNombre = $asignacion->recurso->nombre_rec ?? 'Recurso Desconocido';
             $usuarioAsignado = optional($asignacion->usuario)->nombre . ' ' . optional($asignacion->usuario)->apellido ?? 'Usuario Desconocido';
 
-            // LLamada a la notificación
+            // Llamada a la notificación
             $this->sendAdminNotification('returned', $id_asignacion, $recursoNombre, $usuarioAsignado);
 
             // 6. Redirección exitosa
@@ -315,7 +318,7 @@ class RecursosController extends Controller
             // Manejar caso donde no se encuentra la asignación (ID incorrecto)
             return back()->with('error', 'El registro de asignación no fue encontrado. Intente nuevamente.');
         } catch (\Exception $e) {
-            // Manejar cualquier otro error de servidor o base de datos
+            // Manejar cualquier otro error
             \Log::error("Error al marcar como devuelto (ID: {$id_asignacion}): " . $e->getMessage());
             return back()->with('error', 'Ocurrió un error inesperado al procesar la devolución. Intente nuevamente.');
         }
@@ -326,7 +329,7 @@ class RecursosController extends Controller
      */
     public function exportarRecursosGeneralPDF()
     {
-        // AUTORIZACIÓN: Solo Rol 1 puede exportar el listado general.
+        // Autorización: Solo Rol de Administrador puede exportar el listado general
         $this->authorize('exportGeneralPDF', Recursos::class);
 
         // 1. Obtener todos los recursos
@@ -334,11 +337,9 @@ class RecursosController extends Controller
 
         // 2. Cargar la vista que contiene el PDF
         $pdf = PDF::loadView('recursos.pdf.listado-recursos-pdf', compact('recursos'));
-
-        // 3. Ajustes de DomPDF
         $pdf->setOptions(['isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true, 'isPhpEnabled' => true]);
 
-        // 4. Devolver el archivo PDF para descargar
+        // 3. Devolver el archivo PDF para descargar
         $fecha = Carbon::now()->format('Ymd');
         $nombreArchivo = "Reporte_Recursos_{$fecha}.pdf";
 
@@ -350,7 +351,7 @@ class RecursosController extends Controller
      */
     public function exportarHistorialAsignacionesPDF()
     {
-        // AUTORIZACIÓN: Ambos roles pueden descargar el historial.
+        // Autorización: Ambos roles pueden descargar el historial.
         $this->authorize('exportHistoryPDF', Recursos::class);
 
         $user = Auth::user();
@@ -368,11 +369,9 @@ class RecursosController extends Controller
 
         // 2. Cargar la vista que contiene el PDF
         $pdf = PDF::loadView('recursos.pdf.historial-asignaciones-pdf', compact('asignaciones'));
-
-        // 3. Ajustes de DomPDF
         $pdf->setOptions(['isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true, 'isPhpEnabled' => true]);
 
-        // 4. Devolver el archivo PDF para descargar
+        // 3. Devolver el archivo PDF para descargar
         $fecha = Carbon::now()->format('Ymd');
         $nombreArchivo = "Historial_Asignaciones_{$fecha}.pdf";
 
@@ -384,7 +383,7 @@ class RecursosController extends Controller
      */
     public function exportarHistorialAsignacionesPorFechaPDF(Request $request)
     {
-        // AUTORIZACIÓN: Ambos roles pueden descargar el historial.
+        // Autorización: Ambos roles pueden descargar el historial.
         $this->authorize('exportHistoryPDF', Recursos::class);
 
         $user = Auth::user();
@@ -428,7 +427,7 @@ class RecursosController extends Controller
     }
 
     /**
-     * Crea y envía una notificación a todos los administradores
+     * Crea y envía una notificación a todos los administradores.
      */
     private function sendAdminNotification(string $action, int $id, string $recursoNombre, ?string $usuarioAsignado = null): void
     {

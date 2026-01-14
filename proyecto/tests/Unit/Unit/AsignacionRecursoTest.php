@@ -56,7 +56,7 @@ class AsignacionRecursoTest extends TestCase
         ]);
     }
 
-    
+ 
     // Prueba que un usuario no administrador es bloqueado
     public function test_usuario_no_admin_no_puede_asignar_recurso()
     {

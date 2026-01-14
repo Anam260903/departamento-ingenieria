@@ -31,12 +31,12 @@ class InspeccionesController extends Controller
 
         // Lógica de autorización (Filtro en listado)
 
-        // Si el usuario es de Rol ID 2 (Usuario), restringir a sus propios registros.
+        // Si el usuario es de Rol ID 2 (Inspector), restringir a sus propios registros.
         if ($user && $user->id_rol === 2) {
             $query->where('id_user', $user->id_user);
         }
 
-        // 2. Filtrar por Palabra Clave (Keyword)
+        // 2. Filtrar por palabra clave
         if ($request->filled('keyword')) {
             $keyword = $request->keyword;
             $query->where(function ($q) use ($keyword) {
@@ -298,7 +298,7 @@ class InspeccionesController extends Controller
      */
     public function cancelAssignment(Inspeccion $inspeccion)
     {
-        // 1. Autorización
+        // 1. Autorización:  Verifica si el usuario puede cancelar la inspección
         $this->authorize('reassign', $inspeccion);
 
         try {
@@ -350,13 +350,13 @@ class InspeccionesController extends Controller
                     ->with('warning', 'No se puede eliminar la inspección #' . $id_insp . ' porque ya tiene un informe realizado.');
             }
 
-            // 3. Autorización
+            // 3. Autorización: Verifica si el usuario puede eliminar la inspección
             $this->authorize('delete', $inspeccion);
 
             // 4. Eliminar (Soft Delete)
             $inspeccion->delete();
 
-            // 5. Enviar notificación (usando los datos que ya tenemos en memoria)
+            // 5. Llamada a la notificación
             $this->sendAdminNotification('deleted', $inspeccion);
 
             return redirect()->route('inspecciones.index')
@@ -387,7 +387,7 @@ class InspeccionesController extends Controller
             $inspecciones = Inspeccion::with(['vivienda.propietario', 'usuario'])->get();
         }
 
-        // 2. Cargar la vista que contiene le PDF
+        // 2. Cargar la vista que contiene el PDF
         $pdf = PDF::loadView('inspecciones.pdf.reporte-inspecciones-pdf', compact('inspecciones'));
 
         // Ajuste para mejorar la paginación en tablas grandes
@@ -407,7 +407,6 @@ class InspeccionesController extends Controller
     {
         $user = Auth::user();
 
-
         // 1. Obtener el mes y el año del formulario
         $mes = $request->input('mes');
         $ano = $request->input('ano');
@@ -418,7 +417,7 @@ class InspeccionesController extends Controller
         }
 
         // 2. Filtrar las inspecciones por Mes y Año
-        // Si el usuario es de Rol ID 2 (Usuario), restringir a sus propias inspecciones
+        // Si el usuario es de rol ID 2 (Inspector), restringir a sus propias inspecciones
         if ($user?->id_rol === 2) {
             $inspecciones = Inspeccion::with(['vivienda.propietario', 'usuario'])
                 ->where('id_user', $user->id_user)
@@ -444,7 +443,6 @@ class InspeccionesController extends Controller
         }
 
         // 4. Cargar la vista Blade y generar el PDF
-        // Pasamos la fecha de reporte para actualizar el título del PDF
         $pdf = PDF::loadView('inspecciones.pdf.reporte-inspecciones-pdf', compact('inspecciones', 'fechaReporte'));
         $pdf->setOptions(['isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true, 'isPhpEnabled' => true]);
 
@@ -473,7 +471,7 @@ class InspeccionesController extends Controller
             }
 
             // Definir el prefijo del mensaje con el propietario
-            $prefijo = "(Prop.: {$propietarioName})";
+            $prefijo = "(Prop: {$propietarioName})";
 
             $message = '';
             $type = '';

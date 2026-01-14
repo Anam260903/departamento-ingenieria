@@ -10,7 +10,6 @@
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
     <style>
-        /* Estilos específicos para los badges de estado */
         .badge-asignado {
             background-color: #ffc107;
         }
@@ -133,7 +132,7 @@
 
                 <div class="card shadow-sm p-4">
 
-                    {{-- Tabla con datos de inspecciones --}}
+                    {{-- Tabla de datos --}}
                     <div class="table-responsive">
                         <table class="table table-striped table-hover">
                             <thead class="table-header-custom">
@@ -231,7 +230,6 @@
         <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
         <script src="{{ asset('js/app.js') }}"></script>
         <script src="{{ asset('js/recursos.js') }}"></script>
-
 
         @include('components._session-timeout')
 </body>

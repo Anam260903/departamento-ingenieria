@@ -85,7 +85,6 @@
                     </div>
                 </div>
 
-
                 <div class="card shadow-sm p-4 mb-4">
                     <form action="{{ route('personal.index') }}" method="GET">
                         <div class="row g-3">
@@ -189,7 +188,7 @@
                                                     @method('PATCH')
                                                     <button type="submit"
                                                         class="btn btn-sm btn-icon-only 
-                                                                                                                                                                                                                        {{ $esActivo ? 'btn-warning' : 'btn-success' }}"
+                                                                                                                                                                                                                                {{ $esActivo ? 'btn-warning' : 'btn-success' }}"
                                                         data-bs-toggle="tooltip" data-bs-placement="top"
                                                         title="{{ $esActivo ? 'Desactivar Personal' : 'Activar Personal' }}">
                                                         <i class="bi {{ $esActivo ? 'bi-lock' : 'bi-unlock' }}"></i>
@@ -261,7 +260,6 @@
                                 <select class="form-select" id="id_insp" name="id_insp" required>
                                     <option value="">Cargando inspecciones...</option>
                                 </select>
-                                {{-- Espacio para errores de validación si usaras AJAX, o si Laravel redirige --}}
                                 <div class="text-danger mt-1" id="id_insp-error"></div>
                             </div>
                         </div>
@@ -290,7 +288,6 @@
                     <form id="assignResourceForm" method="POST">
                         @csrf
                         <div class="modal-body">
-
                             <div class="alert alert-warning d-none" id="no-resources-alert">
                                 No hay recursos disponibles para asignar en este momento.
                             </div>

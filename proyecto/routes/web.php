@@ -14,6 +14,11 @@ use App\Http\Controllers\DecisionesController;
 use App\Http\Controllers\NotificacionController;
 use App\Http\Controllers\RespaldoController;
 
+// Ruta raíz para redirigir al login
+Route::get ('/', function () {
+    return redirect()->route('login');
+});
+
 // Ruta para mostrar el formulario de inicio de sesión
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 
@@ -25,9 +30,9 @@ Route::post('/session/extend', function (Illuminate\Http\Request $request) {
     // Solo accedemos a una variable de sesión para actualizar el tiempo de actividad
     $request->session()->put('active_check', time());
     return response()->json(['status' => 'extended']);
-})->name('session.extend')->middleware('auth'); // Asegúrate que solo sea accesible si está logueado
+})->name('session.extend')->middleware('auth');
 
-// Rutas para registrar preguntas de seguridad después dellogin por primera vez
+// Rutas para registrar preguntas de seguridad después del login por primera vez
 Route::get('/registrar/preguntas-seguridad', [PreguntasSeguridadController::class, 'showRegistrationForm'])->name('form.preguntasSeguridad')->middleware('auth');
 Route::post('/registar/preguntas-seguridad', [PreguntasSeguridadController::class, 'registerQuestions'])->name('register.preguntasSeguridad')->middleware('auth');
 
@@ -45,30 +50,30 @@ Route::post('/responder/preguntas-seguridad', [PreguntasSeguridadController::cla
 Route::get('/restablecer-contraseña-de-seguridad', [PreguntasSeguridadController::class, 'showResetForm'])->name('form.reestablecerContraseña')->middleware('guest');
 Route::post('restablecer-contraseña', [PreguntasSeguridadController::class, 'resetPassword'])->name('update.contraseña');
 
-// Ruta para mostrar el formulario de registro
+// Ruta para mostrar el formulario de registro de usuario
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
 
-// Ruta para procesar la solicitud de registro
+// Ruta para procesar la solicitud de registro de usuario
 Route::post('/register', [AuthController::class, 'register']);
 
 //Ruta para cerrar sesión
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Ruta del dashboard (protegida por middleware)
+// Ruta del dashboard
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('auth');
 
-// Ruta para mostrar el perfil (GET, protegida por middleware)
+// Ruta para mostrar el perfil
 Route::get('/perfil', [PerfilController::class, 'index'])->name('perfil')->middleware('auth');
 
-// Ruta para actualizar los datos del perfil (POST, protegida por middleware)
+// Ruta para actualizar los datos del perfil
 Route::post('/perfil/actualizar', [PerfilController::class, 'update'])->name('perfil.update')->middleware('auth');
 
-// Ruta para actualizar la contraseña del perfil (POST, protegida por middleware)
+// Ruta para actualizar la contraseña del perfil
 Route::post('/perfil/cambiar-contrasena', [PerfilController::class, 'changePassword'])->name('perfil.change-password')->middleware('auth');
 
 Route::middleware(['auth'])->group(function () {
     
-    // --- Rutas de Actualización de Preguntas de Seguridad ---
+    // --- Rutas de actualización de preguntas de seguridad ---
     // 1. Verifica la contraseña actual
     Route::post('/perfil/seguridad/verificar-password', [PreguntasSeguridadController::class, 'verifyCurrentPassword'])->name('seguridad.verificarContraseña');
     
@@ -110,7 +115,7 @@ Route::get('personal/exportar/pdf', [PersonalController::class, 'exportarPersona
 // Ruta para exportar listado de personal a PDF filtrado por profesión
 Route::get('personal/exportar/pdf/{profesion}', [PersonalController::class, 'exportarPersonalPorProfesionPDF'])->name('personal.exportar.pdf.filtro')->middleware('auth');
 
-// Rutas del módulo de recursos protegidas por middleware
+// Rutas del módulo de recursos
 Route::group(['middleware' => ['auth']], function () {
 
     // Rutas Resource (cubre index, create, store, edit, update, destroy)
@@ -132,7 +137,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('recursos/asignaciones/exportar/pdf/fecha', [RecursosController::class, 'exportarHistorialAsignacionesPorFechaPDF'])->name('recursos.asignaciones.exportar.pdf.fecha');
 });
 
-// Ruta para el módulo de inspecciones (protegidas por middleware)
+// Ruta para el módulo de inspecciones
 Route::middleware('auth')->group(function () {
     Route::resource('inspecciones', InspeccionesController::class);
 });

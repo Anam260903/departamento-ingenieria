@@ -97,14 +97,12 @@
                                 @enderror
                             </div>
 
-
-                            {{-- Campo de rol --}}
+                            {{-- Rol --}}
                             <div class="col-lg-3 col-md-6 mb-3">
                                 <label for="id_rol" class="form-label">Rol del Usuario</label>
                                 <select class="form-select @error('id_rol') is-invalid @enderror" id="id_rol"
                                     name="id_rol" required>
                                     <option value="">Seleccione un Rol</option>
-                                    {{-- Recorremos la lista de roles que vienen del controlador --}}
                                     @foreach($roles as $rol)
                                         <option value="{{ $rol->id_rol }}" @selected(old('id_rol', $personal->id_rol) == $rol->id_rol)>
                                             {{ $rol->nombre_rol }}
@@ -149,7 +147,7 @@
                         </p>
                         <div class="row mb-4">
 
-                            {{-- Nueva Contraseña --}}
+                            {{-- Nueva contraseña --}}
                             <div class="col-md-6 mb-3">
                                 <label for="password" class="form-label">Nueva Contraseña</label>
                                 <div class="input-group">
@@ -160,14 +158,13 @@
                                     <button class="btn btn-outline-secondary toggle-password" type="button">
                                         <i class="bi bi-eye"></i>
                                     </button>
-
                                 </div>
                                 @error('password')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
 
-                            {{-- Confirmar Contraseña --}}
+                            {{-- Confirmar contraseña --}}
                             <div class="col-md-6 mb-3">
                                 <label for="password_confirmation" class="form-label">Confirmar Contraseña</label>
                                 <div class="input-group">
@@ -180,11 +177,9 @@
                             </div>
                         </div>
 
+                        {{-- Botones de navegación --}}
                         <div class="d-flex justify-content-end gap-2 mt-4">
-                            {{-- Botón Cancelar: Vuelve al listado de personal --}}
                             <a href="{{ route('personal.index') }}" class="btn btn-secondary">Cancelar</a>
-
-                            {{-- Botón Guardar --}}
                             <button type="submit" class="btn btn-primary w-auto">Guardar Cambios</button>
                         </div>
                     </form>
@@ -196,9 +191,9 @@
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('js/app.js') }}"></script>
     <script>
-        // Inicializar Tooltips y Popovers
+        // Inicializar tooltips y popovers
         document.addEventListener('DOMContentLoaded', function () {
-            // Inicializa Tooltips
+            // Inicializa tooltips
             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
             var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
                 return new bootstrap.Tooltip(tooltipTriggerEl)

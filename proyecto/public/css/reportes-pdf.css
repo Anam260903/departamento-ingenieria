@@ -6,7 +6,7 @@ body {
     padding: 0;
 }
 
-/* Estilos del Encabezado */
+/* Estilos del encabezado */
 .header-container {
     width: 100%;
     display: table;
@@ -44,7 +44,7 @@ body {
     margin: 10px 0 15px 0;
 }
 
-/* Títulos del Reporte */
+/* Títulos del reporte */
 .report-title {
     text-align: center;
     font-size: 14px;
@@ -57,7 +57,7 @@ body {
     margin-bottom: 25px;
 }
 
-/* Estilos de la Tabla */
+/* Estilos de la tabla */
 .table {
     width: 100%;
     border-collapse: collapse;
@@ -134,7 +134,7 @@ body {
             margin: 10px 0 15px 0;
         }
 
-        /* Títulos del Informe */
+        /* Títulos del informe */
         .report-title {
             text-align: center;
             font-size: 14px;
@@ -194,7 +194,7 @@ body {
             display: block;
         }
 
-        /* --- Memoria fotográfica --- */
+        /*  Memoria fotográfica */
 
         .photo-table {
             width: 100%;
@@ -223,4 +223,3 @@ body {
             font-style: italic;
     padding-bottom: 10px;
 }
-
