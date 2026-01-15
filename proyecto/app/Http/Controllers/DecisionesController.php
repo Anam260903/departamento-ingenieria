@@ -143,43 +143,54 @@ class DecisionesController extends Controller
     {
         $hoy = Carbon::today();
 
-        // 1. Lógica para gráfico uso de recursos por inspector
+        // 1. Lógica para gráfico de uso de recursos por inspector
         $usoRecursosPorInspector = $this->obtenerUsoRecursosPorInspector();
 
-        // 2. Lógica para gráfico de recursos más solicitados (Top N)
-        // Por defecto, calculamos el Top 10 para el mes actual
-        $topRecursosData = $this->obtenerTopRecursosPorMes();
+        // 2. Lógica para gráfico de top recursos
+        $topRecursosData = $this->obtenerTopRecursosPorMes($request);
 
-        // 3. Generar la recomendación inicial basada en el Top 3
+        // 3. Generar la recomendación inicial
         $recomendacion = $this->generarRecomendacionRecursos($topRecursosData);
 
-        // 4. Obtenemos una lista de meses para el selector del Top N
-        $mesesDisponibles = asignacion_recursos::select(
+        // 4. Obtener meses con datos
+        $mesesQuery = asignacion_recursos::select(
             DB::raw('YEAR(fecha_asignacion) as ano'),
             DB::raw('MONTH(fecha_asignacion) as mes')
         )
             ->distinct()
             ->orderBy('ano', 'desc')
             ->orderBy('mes', 'desc')
-            ->get()
-            ->map(function ($item) use ($hoy) {
-                $fecha = Carbon::create($item->ano, $item->mes, 1);
-                return [
-                    'value' => "{$item->ano}-{$item->mes}",
-                    'label' => $fecha->isoFormat('MMMM YYYY'),
-                    'selected' => ($item->ano == $hoy->year && $item->mes == $hoy->month)
-                ];
-            });
+            ->get();
+        $existeMesActual = $mesesQuery->contains(function ($item) use ($hoy) {
+            return $item->ano == $hoy->year && $item->mes == $hoy->month;
+        });
 
-        // Cálculo del mes actual seleccionado para mostrar en la vista
-        $mesSeleccionado = $request->input('mes', null);
+        $mesesDisponibles = $mesesQuery->map(function ($item) use ($hoy, $request) {
+            $valor = "{$item->ano}-{$item->mes}";
+            $seleccionado = $request->input('mes') == $valor || (!$request->has('mes') && $item->ano == $hoy->year && $item->mes == $hoy->month);
 
-        if ($mesSeleccionado) {
-            list($ano, $mes) = explode('-', $mesSeleccionado);
-            $fechaSeleccionada = Carbon::create($ano, $mes, 1);
-            $mesActualTopN = $fechaSeleccionada->isoFormat('MMMM YYYY');
+            return [
+                'value' => $valor,
+                'label' => Carbon::create($item->ano, $item->mes, 1)->isoFormat('MMMM YYYY'),
+                'selected' => $seleccionado
+            ];
+        })->toArray();
+
+        // Si el mes actual no tiene datos, lo agregamos manualmente al inicio para que el selector sea coherente
+        if (!$existeMesActual && !$request->has('mes')) {
+            array_unshift($mesesDisponibles, [
+                'value' => $hoy->format('Y-n'),
+                'label' => $hoy->isoFormat('MMMM YYYY'),
+                'selected' => true
+            ]);
+        }
+
+        // 6. Calcular correctamente el nombre del mes para la vista
+        $mesSeleccionadoString = $request->input('mes');
+        if ($mesSeleccionadoString) {
+            list($ano, $mes) = explode('-', $mesSeleccionadoString);
+            $mesActualTopN = Carbon::create($ano, $mes, 1)->isoFormat('MMMM YYYY');
         } else {
-            // Si no hay mes seleccionado, usa el valor por defecto (mes actual)
             $mesActualTopN = $hoy->isoFormat('MMMM YYYY');
         }
 
@@ -188,7 +199,7 @@ class DecisionesController extends Controller
             'topRecursosData' => $topRecursosData,
             'mesesDisponibles' => $mesesDisponibles,
             'recomendacion' => $recomendacion,
-            'mesActualTopN' => $hoy->isoFormat('MMMM YYYY')
+            'mesActualTopN' => $mesActualTopN
         ]);
     }
 

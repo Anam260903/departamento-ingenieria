@@ -34,7 +34,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
-                
+
                 {{-- Mensajes de sesión --}}
                 @php
                     $mensaje = session('status') ?? session('success');
@@ -55,7 +55,7 @@
                             @endforeach
                         </ul>
                     </div>
-                @endif 
+                @endif
 
                 {{-- Recomendación --}}
                 <div class="row mb-5">
@@ -127,7 +127,7 @@
                                         <li><a class="dropdown-item" href="#" data-chart-id="topRecursosChart"
                                                 data-format="png">Descargar como PNG</a></li>
                                         <li><a class="dropdown-item" href="#" data-chart-id="topRecursosChart"
-                                                data-format=" jpg">Descargar como JPG</a></li>
+                                                data-format="jpg">Descargar como JPG</a></li>
                                     </ul>
                                 </div>
 
@@ -144,7 +144,8 @@
                                                 </option>
                                             @endforeach
                                         </select>
-                                        <small class="text-muted" id="mes-display-label">Datos de: {{ $mesActualTopN }}</small>
+                                        <small class="text-muted" id="mes-display-label">Datos de:
+                                            {{ $mesActualTopN }}</small>
                                     </div>
                                 </div>
                                 <canvas id="topRecursosChart" style="max-height: 400px;"></canvas>
@@ -163,7 +164,24 @@
     <script>
         window.usoRecursosPorInspector = @json($usoRecursosPorInspector);
         window.topRecursosData = @json($topRecursosData);
-        window.mesActualTopN = "{{ $mesActualTopN }}"; 
+        window.mesActualTopN = "{{ $mesActualTopN }}";
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Renderiza el gráfico de inspectores
+            if (typeof renderUsoRecursosChart === 'function') {
+                renderUsoRecursosChart(window.usoRecursosPorInspector.labels, window.usoRecursosPorInspector.datasets);
+            }
+
+            // Renderiza el gráfico de Top Recursos con los datos iniciales
+            if (typeof renderTopRecursosChart === 'function') {
+                // Si no hay datos, pasamos un estado vacío
+                if (window.topRecursosData.labels.length > 0) {
+                    renderTopRecursosChart(window.topRecursosData.labels, window.topRecursosData.data);
+                } else {
+                    renderTopRecursosChart(['Sin datos para este mes'], [0]);
+                }
+            }
+        });
     </script>
 
     <script src="{{ asset('js/decisiones.js') }}"></script>
