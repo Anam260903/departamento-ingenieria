@@ -21,62 +21,64 @@ class DashboardController extends BaseController
         $this->middleware('auth');
     }
 
-    public function index()
+    public function index(Request $request)
     {
-
-        // 1. Obtener el usuario autenticado
         $user = Auth::user();
-
-        // 2. Autorización: Usamos la política para verificar el acceso general
         $this->authorize('viewDashboard', Dashboard::class);
 
+        // 1. Parámetros para el gráfico
+        $anioSeleccionado = $request->input('anio', date('Y'));
+        $aniosDisponibles = range(date('Y'), date('Y') - 5);
 
-        // 3. Determinar si se debe filtrar por id_user
         $isUserRole = ($user->id_rol === 2);
         $userId = $user->id_user;
 
-
-        // 4. Conteo de inspecciones
-        $inspeccionQuery = Inspeccion::query();
+        // 2. Crear la base de la consulta para informes
+        $informeBaseQuery = Informe::query();
         if ($isUserRole) {
-            // id_rol=2 solo ve las inspecciones que él creó.
-            $inspeccionQuery->where('id_user', $userId);
-        }
-        
-        $inspeccionesPendientes = (clone $inspeccionQuery)->where('estado_insp', '0')->count();
-        $inspeccionesCompletadas = (clone $inspeccionQuery)->where('estado_insp', '1')->count();
-
-
-        // 5. Conteo de informes
-        $informeQuery = Informe::query();
-        if ($isUserRole) {
-            // id_rol=2 solo ve los informes que él creó
-            $informeQuery->whereHas('inspeccion', function ($q) use ($userId) {
+            $informeBaseQuery->whereHas('inspeccion', function ($q) use ($userId) {
                 $q->where('id_user', $userId);
             });
         }
-        $totalInformes = $informeQuery->count();
 
+        // 3. Total global
+        $totalInformes = (clone $informeBaseQuery)->count();
 
-        // 6. Recuento de informes por mes (GRÁFICO)
-        $informesPorMes = $informeQuery->select(
-            DB::raw('count(*) as total'), 
-            DB::raw('MONTH(created_at) as mes')
-        )
+        // 4. Cosulta para el gráfico
+        $informesPorMes = $informeBaseQuery->whereYear('fecha_inf', $anioSeleccionado)
+            ->select(
+                DB::raw('count(*) as total'),
+                DB::raw('MONTH(fecha_inf) as mes')
+            )
             ->groupBy('mes')
             ->orderBy('mes', 'asc')
             ->get();
 
-
-        // 7 Lógica del gráfico
+        // 5. Lógica del gráfico (Llenado de array)
         $meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
         $datosGrafico = array_fill(0, 12, 0);
-
         foreach ($informesPorMes as $informe) {
-            $datosGrafico[$informe->mes - 1] = $informe->total;
+            $indice = (int) $informe->mes - 1;
+            $datosGrafico[$indice] = $informe->total;
         }
 
-        // 8. Pasar todos los datos a la vista
-        return view('dashboard', compact('inspeccionesPendientes', 'inspeccionesCompletadas', 'totalInformes', 'datosGrafico', 'meses'));
+        // 6. Inspecciones pendientes y completadas
+        $inspeccionQuery = Inspeccion::query();
+        if ($isUserRole) {
+            $inspeccionQuery->where('id_user', $userId);
+        }
+        $inspeccionesPendientes = (clone $inspeccionQuery)->where('estado_insp', '0')->count();
+        $inspeccionesCompletadas = (clone $inspeccionQuery)->where('estado_insp', '1')->count();
+
+        // 7. Retornar vista con datos
+        return view('dashboard', compact(
+            'inspeccionesPendientes',
+            'inspeccionesCompletadas',
+            'totalInformes',
+            'datosGrafico',
+            'meses',
+            'anioSeleccionado',
+            'aniosDisponibles'
+        ));
     }
 }

@@ -24,7 +24,7 @@
 
                 {{-- Mensajes de sesión --}}
                 @php
-                    $mensaje = session('status') ?? session('success');
+$mensaje = session('status') ?? session('success');
                 @endphp
 
                 @if($mensaje)
@@ -85,21 +85,35 @@
                 <div class="row mt-4">
                     <div class="col-12">
                         <div class="card shadow-sm p-4">
-                            <div>
-                                <div class="dropdown">
-                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button"
-                                        id="descargarGraficoDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="bi bi-download"></i> Descargar
-                                    </button>
-                                    <ul class="dropdown-menu" aria-labelledby="descargarGraficoDropdown">
-                                        <li><a class="dropdown-item" href="#" id="descargarPng">Descargar como PNG</a>
-                                        </li>
-                                        <li><a class="dropdown-item" href="#" id="descargarJpg">Descargar como JPG</a>
-                                        </li>
-                                    </ul>
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h5 class="mb-0">Informes realizados por mes</h5>
+
+                                <div class="d-flex gap-2">
+                                    <form action="{{ route('dashboard') }}" method="GET" id="yearForm">
+                                        <select name="anio" class="form-select form-select-sm"
+                                            onchange="document.getElementById('yearForm').submit()">
+                                            @foreach($aniosDisponibles as $anio)
+                                                <option value="{{ $anio }}" {{ $anioSeleccionado == $anio ? 'selected' : '' }}>
+                                                    Año {{ $anio }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </form>
+
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="descargarGraficoDropdown"
+                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="bi bi-download"></i> Descargar
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="descargarGraficoDropdown">
+                                            <li><a class="dropdown-item" href="#" id="descargarPng">Descargar como PNG</a>
+                                            </li>
+                                            <li><a class="dropdown-item" href="#" id="descargarJpg">Descargar como JPG</a>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
-                            <h5 class="text-center mb-4">Informes realizados por mes</h5>
 
                             <canvas id="informesChart" data-chart-data="{{ json_encode($datosGrafico) }}"
                                 data-chart-labels="{{ json_encode($meses) }}">

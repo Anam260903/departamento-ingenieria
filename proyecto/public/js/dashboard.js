@@ -21,6 +21,13 @@ document.addEventListener("DOMContentLoaded", function () {
         const datos = JSON.parse(ctx.getAttribute("data-chart-data"));
         const labels = JSON.parse(ctx.getAttribute("data-chart-labels"));
 
+        console.log("Labels:", labels); // Debería tener 12 nombres
+        console.log("Datos:", datos);   // El número '1' debe estar en la posición 10 (Noviembre)
+
+        if (informesChartInstance) {
+            informesChartInstance.destroy(); // Limpia el gráfico previo si existe
+        }
+
         // Crea el gráfico y almacena la instancia
         informesChartInstance = new Chart(ctx, {
             type: "bar",
@@ -71,16 +78,16 @@ document.addEventListener("DOMContentLoaded", function () {
             // Obtener el elemento canvas original y definir el margen
             const canvasOriginal = informesChartInstance.canvas;
             const margin = 20;
-            
+
             // Crear un nuevo canvas temporal
             const canvasTemporal = document.createElement('canvas');
             canvasTemporal.width = canvasOriginal.width + 2 * margin; // Añadir margen a izquierda y derecha
             canvasTemporal.height = canvasOriginal.height + 2 * margin; // Añadir margen arriba y abajo
-            
+
             const ctxTemp = canvasTemporal.getContext('2d');
-            
+
             // Dibujar el fondo blanco en el canvas temporal completo
-            ctxTemp.fillStyle = 'white'; 
+            ctxTemp.fillStyle = 'white';
             ctxTemp.fillRect(0, 0, canvasTemporal.width, canvasTemporal.height);
 
             // Dibujar el contenido del gráfico original con el desfase del margen
@@ -89,7 +96,7 @@ document.addEventListener("DOMContentLoaded", function () {
             // Obtener el Data URL de la imagen (PNG o JPEG/JPG)
             let dataURL;
             let mimeType;
-            
+
             if (formato === 'png') {
                 mimeType = 'image/png';
                 dataURL = canvasTemporal.toDataURL(mimeType);
@@ -99,7 +106,7 @@ document.addEventListener("DOMContentLoaded", function () {
             } else {
                 return; // Formato no soportado
             }
-            
+
             // Crear un enlace temporal para forzar la descarga
             const a = document.createElement('a');
             a.download = `informes_por_mes_${new Date().toISOString().split('T')[0]}.${formato}`;
