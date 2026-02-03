@@ -103,7 +103,8 @@
                 </div>
 
                 <ul class="list-group list-group-flush mb-4">
-                    <li class="list-group-item"><strong>Elaborado Por:</strong> Ana Marcano</li>
+                    <li class="list-group-item"><strong>Elaborado Por:</strong> Ana Teresa Marcano Rosal</li>
+                    <li class="list-group-item"><strong>Contacto:</strong> marcano02ana@gmaill.com</li>
                     <li class="list-group-item"><strong>Desarrollado con:</strong> Laravel 12.26.3 & Bootstrap 5.3.8</li>
                     <li class="list-group-item"><strong>Base de Datos:</strong> MariaDB 10.4.32</li>
                     <li class="list-group-item"><strong>Última actualización:</strong> Enero 2026 </li>
@@ -116,7 +117,7 @@
                     {{-- Botón para descargar manual de usuario--}}
                     <div class="d-grid gap-2">
                         <a href="{{ asset('documentos/manual-usuario.pdf') }}" 
-                           download="Manual_de_Usuario.pdf" 
+                           target="_blank"
                            class="btn btn-outline-primary">
                             <i class="bi bi-file-earmark-pdf me-2"></i> Descargar Manual de Usuario (PDF)
                         </a>

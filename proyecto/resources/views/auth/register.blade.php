@@ -101,7 +101,7 @@
 
                     <div class="row mt-3">
                         <div class="col-6 text-start">
-                            <a href="{{ asset('documentos/manual-usuario.pdf') }}" download="Manual_de_Usuario.pdf" class="text-decoration-none" title="Descarga el manual de usuario del sistema">
+                            <a href="{{ asset('documentos/manual-usuario.pdf') }}" target="_blank" class="text-decoration-none" title="Descarga el manual de usuario del sistema">
                             ¿Cómo usar el sistema?
                             </a>
                         </div>

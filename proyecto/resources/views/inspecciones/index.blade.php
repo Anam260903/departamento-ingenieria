@@ -53,7 +53,7 @@
 
                 {{-- Mensajes de sesión --}}
                 @php
-                    $mensaje = session('status') ?? session('success');
+$mensaje = session('status') ?? session('success');
                 @endphp
 
                 @if($mensaje)
@@ -76,7 +76,7 @@
                 <div class="row justify-content-end mb-3">
                     {{-- Botón de descarga PDF general--}}
                     <div class="col-auto">
-                        <a href="{{ route('inspecciones.exportar.pdf') }}" class="btn btn-secondary text-nowrap"
+                        <a href="{{ route('inspecciones.exportar.pdf') }}" target="_blank" class="btn btn-secondary text-nowrap"
                             title="Descargar PDF">
                             <i class="bi bi-file-earmark-pdf me-2"></i>Descargar listado
                         </a>
@@ -335,7 +335,7 @@
                         Mensual</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form action="{{ route('inspecciones.exportar.mes') }}" method="GET">
+                <form action="{{ route('inspecciones.exportar.mes') }}" target="_blank" method="GET">
                     <div class="modal-body">
                         <p>Seleccione el mes y año para filtrar el listado de inspecciones a descargar.</p>
 
@@ -346,7 +346,7 @@
                                 <select id="mes_modal" name="mes" class="form-select" required>
                                     <option value="">Seleccione Mes</option>
                                     @php
-                                        \Carbon\Carbon::setLocale('es');
+\Carbon\Carbon::setLocale('es');
                                     @endphp
                                     {{-- Listar los 12 meses --}}
                                     @for ($m = 1; $m <= 12; $m++)

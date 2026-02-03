@@ -58,7 +58,7 @@
 
                                 @if (!$notificacion->leida)
                                     <form action="{{ route('notifications.markAsRead', $notificacion->id_notificacion) }}"
-                                        method="POST" class="w-100" id="mark-read-{{ $notificacion->id_notificacion }}">
+                                        method="POST" class="w-100" id="mark-read-{{ $notificacion->id_notificacion }}" >
                                         @csrf
                                         <button type="submit"
                                             class="btn btn-link dropdown-item text-start w-100 d-flex align-items-start {{ $notificacion->leida ? 'text-muted' : 'fw-bold' }}"

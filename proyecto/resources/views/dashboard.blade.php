@@ -46,47 +46,53 @@ $mensaje = session('status') ?? session('success');
 
                 {{-- Panel de inicio--}}
                 <div class="row mt-4 gy-4 gx-md-4">
+                    
+                    {{-- Card inspeccioes pendientes --}}
                     <div class="col-12 col-md-6 col-lg-4">
-
-                        {{-- Card inspecciones pendientes --}}
-                        <div class="card text-center shadow-sm h-100">
-                            <div class="card-body d-flex flex-column justify-content-center">
-                                <i class="bi bi-exclamation-circle-fill display-4 text-warning"></i>
-                                <h5 class="card-title mt-3">INSPECCIONES PENDIENTES</h5>
-                                <p class="display-4 fw-bold">{{ $inspeccionesPendientes }}</p>
+                        <a href="{{ route('inspecciones.index') }}" class="text-decoration-none text-dark">
+                            <div class="card text-center shadow-sm h-100">
+                                <div class="card-body d-flex flex-column justify-content-center">
+                                    <i class="bi bi-exclamation-circle-fill display-4 text-warning"></i>
+                                    <h5 class="card-title mt-3">INSPECCIONES PENDIENTES</h5>
+                                    <p class="display-4 fw-bold">{{ $inspeccionesPendientes }}</p>
+                                </div>
                             </div>
-                        </div>
+                        </a>
                     </div>
 
                     {{-- Card inspeccioes completadas --}}
                     <div class="col-12 col-md-6 col-lg-4">
-                        <div class="card text-center shadow-sm h-100">
-                            <div class="card-body d-flex flex-column justify-content-center">
-                                <i class="bi bi-check-circle-fill display-4 text-success"></i>
-                                <h5 class="card-title mt-3">INSPECCIONES COMPLETADAS</h5>
-                                <p class="display-4 fw-bold">{{ $inspeccionesCompletadas }}</p>
+                        <a href="{{ route('inspecciones.index') }}" class="text-decoration-none text-dark">    
+                            <div class="card text-center shadow-sm h-100">
+                                <div class="card-body d-flex flex-column justify-content-center">
+                                    <i class="bi bi-check-circle-fill display-4 text-success"></i>
+                                    <h5 class="card-title mt-3">INSPECCIONES COMPLETADAS</h5>
+                                    <p class="display-4 fw-bold">{{ $inspeccionesCompletadas }}</p>
+                                </div>
                             </div>
-                        </div>
+                        </a>
                     </div>
 
                     {{-- Card total de informes --}}
                     <div class="col-12 col-md-6 col-lg-4">
-                        <div class="card text-center shadow-sm h-100">
-                            <div class="card-body d-flex flex-column justify-content-center">
-                                <i class="bi bi-journal-text display-4 text-primary"></i>
-                                <h5 class="card-title mt-3">TOTAL DE INFORMES</h5>
-                                <p class="display-4 fw-bold">{{ $totalInformes }}</p>
+                        <a href="{{ route('informes.index') }}" class="text-decoration-none text-dark">
+                            <div class="card text-center shadow-sm h-100">
+                                <div class="card-body d-flex flex-column justify-content-center">
+                                    <i class="bi bi-journal-text display-4 text-primary"></i>
+                                    <h5 class="card-title mt-3">TOTAL DE INFORMES</h5>
+                                    <p class="display-4 fw-bold">{{ $totalInformes }}</p>
+                                </div>
                             </div>
-                        </div>
+                        </a>
                     </div>
                 </div>
 
-                {{-- Gráfico informes por mes --}}
+                {{-- Gráfico informes por año detallados por mes --}}
                 <div class="row mt-4">
                     <div class="col-12">
                         <div class="card shadow-sm p-4">
                             <div class="d-flex justify-content-between align-items-center mb-4">
-                                <h5 class="mb-0">Informes realizados por mes</h5>
+                                <h5 class="mb-0">Informes realizados por año detallados por mes</h5>
 
                                 <div class="d-flex gap-2">
                                     <form action="{{ route('dashboard') }}" method="GET" id="yearForm">

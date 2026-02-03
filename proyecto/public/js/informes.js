@@ -139,12 +139,13 @@ function getCsrfToken() {
 
         // Definición de capas base
         const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 22,
+            maxZoom: 19,
             attribution: '© OpenStreetMap contributors'
         });
 
         const esriLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
             maxZoom: 22,
+            maxNativeZoom: 17,
             attribution: 'Tiles © Esri &mdash; Source: Esri...'
         });
 

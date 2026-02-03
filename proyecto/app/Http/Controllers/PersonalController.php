@@ -369,7 +369,7 @@ class PersonalController extends Controller
         $fecha = Carbon::now()->format('Ymd');
         $nombreArchivo = "Reporte_Personal_{$fecha}.pdf";
 
-        return $pdf->download($nombreArchivo);
+        return $pdf->stream($nombreArchivo);
     }
 
     /**
@@ -394,7 +394,7 @@ class PersonalController extends Controller
         $fecha = Carbon::now()->format('Ymd');
         $nombreArchivo = "Reporte_Personal_{$profesion}_{$fecha}.pdf";
 
-        return $pdf->download($nombreArchivo);
+        return $pdf->stream($nombreArchivo);
     }
 
 }

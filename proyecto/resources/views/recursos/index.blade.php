@@ -84,7 +84,7 @@
                     <div class="col-auto">
                         {{-- Verifica si el usuario autenticado tiene id_rol igual a 1 (Administrador) --}}
                         @if (auth()->check() && auth()->user()->id_rol === 1)
-                            <a href="{{ route('recursos.exportar.pdf.general') }}" class="btn btn-danger text-nowrap"
+                            <a href="{{ route('recursos.exportar.pdf.general') }}" target="_blank" class="btn btn-danger text-nowrap"
                                 title="Descargar PDF Listado General">
                                 <i class="bi bi-file-earmark-pdf me-2"></i>Descargar Listado
                             </a>

@@ -55,7 +55,7 @@
 
                 <div class="d-flex justify-content-end mb-3 gap-2">
                     <div class="col-auto">
-                        <a href="{{ route('recursos.asignaciones.exportar.pdf') }}"
+                        <a href="{{ route('recursos.asignaciones.exportar.pdf') }}" target="_blank"
                             class="btn btn-secondary text-nowrap" title="Descargar Historial de Asignaciones">
                             <i class="bi bi-file-earmark-pdf me-2"></i>Descargar historial
                         </a>
@@ -213,8 +213,8 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
-                <form action="{{ route('recursos.asignaciones.exportar.pdf.fecha') }}" method="GET"
-                    id="exportarPDFForm">
+                <form action="{{ route('recursos.asignaciones.exportar.pdf.fecha') }}" method="GET" 
+                    target="_blank" id="exportarPDFForm">
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="fecha_desde" class="form-label">Fecha Desde:</label>

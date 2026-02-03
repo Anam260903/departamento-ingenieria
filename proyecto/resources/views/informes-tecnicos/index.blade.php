@@ -147,7 +147,7 @@
                                                 </a>
 
                                                 {{-- 2. Botón de descargar PDF --}}
-                                                <a href="{{ route('informes.generatePdf', $informe->id_inf) }}"
+                                                <a href="{{ route('informes.generatePdf', $informe->id_inf) }}" target="_blank"
                                                     class="btn btn-danger btn-sm" title="Descargar PDF">
                                                     <i class="bi bi-file-pdf-fill"></i>
                                                 </a>

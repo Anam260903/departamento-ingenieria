@@ -687,7 +687,7 @@ class InformesController extends BaseController
         $pdf = Pdf::loadView('informes-tecnicos.pdf.informe_tecnico', compact('informe'));
 
         // 4. Configurar y retornar el PDF para la descarga con el nuevo nombre
-        return $pdf->setPaper('a4', 'portrait')->download($nombre_archivo);
+        return $pdf->setPaper('a4', 'portrait')->stream($nombre_archivo);
     }
 
     /**

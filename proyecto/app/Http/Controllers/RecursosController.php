@@ -343,7 +343,7 @@ class RecursosController extends Controller
         $fecha = Carbon::now()->format('Ymd');
         $nombreArchivo = "Reporte_Recursos_{$fecha}.pdf";
 
-        return $pdf->download($nombreArchivo);
+        return $pdf->stream($nombreArchivo);
     }
 
     /**
@@ -375,7 +375,7 @@ class RecursosController extends Controller
         $fecha = Carbon::now()->format('Ymd');
         $nombreArchivo = "Historial_Asignaciones_{$fecha}.pdf";
 
-        return $pdf->download($nombreArchivo);
+        return $pdf->stream($nombreArchivo);
     }
 
     /**
@@ -423,7 +423,7 @@ class RecursosController extends Controller
         $pdf->setOptions(['isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true, 'isPhpEnabled' => true]);
         $nombreArchivo = "Historial_Asignaciones_Filtrado_{$rangoFechas['desde']}_a_{$rangoFechas['hasta']}.pdf";
 
-        return $pdf->download($nombreArchivo);
+        return $pdf->stream($nombreArchivo);
     }
 
     /**

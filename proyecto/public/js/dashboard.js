@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Variable para almecenar la instancia del gráfico
     let informesChartInstance = null;
 
-    // Lógica para el gráfico de Chart.js
+    // Lógica para el gráfico de informes por año detallados por mes
     const ctx = document.getElementById("informesChart");
     if (ctx) {
         const datos = JSON.parse(ctx.getAttribute("data-chart-data"));

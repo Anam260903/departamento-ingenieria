@@ -372,7 +372,6 @@ class InspeccionesController extends Controller
     /**
      * Exporta todas las inspecciones a un archivo PDF descargable
      */
-
     public function exportarPDF()
     {
         $user = Auth::user();
@@ -397,7 +396,7 @@ class InspeccionesController extends Controller
         $fecha = Carbon::now()->format('Ymd');
         $nombreArchivo = "Reporte_Inspecciones_{$fecha}.pdf";
 
-        return $pdf->download($nombreArchivo);
+        return $pdf->stream($nombreArchivo);
     }
 
     /**
@@ -449,7 +448,7 @@ class InspeccionesController extends Controller
         // 5. Devolver el archivo PDF para descarga
         $nombreArchivo = "Reporte_Inspecciones_{$ano}_{$mes}.pdf";
 
-        return $pdf->setPaper('a4', 'portrait')->download($nombreArchivo);
+        return $pdf->setPaper('a4', 'portrait')->stream($nombreArchivo);
     }
 
     /**

@@ -33,7 +33,7 @@
 
                 {{-- Mensajes de sesión --}}
                 @php
-                    $mensaje = session('status') ?? session('success');
+$mensaje = session('status') ?? session('success');
                 @endphp
 
                 @if($mensaje)
@@ -59,7 +59,7 @@
 
                         {{-- Botón de descarga listado PDF (General) --}}
                         <div class="col-lg-4 col-md-6 mb-3 mb-lg-0">
-                            <a href="{{ route('personal.exportar.pdf') }}" class="btn btn-danger text-nowrap w-auto"
+                            <a href="{{ route('personal.exportar.pdf') }}" target="_blank" class="btn btn-danger text-nowrap w-auto"
                                 title="Descargar PDF General del Personal">
                                 <i class="bi bi-file-earmark-pdf me-2"></i>Descargar
                             </a>
@@ -165,12 +165,12 @@
                                         {{-- Estado (Activo/Inactivo) --}}
                                         <td class="align-middle text-center text-sm">
                                             @php
-                                                $estado_numerico = $user->estado_user;
+    $estado_numerico = $user->estado_user;
 
-                                                $estado = ($estado_numerico == 1) ? 'ACIVO' : 'INACTIVO';
+    $estado = ($estado_numerico == 1) ? 'ACIVO' : 'INACTIVO';
 
-                                                $esActivo = ($estado_numerico === '1');
-                                                $badgeClass = $esActivo ? 'bg-success' : 'bg-secondary';
+    $esActivo = ($estado_numerico === '1');
+    $badgeClass = $esActivo ? 'bg-success' : 'bg-secondary';
                                             @endphp
                                             <span class="badge {{ $badgeClass }} text-white text-uppercase">
                                                 {{ $estado }}

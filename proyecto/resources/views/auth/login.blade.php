@@ -69,7 +69,7 @@
                         <p class="mb-0">¿No tienes cuenta? <a href="{{ route('register') }}" class="text-decoration-none">Regístrate</a></p>
                     </div>
                     <div class="mt-3">
-                        <a href="{{ asset('documentos/manual-usuario.pdf') }}" download="Manual_de_Usuario.pdf" class="text-decoration-none" title="Descarga el manual de usuario del sistema">¿Cómo usar el sistema?</a>
+                        <a href="{{ asset('documentos/manual-usuario.pdf') }}" target="_blank" class="text-decoration-none" title="Descarga el manual de usuario del sistema">¿Cómo usar el sistema?</a>
                     </div>
                 </div>
             </div>

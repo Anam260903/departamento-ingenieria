@@ -35,9 +35,9 @@ document.addEventListener('DOMContentLoaded', function () {
         resetResults();
     }
 
-    
+
     // Validar que no se seleccione la misma inspección en ambos selects.
-     
+
     function validateSelection(changedSelect, otherSelect, panelNumber) {
         const changedValue = changedSelect.value;
         const otherValue = otherSelect.value;
@@ -58,28 +58,41 @@ document.addEventListener('DOMContentLoaded', function () {
         return true;
     }
 
+    // Función para ocultar la opción seleccionada en el selector opuesto
+    function sincronizarSelects() {
+        const val1 = select1.value;
+        const val2 = select2.value;
+
+        // Recorrer opciones del segundo select para ocultar la elegida en el primero
+        Array.from(select2.options).forEach(option => {
+            if (option.value !== "") {
+                option.hidden = (option.value === val1);
+            }
+        });
+
+        // Recorrer opciones del primer select para ocultar la elegida en el segundo
+        Array.from(select1.options).forEach(option => {
+            if (option.value !== "") {
+                option.hidden = (option.value === val2);
+            }
+        });
+    }
+
     // Actualizar la información de la vivienda
     function updateViviendaInfo(selectElement, panelNumber) {
-
-        // Si la validación falla, se detiene la ejecución
-        if (!validateSelection(selectElement, (panelNumber === 1 ? select2 : select1), panelNumber)) {
-            return;
-        }
+        // 1. Sincronizar visibilidad de opciones
+        sincronizarSelects();
 
         const infoDiv = document.getElementById(`vivienda_info_${panelNumber}`);
         const selectedOption = selectElement.options[selectElement.selectedIndex];
 
         if (selectedOption.value) {
-            // Actualizar la información de la vivienda en el panel
             document.getElementById(`propietario_${panelNumber}`).textContent = selectedOption.dataset.propietario;
             document.getElementById(`fecha_${panelNumber}`).textContent = selectedOption.dataset.fecha;
             document.getElementById(`comunidad_${panelNumber}`).textContent = selectedOption.dataset.comunidad;
             infoDiv.style.display = 'block';
-
             calculatePriorityScore(panelNumber);
-
         } else {
-            // Limpiar y ocultar si se selecciona la opción vacía
             infoDiv.style.display = 'none';
             document.querySelectorAll(`.check-inspeccion-${panelNumber}`).forEach(cb => cb.checked = false);
             document.getElementById(`current_score_${panelNumber}`).textContent = '0';
